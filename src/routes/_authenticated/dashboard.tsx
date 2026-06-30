@@ -15,12 +15,17 @@ function Dashboard() {
   const { data: profile } = useProfile();
   const { data: expenses = [] } = useExpenses();
 
+  const totals = computeTotals(
+    Number(profile?.net_income ?? 0),
+    Number(profile?.gross_income ?? 0),
+    expenses,
+  );
+  const animatedDisposable = useCountUp(totals.disposable, 900);
+
   if (!profile) return <div className="p-8 text-muted-foreground text-sm">Loading…</div>;
 
-  const totals = computeTotals(Number(profile.net_income), Number(profile.gross_income), expenses);
   const level = healthLevel(totals.savingsRate);
   const currency = profile.currency_code;
-  const animatedDisposable = useCountUp(totals.disposable, 900);
 
   const levelStyles: Record<typeof level, string> = {
     tight: "bg-alert/10 text-alert border-alert/20",
