@@ -157,15 +157,13 @@ export function evaluateAffordability(params: {
     };
   }
 
-  if (isRecurring && projectedDebtRatio > 36 && (params as any) /* type guard placeholder */) {
-    // Only flag if this category was debt-like; simpler heuristic: if recurring and ratio >36% gross
-    if (projectedDebtRatio > 36) {
-      return {
-        verdict: "not_recommended",
-        reasoning: `Adding this would push your recurring debt-like obligations to ${projectedDebtRatio.toFixed(0)}% of gross income — above the 36% safe ceiling lenders use. Consider trimming an existing commitment first.`,
-      };
-    }
+  if (isRecurring && projectedDebtRatio > 36) {
+    return {
+      verdict: "not_recommended",
+      reasoning: `Adding this would push your recurring debt-like obligations to ${projectedDebtRatio.toFixed(0)}% of gross income — above the 36% safe ceiling lenders use. Consider trimming an existing commitment first.`,
+    };
   }
+
 
   if (remainingAfterBuffer < 0) {
     return {
