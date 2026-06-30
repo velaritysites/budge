@@ -14,7 +14,198 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      affordability_checks: {
+        Row: {
+          amount: number
+          created_at: string
+          currency_code: string
+          disposable_at_check: number
+          id: string
+          is_recurring: boolean
+          item_name: string
+          reasoning: string
+          user_id: string
+          verdict: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency_code?: string
+          disposable_at_check?: number
+          id?: string
+          is_recurring?: boolean
+          item_name: string
+          reasoning: string
+          user_id: string
+          verdict: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency_code?: string
+          disposable_at_check?: number
+          id?: string
+          is_recurring?: boolean
+          item_name?: string
+          reasoning?: string
+          user_id?: string
+          verdict?: string
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          frequency: string
+          id: string
+          is_fixed: boolean
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string
+          frequency?: string
+          id?: string
+          is_fixed?: boolean
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          frequency?: string
+          id?: string
+          is_fixed?: boolean
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      monthly_snapshots: {
+        Row: {
+          created_at: string
+          currency_code: string
+          disposable_income: number
+          expenses_by_category: Json
+          gross_income: number
+          id: string
+          month: string
+          net_income: number
+          savings_rate: number
+          total_expenses: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency_code?: string
+          disposable_income?: number
+          expenses_by_category?: Json
+          gross_income?: number
+          id?: string
+          month: string
+          net_income?: number
+          savings_rate?: number
+          total_expenses?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency_code?: string
+          disposable_income?: number
+          expenses_by_category?: Json
+          gross_income?: number
+          id?: string
+          month?: string
+          net_income?: number
+          savings_rate?: number
+          total_expenses?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          currency_code: string
+          display_name: string | null
+          gross_income: number
+          id: string
+          net_income: number
+          onboarded_at: string | null
+          pay_frequency: string
+          safety_buffer_pct: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency_code?: string
+          display_name?: string | null
+          gross_income?: number
+          id: string
+          net_income?: number
+          onboarded_at?: string | null
+          pay_frequency?: string
+          safety_buffer_pct?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency_code?: string
+          display_name?: string | null
+          gross_income?: number
+          id?: string
+          net_income?: number
+          onboarded_at?: string | null
+          pay_frequency?: string
+          safety_buffer_pct?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      savings_goals: {
+        Row: {
+          created_at: string
+          current_amount: number
+          id: string
+          name: string
+          target_amount: number
+          target_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_amount?: number
+          id?: string
+          name: string
+          target_amount: number
+          target_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_amount?: number
+          id?: string
+          name?: string
+          target_amount?: number
+          target_date?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
