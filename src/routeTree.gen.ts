@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedStatsRouteImport } from './routes/_authenticated/stats'
+import { Route as AuthenticatedGoalsRouteImport } from './routes/_authenticated/goals'
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCheckerRouteImport } from './routes/_authenticated/checker'
@@ -34,6 +35,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedStatsRoute = AuthenticatedStatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGoalsRoute = AuthenticatedGoalsRouteImport.update({
+  id: '/goals',
+  path: '/goals',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedExpensesRoute = AuthenticatedExpensesRouteImport.update({
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/checker': typeof AuthenticatedCheckerRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/expenses': typeof AuthenticatedExpensesRoute
+  '/goals': typeof AuthenticatedGoalsRoute
   '/stats': typeof AuthenticatedStatsRoute
 }
 export interface FileRoutesByTo {
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/checker': typeof AuthenticatedCheckerRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/expenses': typeof AuthenticatedExpensesRoute
+  '/goals': typeof AuthenticatedGoalsRoute
   '/stats': typeof AuthenticatedStatsRoute
 }
 export interface FileRoutesById {
@@ -76,13 +84,28 @@ export interface FileRoutesById {
   '/_authenticated/checker': typeof AuthenticatedCheckerRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
+  '/_authenticated/goals': typeof AuthenticatedGoalsRoute
   '/_authenticated/stats': typeof AuthenticatedStatsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/checker' | '/dashboard' | '/expenses' | '/stats'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/checker'
+    | '/dashboard'
+    | '/expenses'
+    | '/goals'
+    | '/stats'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/checker' | '/dashboard' | '/expenses' | '/stats'
+  to:
+    | '/'
+    | '/auth'
+    | '/checker'
+    | '/dashboard'
+    | '/expenses'
+    | '/goals'
+    | '/stats'
   id:
     | '__root__'
     | '/'
@@ -91,6 +114,7 @@ export interface FileRouteTypes {
     | '/_authenticated/checker'
     | '/_authenticated/dashboard'
     | '/_authenticated/expenses'
+    | '/_authenticated/goals'
     | '/_authenticated/stats'
   fileRoutesById: FileRoutesById
 }
@@ -130,6 +154,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStatsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/goals': {
+      id: '/_authenticated/goals'
+      path: '/goals'
+      fullPath: '/goals'
+      preLoaderRoute: typeof AuthenticatedGoalsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/expenses': {
       id: '/_authenticated/expenses'
       path: '/expenses'
@@ -158,6 +189,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCheckerRoute: typeof AuthenticatedCheckerRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
+  AuthenticatedGoalsRoute: typeof AuthenticatedGoalsRoute
   AuthenticatedStatsRoute: typeof AuthenticatedStatsRoute
 }
 
@@ -165,6 +197,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCheckerRoute: AuthenticatedCheckerRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
+  AuthenticatedGoalsRoute: AuthenticatedGoalsRoute,
   AuthenticatedStatsRoute: AuthenticatedStatsRoute,
 }
 
