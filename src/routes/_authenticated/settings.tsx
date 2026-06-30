@@ -39,7 +39,7 @@ function SettingsPage() {
     const q = search.trim().toLowerCase();
     if (!q) return CURRENCIES.slice(0, 50);
     return CURRENCIES.filter(
-      (c) => c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q) || c.country.toLowerCase().includes(q),
+      (c) => c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q),
     ).slice(0, 50);
   }, [search]);
 
