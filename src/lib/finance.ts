@@ -129,11 +129,9 @@ export function evaluateAffordability(params: {
 }): { verdict: Verdict; reasoning: string } {
   const { amount, isRecurring, totals, safetyBufferPct, debtMonthly, grossIncome } = params;
   const buffer = (totals.netIncome * safetyBufferPct) / 100;
-  const monthlyImpact = isRecurring ? amount : amount; // for one-off vs disposable directly
-  const disposableAfter = isRecurring
-    ? totals.disposable - amount
-    : totals.disposable - amount;
+  const disposableAfter = totals.disposable - amount;
   const remainingAfterBuffer = disposableAfter - buffer;
+
 
   // Debt-to-income flag (recurring debt-like cost vs gross)
   const projectedDebtRatio = grossIncome > 0
