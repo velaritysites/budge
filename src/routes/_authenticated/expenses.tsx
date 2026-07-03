@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useExpenses, useProfile } from "@/hooks/use-profile";
 import { CATEGORY_LABELS, type ExpenseCategory, type ExpenseFrequency, monthlyEquivalent } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
@@ -7,14 +7,25 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, RotateCcw, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
   head: () => ({ meta: [{ title: "Expenses — CanIAfford" }] }),
   component: ExpensesPage,
 });
 
-const CATEGORIES: ExpenseCategory[] = ["housing", "transport", "debt", "subscriptions", "food", "other"];
+const CATEGORIES: ExpenseCategory[] = [
+  "housing_rent",
+  "transport_fuel",
+  "vehicle_finance",
+  "insurance",
+  "medical_insurance",
+  "groceries",
+  "debt",
+  "subscriptions",
+  "food",
+  "other",
+];
 const FREQUENCIES: { value: ExpenseFrequency; label: string }[] = [
   { value: "monthly", label: "Monthly" },
   { value: "weekly", label: "Weekly" },
@@ -22,35 +33,73 @@ const FREQUENCIES: { value: ExpenseFrequency; label: string }[] = [
   { value: "one_off", label: "One-off" },
 ];
 
+type DeletedExpense = {
+  id: string;
+  name: string;
+  category: ExpenseCategory;
+  amount: number;
+  frequency: ExpenseFrequency;
+  is_fixed: boolean;
+  deleted_at: string;
+};
+
 function ExpensesPage() {
   const { data: profile } = useProfile();
   const { data: expenses = [] } = useExpenses();
   const qc = useQueryClient();
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<ExpenseCategory>("housing");
+  const [category, setCategory] = useState<ExpenseCategory>("housing_rent");
   const [frequency, setFrequency] = useState<ExpenseFrequency>("monthly");
   const [isFixed, setIsFixed] = useState(true);
   const [bulkMode, setBulkMode] = useState(false);
   const [bulkText, setBulkText] = useState("");
+  const [deleted, setDeleted] = useState<DeletedExpense[]>([]);
+  const [showDeleted, setShowDeleted] = useState(false);
+
+  async function loadDeleted() {
+    const { data } = await supabase
+      .from("expenses")
+      .select("id, name, category, amount, frequency, is_fixed, deleted_at")
+      .not("deleted_at", "is", null)
+      .order("deleted_at", { ascending: false });
+    setDeleted(
+      (data ?? []).map((r: any) => ({
+        id: r.id,
+        name: r.name,
+        category: r.category,
+        amount: Number(r.amount),
+        frequency: r.frequency,
+        is_fixed: r.is_fixed,
+        deleted_at: r.deleted_at,
+      })),
+    );
+  }
+
+  useEffect(() => {
+    loadDeleted();
+  }, []);
 
   async function refresh() {
-    const { data: fresh } = await supabase.from("expenses").select("id, name, category, amount, frequency, is_fixed").order("created_at", { ascending: false });
-    qc.setQueryData(["expenses"], (fresh ?? []).map((r: any) => ({
+    const { data: fresh } = await supabase
+      .from("expenses")
+      .select("id, name, category, amount, frequency, is_fixed")
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false });
+    const list = (fresh ?? []).map((r: any) => ({
       id: r.id, name: r.name, category: r.category, amount: Number(r.amount),
       frequency: r.frequency, is_fixed: r.is_fixed,
-    })));
+    }));
+    qc.setQueryData(["expenses"], list);
     if (profile) {
       await upsertCurrentMonthSnapshot({
         netIncome: Number(profile.net_income),
         grossIncome: Number(profile.gross_income),
-        expenses: (fresh ?? []).map((r: any) => ({
-          id: r.id, name: r.name, category: r.category, amount: Number(r.amount),
-          frequency: r.frequency, is_fixed: r.is_fixed,
-        })),
+        expenses: list,
         currencyCode: profile.currency_code,
       });
     }
+    await loadDeleted();
   }
 
   async function addOne(e: React.FormEvent) {
@@ -68,9 +117,29 @@ function ExpensesPage() {
   }
 
   async function deleteExpense(id: string) {
-    const { error } = await supabase.from("expenses").delete().eq("id", id);
+    const { error } = await supabase
+      .from("expenses")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", id);
     if (error) return toast.error(error.message);
     await refresh();
+    toast.success("Removed — restore anytime");
+  }
+
+  async function restoreExpense(id: string) {
+    const { error } = await supabase
+      .from("expenses")
+      .update({ deleted_at: null })
+      .eq("id", id);
+    if (error) return toast.error(error.message);
+    await refresh();
+    toast.success("Restored");
+  }
+
+  async function purgeExpense(id: string) {
+    const { error } = await supabase.from("expenses").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    await loadDeleted();
   }
 
   async function addBulk() {
@@ -123,7 +192,7 @@ function ExpensesPage() {
               value={bulkText}
               onChange={(e) => setBulkText(e.target.value)}
               rows={6}
-              placeholder="Rent, 1200, housing&#10;Spotify, 11, subscriptions&#10;Gym, 30, other"
+              placeholder="Rent, 1200, housing_rent&#10;Spotify, 11, subscriptions&#10;Groceries, 400, groceries"
               className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent"
             />
             <button onClick={addBulk} className="w-full bg-accent text-accent-foreground rounded-lg py-2.5 text-sm font-bold">
@@ -172,11 +241,56 @@ function ExpensesPage() {
                 </div>
               </div>
               <span className="font-mono text-sm">{formatCurrency(e.amount, currency)}</span>
-              <button onClick={() => deleteExpense(e.id)} className="opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-alert">
+              <button onClick={() => deleteExpense(e.id)} className="opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-alert" aria-label="Remove">
                 <Trash2 className="size-3.5" />
               </button>
             </div>
           ))}
+        </div>
+
+        <div className="pt-4 border-t border-border">
+          <button
+            onClick={() => setShowDeleted((s) => !s)}
+            className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground flex items-center gap-2"
+          >
+            <RotateCcw className="size-3" />
+            Recently removed {deleted.length > 0 && <span className="text-foreground">({deleted.length})</span>}
+            <span className="text-muted-foreground/60">{showDeleted ? "▾" : "▸"}</span>
+          </button>
+
+          {showDeleted && (
+            <div className="mt-4 space-y-1 animate-enter">
+              {deleted.length === 0 ? (
+                <p className="text-xs text-muted-foreground py-4">Nothing here yet. Deleted expenses show up here so you can bring them back.</p>
+              ) : deleted.map((e) => (
+                <div key={e.id} className="group flex items-center gap-3 p-3 bg-surface/40 rounded-lg">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium truncate text-muted-foreground line-through">{e.name}</span>
+                      <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground/70">
+                        {CATEGORY_LABELS[e.category]} · {e.frequency} · removed {new Date(e.deleted_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="font-mono text-sm text-muted-foreground">{formatCurrency(e.amount, currency)}</span>
+                  <button
+                    onClick={() => restoreExpense(e.id)}
+                    className="text-[10px] font-mono uppercase tracking-widest text-accent hover:opacity-80 flex items-center gap-1"
+                  >
+                    <RotateCcw className="size-3" /> Restore
+                  </button>
+                  <button
+                    onClick={() => purgeExpense(e.id)}
+                    className="opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-alert"
+                    aria-label="Delete permanently"
+                    title="Delete permanently"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
