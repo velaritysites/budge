@@ -1,15 +1,23 @@
 export type ExpenseFrequency = "monthly" | "weekly" | "yearly" | "one_off";
 export type ExpenseCategory =
-  | "housing"
-  | "transport"
+  | "housing_rent"
+  | "transport_fuel"
+  | "vehicle_finance"
+  | "insurance"
+  | "medical_insurance"
+  | "groceries"
   | "debt"
   | "subscriptions"
   | "food"
   | "other";
 
 export const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
-  housing: "Housing",
-  transport: "Transport",
+  housing_rent: "Housing/Rent",
+  transport_fuel: "Transport/Fuel",
+  vehicle_finance: "Vehicle Finance",
+  insurance: "Insurance",
+  medical_insurance: "Medical Insurance",
+  groceries: "Groceries",
   debt: "Debt",
   subscriptions: "Subscriptions",
   food: "Food",
@@ -17,8 +25,12 @@ export const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
 };
 
 export const CATEGORY_COLORS: Record<ExpenseCategory, string> = {
-  housing: "hsl(142 45% 62%)",
-  transport: "hsl(200 70% 60%)",
+  housing_rent: "hsl(142 45% 62%)",
+  transport_fuel: "hsl(200 70% 60%)",
+  vehicle_finance: "hsl(220 60% 65%)",
+  insurance: "hsl(180 45% 60%)",
+  medical_insurance: "hsl(340 55% 65%)",
+  groceries: "hsl(90 50% 60%)",
   debt: "hsl(0 70% 60%)",
   subscriptions: "hsl(270 50% 65%)",
   food: "hsl(38 82% 65%)",
@@ -64,8 +76,12 @@ export function computeTotals(
   expenses: Expense[],
 ): Totals {
   const byCategory: Record<ExpenseCategory, number> = {
-    housing: 0,
-    transport: 0,
+    housing_rent: 0,
+    transport_fuel: 0,
+    vehicle_finance: 0,
+    insurance: 0,
+    medical_insurance: 0,
+    groceries: 0,
     debt: 0,
     subscriptions: 0,
     food: 0,

@@ -37,6 +37,7 @@ export function useExpenses() {
       const { data, error } = await supabase
         .from("expenses")
         .select("id, name, category, amount, frequency, is_fixed")
+        .is("deleted_at", null)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []).map((r) => ({

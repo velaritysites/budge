@@ -58,6 +58,7 @@ export type Database = {
           amount: number
           category: string
           created_at: string
+          deleted_at: string | null
           frequency: string
           id: string
           is_fixed: boolean
@@ -69,6 +70,7 @@ export type Database = {
           amount: number
           category: string
           created_at?: string
+          deleted_at?: string | null
           frequency?: string
           id?: string
           is_fixed?: boolean
@@ -80,6 +82,7 @@ export type Database = {
           amount?: number
           category?: string
           created_at?: string
+          deleted_at?: string | null
           frequency?: string
           id?: string
           is_fixed?: boolean
