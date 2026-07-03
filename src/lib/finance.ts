@@ -76,8 +76,12 @@ export function computeTotals(
   expenses: Expense[],
 ): Totals {
   const byCategory: Record<ExpenseCategory, number> = {
-    housing: 0,
-    transport: 0,
+    housing_rent: 0,
+    transport_fuel: 0,
+    vehicle_finance: 0,
+    insurance: 0,
+    medical_insurance: 0,
+    groceries: 0,
     debt: 0,
     subscriptions: 0,
     food: 0,
