@@ -2,7 +2,8 @@ import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } fro
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon } from "lucide-react";
+import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon, Calculator } from "lucide-react";
+import logo from "@/assets/budge-logo.png";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -18,6 +19,7 @@ const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/checker", label: "Checker", icon: Sparkles },
   { to: "/expenses", label: "Expenses", icon: Wallet },
+  { to: "/planner", label: "Planner", icon: Calculator },
   { to: "/stats", label: "Stats", icon: BarChart3 },
   { to: "/goals", label: "Goals", icon: Target },
   { to: "/settings", label: "Settings", icon: Settings },
@@ -37,7 +39,6 @@ function AuthLayout() {
     }
   }, []);
 
-  // Redirect to onboarding if user hasn't completed it
   useEffect(() => {
     if (!isLoading && profile && !profile.onboarded_at && location.pathname !== "/onboarding") {
       navigate({ to: "/onboarding" });
@@ -61,26 +62,20 @@ function AuthLayout() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
-      {/* Mobile top bar */}
       <header className="md:hidden flex items-center justify-between p-4 border-b border-border">
         <Link to="/dashboard" className="flex items-center gap-2">
-          <div className="size-7 bg-accent rounded-sm flex items-center justify-center">
-            <div className="size-3 border-2 border-background rotate-45" />
-          </div>
-          <span className="font-mono text-xs font-bold uppercase tracking-tight">CanIAfford</span>
+          <img src={logo} alt="Budge" className="size-7 rounded-sm" />
+          <span className="font-mono text-xs font-bold uppercase tracking-tight">Budge</span>
         </Link>
         <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2">
           {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </header>
 
-      {/* Sidebar */}
       <nav className={`${mobileOpen ? "flex" : "hidden"} md:flex w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-border p-6 flex-col gap-8 md:min-h-screen`}>
         <Link to="/dashboard" className="hidden md:flex items-center gap-3" onClick={() => setMobileOpen(false)}>
-          <div className="size-8 bg-accent rounded-sm flex items-center justify-center">
-            <div className="size-4 border-2 border-background rotate-45" />
-          </div>
-          <span className="font-mono text-sm tracking-tight font-bold uppercase">CanIAfford</span>
+          <img src={logo} alt="Budge" className="size-9 rounded-sm" />
+          <span className="font-mono text-sm tracking-tight font-bold uppercase">Budge</span>
         </Link>
 
         <div className="flex flex-col gap-1">

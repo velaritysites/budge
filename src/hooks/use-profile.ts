@@ -11,6 +11,18 @@ export type Profile = {
   net_income: number;
   safety_buffer_pct: number;
   onboarded_at: string | null;
+  email_notifications: boolean;
+  push_notifications: boolean;
+  push_token: string | null;
+};
+
+export type IncomeStream = {
+  id: string;
+  name: string;
+  gross_amount: number;
+  net_amount: number;
+  frequency: "monthly" | "weekly" | "biweekly" | "yearly";
+  is_active: boolean;
 };
 
 export function useProfile() {
@@ -30,23 +42,47 @@ export function useProfile() {
   });
 }
 
+export function useIncomeStreams() {
+  return useQuery({
+    queryKey: ["income_streams"],
+    queryFn: async (): Promise<IncomeStream[]> => {
+      const { data, error } = await supabase
+        .from("income_streams")
+        .select("id, name, gross_amount, net_amount, frequency, is_active")
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return (data ?? []).map((r: any) => ({
+        id: r.id,
+        name: r.name,
+        gross_amount: Number(r.gross_amount),
+        net_amount: Number(r.net_amount),
+        frequency: r.frequency,
+        is_active: r.is_active,
+      }));
+    },
+  });
+}
+
 export function useExpenses() {
   return useQuery({
     queryKey: ["expenses"],
     queryFn: async (): Promise<Expense[]> => {
       const { data, error } = await supabase
         .from("expenses")
-        .select("id, name, category, amount, frequency, is_fixed")
+        .select("id, name, category, amount, frequency, is_fixed, due_day, notify_enabled, notify_lead_days")
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []).map((r) => ({
+      return (data ?? []).map((r: any) => ({
         id: r.id as string,
         name: r.name as string,
         category: r.category as ExpenseCategory,
         amount: Number(r.amount),
         frequency: r.frequency as Expense["frequency"],
         is_fixed: r.is_fixed as boolean,
+        due_day: r.due_day ?? null,
+        notify_enabled: !!r.notify_enabled,
+        notify_lead_days: r.notify_lead_days ?? 3,
       }));
     },
   });

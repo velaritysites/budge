@@ -68,10 +68,8 @@ function OnboardingPage() {
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-md space-y-10 animate-enter">
         <div className="flex items-center gap-3">
-          <div className="size-8 bg-accent rounded-sm flex items-center justify-center">
-            <div className="size-3 border-2 border-background rotate-45" />
-          </div>
-          <span className="font-mono text-xs font-bold uppercase tracking-tight">CanIAfford</span>
+          <img src="/favicon.png" alt="Budge" className="size-8 rounded-sm" />
+          <span className="font-mono text-xs font-bold uppercase tracking-tight">Budge</span>
           <span className="ml-auto text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
             Step {step + 1} / 3
           </span>
@@ -134,6 +132,9 @@ function OnboardingPage() {
               <input type="number" step="0.01" value={net} onChange={(e) => setNet(e.target.value)} placeholder="0.00"
                 className="w-full bg-surface border border-border rounded-lg px-3 py-3 text-2xl font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
             </div>
+            <p className="text-xs text-muted-foreground leading-relaxed bg-surface border border-border rounded-lg p-3">
+              Got more than one income stream? No problem — add your primary here and you can add or remove others anytime from <span className="text-foreground font-medium">Settings → Income streams</span>.
+            </p>
           </div>
         )}
 

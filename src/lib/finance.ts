@@ -44,6 +44,9 @@ export type Expense = {
   amount: number;
   frequency: ExpenseFrequency;
   is_fixed: boolean;
+  due_day?: number | null;
+  notify_enabled?: boolean;
+  notify_lead_days?: number;
 };
 
 /** Convert any expense to a monthly-equivalent amount. One-offs treated as 0/month for recurring math. */
