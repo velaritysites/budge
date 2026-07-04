@@ -59,10 +59,13 @@ export type Database = {
           category: string
           created_at: string
           deleted_at: string | null
+          due_day: number | null
           frequency: string
           id: string
           is_fixed: boolean
           name: string
+          notify_enabled: boolean
+          notify_lead_days: number
           updated_at: string
           user_id: string
         }
@@ -71,10 +74,13 @@ export type Database = {
           category: string
           created_at?: string
           deleted_at?: string | null
+          due_day?: number | null
           frequency?: string
           id?: string
           is_fixed?: boolean
           name: string
+          notify_enabled?: boolean
+          notify_lead_days?: number
           updated_at?: string
           user_id: string
         }
@@ -83,10 +89,49 @@ export type Database = {
           category?: string
           created_at?: string
           deleted_at?: string | null
+          due_day?: number | null
           frequency?: string
           id?: string
           is_fixed?: boolean
           name?: string
+          notify_enabled?: boolean
+          notify_lead_days?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      income_streams: {
+        Row: {
+          created_at: string
+          frequency: string
+          gross_amount: number
+          id: string
+          is_active: boolean
+          name: string
+          net_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          frequency?: string
+          gross_amount?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          net_amount?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          frequency?: string
+          gross_amount?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          net_amount?: number
           updated_at?: string
           user_id?: string
         }
@@ -142,11 +187,14 @@ export type Database = {
           created_at: string
           currency_code: string
           display_name: string | null
+          email_notifications: boolean
           gross_income: number
           id: string
           net_income: number
           onboarded_at: string | null
           pay_frequency: string
+          push_notifications: boolean
+          push_token: string | null
           safety_buffer_pct: number
           updated_at: string
         }
@@ -154,11 +202,14 @@ export type Database = {
           created_at?: string
           currency_code?: string
           display_name?: string | null
+          email_notifications?: boolean
           gross_income?: number
           id: string
           net_income?: number
           onboarded_at?: string | null
           pay_frequency?: string
+          push_notifications?: boolean
+          push_token?: string | null
           safety_buffer_pct?: number
           updated_at?: string
         }
@@ -166,11 +217,14 @@ export type Database = {
           created_at?: string
           currency_code?: string
           display_name?: string | null
+          email_notifications?: boolean
           gross_income?: number
           id?: string
           net_income?: number
           onboarded_at?: string | null
           pay_frequency?: string
+          push_notifications?: boolean
+          push_token?: string | null
           safety_buffer_pct?: number
           updated_at?: string
         }
