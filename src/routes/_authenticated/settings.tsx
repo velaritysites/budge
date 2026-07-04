@@ -1,20 +1,45 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
-import { useExpenses, useProfile, useUpdateProfile } from "@/hooks/use-profile";
+import { useExpenses, useProfile, useUpdateProfile, useIncomeStreams, type IncomeStream } from "@/hooks/use-profile";
 import { CURRENCIES } from "@/lib/currencies";
 import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
+import { supabase } from "@/integrations/supabase/client";
+import { registerPushToken } from "@/lib/notifications";
+import { useQueryClient } from "@tanstack/react-query";
+import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
-import { Check, Search } from "lucide-react";
+import { Check, Search, Plus, Trash2, Bell, Mail, Smartphone } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings — CanIAfford" }] }),
+  head: () => ({ meta: [{ title: "Settings — Budge" }] }),
   component: SettingsPage,
 });
+
+function monthly(s: IncomeStream): number {
+  const g = s.net_amount;
+  switch (s.frequency) {
+    case "monthly": return g;
+    case "weekly": return (g * 52) / 12;
+    case "biweekly": return (g * 26) / 12;
+    case "yearly": return g / 12;
+  }
+}
+function monthlyGross(s: IncomeStream): number {
+  const g = s.gross_amount;
+  switch (s.frequency) {
+    case "monthly": return g;
+    case "weekly": return (g * 52) / 12;
+    case "biweekly": return (g * 26) / 12;
+    case "yearly": return g / 12;
+  }
+}
 
 function SettingsPage() {
   const { data: profile } = useProfile();
   const { data: expenses = [] } = useExpenses();
+  const { data: streams = [] } = useIncomeStreams();
   const update = useUpdateProfile();
+  const qc = useQueryClient();
   const [gross, setGross] = useState("");
   const [net, setNet] = useState("");
   const [buffer, setBuffer] = useState("");
@@ -23,6 +48,14 @@ function SettingsPage() {
   const [currency, setCurrency] = useState("USD");
   const [currOpen, setCurrOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [emailN, setEmailN] = useState(false);
+  const [pushN, setPushN] = useState(false);
+
+  // Income stream form
+  const [sName, setSName] = useState("");
+  const [sGross, setSGross] = useState("");
+  const [sNet, setSNet] = useState("");
+  const [sFreq, setSFreq] = useState<IncomeStream["frequency"]>("monthly");
 
   useEffect(() => {
     if (profile) {
@@ -32,16 +65,24 @@ function SettingsPage() {
       setName(profile.display_name ?? "");
       setFreq(profile.pay_frequency);
       setCurrency(profile.currency_code);
+      setEmailN(profile.email_notifications);
+      setPushN(profile.push_notifications);
     }
   }, [profile]);
 
   const filteredCurrencies = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return CURRENCIES.slice(0, 50);
-    return CURRENCIES.filter(
-      (c) => c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q),
-    ).slice(0, 50);
+    return CURRENCIES.filter((c) => c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q)).slice(0, 50);
   }, [search]);
+
+  const streamTotals = useMemo(() => {
+    const active = streams.filter((s) => s.is_active);
+    return {
+      net: active.reduce((s, x) => s + monthly(x), 0),
+      gross: active.reduce((s, x) => s + monthlyGross(x), 0),
+    };
+  }, [streams]);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -53,14 +94,42 @@ function SettingsPage() {
       display_name: name || null,
       pay_frequency: freq,
       currency_code: currency,
+      email_notifications: emailN,
+      push_notifications: pushN,
     });
+    if (pushN && !profile.push_token) {
+      const token = await registerPushToken();
+      if (token) await supabase.from("profiles").update({ push_token: token }).eq("id", profile.id);
+    }
     await upsertCurrentMonthSnapshot({
-      netIncome: parseFloat(net || "0"),
-      grossIncome: parseFloat(gross || "0"),
-      expenses,
-      currencyCode: currency,
+      netIncome: parseFloat(net || "0"), grossIncome: parseFloat(gross || "0"),
+      expenses, currencyCode: currency,
     });
     toast.success("Saved");
+  }
+
+  async function addStream() {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user || !sName || (!sGross && !sNet)) return toast.error("Name and amounts required");
+    const { error } = await supabase.from("income_streams").insert({
+      user_id: u.user.id, name: sName,
+      gross_amount: parseFloat(sGross || "0"), net_amount: parseFloat(sNet || "0"),
+      frequency: sFreq, is_active: true,
+    });
+    if (error) return toast.error(error.message);
+    setSName(""); setSGross(""); setSNet("");
+    await qc.invalidateQueries({ queryKey: ["income_streams"] });
+    toast.success("Income stream added");
+  }
+  async function removeStream(id: string) {
+    const { error } = await supabase.from("income_streams").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    await qc.invalidateQueries({ queryKey: ["income_streams"] });
+  }
+  async function toggleStream(id: string, active: boolean) {
+    const { error } = await supabase.from("income_streams").update({ is_active: !active }).eq("id", id);
+    if (error) return toast.error(error.message);
+    await qc.invalidateQueries({ queryKey: ["income_streams"] });
   }
 
   const selectedCurrency = CURRENCIES.find((c) => c.code === currency);
@@ -122,7 +191,7 @@ function SettingsPage() {
           </Field>
         </Section>
 
-        <Section title="Income">
+        <Section title="Income (totals)">
           <Field label="Gross income (monthly)">
             <input type="number" step="0.01" value={gross} onChange={(e) => setGross(e.target.value)}
               className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-lg font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
@@ -131,6 +200,67 @@ function SettingsPage() {
             <input type="number" step="0.01" value={net} onChange={(e) => setNet(e.target.value)}
               className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-lg font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
           </Field>
+          <p className="text-xs text-muted-foreground">
+            These are the numbers used across the app. If you have multiple income streams, list them below for your records — then update these totals to match the sum.
+          </p>
+        </Section>
+
+        <Section title="Income streams">
+          <p className="text-xs text-muted-foreground -mt-2">
+            Break down where your income comes from. Active streams below sum to <span className="text-foreground font-mono font-medium">{formatCurrency(streamTotals.net, currency)}/mo net</span> · <span className="text-foreground font-mono font-medium">{formatCurrency(streamTotals.gross, currency)}/mo gross</span>.
+          </p>
+          <div className="space-y-1">
+            {streams.length === 0 ? (
+              <p className="text-xs text-muted-foreground py-3">No streams yet.</p>
+            ) : streams.map((s) => (
+              <div key={s.id} className={`group flex items-center gap-3 p-3 rounded-lg border ${s.is_active ? "bg-surface border-border" : "bg-surface/40 border-border/40 opacity-60"}`}>
+                <button type="button" onClick={() => toggleStream(s.id, s.is_active)}
+                  className={`size-2 rounded-full ${s.is_active ? "bg-accent" : "bg-muted-foreground/40"}`} title={s.is_active ? "Active" : "Paused"} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-medium truncate">{s.name}</span>
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground">{s.frequency}</span>
+                  </div>
+                  <div className="text-[10px] text-muted-foreground font-mono">
+                    gross {formatCurrency(s.gross_amount, currency)} · net {formatCurrency(s.net_amount, currency)}
+                  </div>
+                </div>
+                <button type="button" onClick={() => removeStream(s.id)}
+                  className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-alert transition"><Trash2 className="size-3.5" /></button>
+              </div>
+            ))}
+          </div>
+          <div className="bg-surface border border-border rounded-lg p-3 space-y-2 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <input value={sName} onChange={(e) => setSName(e.target.value)} placeholder="Stream name (e.g. Freelance)"
+                className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+              <select value={sFreq} onChange={(e) => setSFreq(e.target.value as IncomeStream["frequency"])}
+                className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <option value="monthly">Monthly</option>
+                <option value="biweekly">Bi-weekly</option>
+                <option value="weekly">Weekly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+              <input value={sGross} onChange={(e) => setSGross(e.target.value)} type="number" step="0.01" placeholder="Gross"
+                className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+              <input value={sNet} onChange={(e) => setSNet(e.target.value)} type="number" step="0.01" placeholder="Net"
+                className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+            </div>
+            <button type="button" onClick={addStream}
+              className="w-full bg-foreground text-background rounded-lg py-2 text-xs font-bold flex items-center justify-center gap-2">
+              <Plus className="size-3.5" /> Add income stream
+            </button>
+          </div>
+        </Section>
+
+        <Section title="Notifications">
+          <p className="text-xs text-muted-foreground -mt-2 flex items-center gap-2">
+            <Bell className="size-3.5" /> Reminders for upcoming expenses. Configure lead time per expense on the Expenses page.
+          </p>
+          <ToggleRow icon={<Mail className="size-4" />} label="Email reminders" desc="Sent to your account email."
+            checked={emailN} onChange={setEmailN} />
+          <ToggleRow icon={<Smartphone className="size-4" />} label="Push notifications" desc="Wired up now, live once the iOS app ships."
+            checked={pushN} onChange={setPushN} />
         </Section>
 
         <Section title="Safety buffer">
@@ -145,6 +275,24 @@ function SettingsPage() {
           {update.isPending ? "Saving…" : "Save changes"}
         </button>
       </form>
+    </div>
+  );
+}
+
+function ToggleRow({ icon, label, desc, checked, onChange }: { icon: React.ReactNode; label: string; desc: string; checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <div className="flex items-center justify-between gap-4 bg-surface border border-border rounded-lg p-3">
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="text-muted-foreground">{icon}</div>
+        <div className="min-w-0">
+          <div className="text-sm font-medium">{label}</div>
+          <div className="text-[11px] text-muted-foreground truncate">{desc}</div>
+        </div>
+      </div>
+      <button type="button" onClick={() => onChange(!checked)}
+        className={`shrink-0 relative w-10 h-6 rounded-full transition ${checked ? "bg-accent" : "bg-muted"}`}>
+        <span className={`absolute top-0.5 left-0.5 size-5 rounded-full bg-background shadow transition-transform ${checked ? "translate-x-4" : ""}`} />
+      </button>
     </div>
   );
 }

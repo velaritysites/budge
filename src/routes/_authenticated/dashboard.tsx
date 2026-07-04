@@ -1,19 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useExpenses, useProfile } from "@/hooks/use-profile";
-import { computeTotals, healthLevel, HEALTH_LABEL, CATEGORY_LABELS, CATEGORY_COLORS, type ExpenseCategory } from "@/lib/finance";
+import { computeTotals, healthLevel, HEALTH_LABEL, CATEGORY_LABELS, CATEGORY_COLORS, type ExpenseCategory, type ExpenseFrequency } from "@/lib/finance";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { useCountUp } from "@/hooks/use-count-up";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — CanIAfford" }] }),
+  head: () => ({ meta: [{ title: "Dashboard — Budge" }] }),
   component: Dashboard,
 });
+
+const CATEGORIES: ExpenseCategory[] = [
+  "housing_rent", "transport_fuel", "vehicle_finance", "insurance",
+  "medical_insurance", "groceries", "debt", "subscriptions", "food", "other",
+];
 
 function Dashboard() {
   const { data: profile } = useProfile();
   const { data: expenses = [] } = useExpenses();
+  const qc = useQueryClient();
+
+  const [qName, setQName] = useState("");
+  const [qAmount, setQAmount] = useState("");
+  const [qCategory, setQCategory] = useState<ExpenseCategory>("other");
+  const [qFrequency, setQFrequency] = useState<ExpenseFrequency>("monthly");
+  const [saving, setSaving] = useState(false);
 
   const totals = computeTotals(
     Number(profile?.net_income ?? 0),
@@ -22,21 +39,39 @@ function Dashboard() {
   );
   const animatedDisposable = useCountUp(totals.disposable, 900);
 
+  async function quickAdd(e: React.FormEvent) {
+    e.preventDefault();
+    if (!qName || !qAmount || !profile) return;
+    setSaving(true);
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return setSaving(false);
+    const { error } = await supabase.from("expenses").insert({
+      user_id: u.user.id, name: qName, amount: parseFloat(qAmount),
+      category: qCategory, frequency: qFrequency, is_fixed: true,
+    });
+    if (error) { toast.error(error.message); setSaving(false); return; }
+    setQName(""); setQAmount("");
+    await qc.invalidateQueries({ queryKey: ["expenses"] });
+    await upsertCurrentMonthSnapshot({
+      netIncome: Number(profile.net_income), grossIncome: Number(profile.gross_income),
+      expenses, currencyCode: profile.currency_code,
+    });
+    toast.success("Added");
+    setSaving(false);
+  }
+
   if (!profile) return <div className="p-8 text-muted-foreground text-sm">Loading…</div>;
 
   const level = healthLevel(totals.savingsRate);
   const currency = profile.currency_code;
-
   const levelStyles: Record<typeof level, string> = {
     tight: "bg-alert/10 text-alert border-alert/20",
     balanced: "bg-caution/10 text-caution border-caution/20",
     comfortable: "bg-accent/10 text-accent border-accent/20",
   };
-
   const cats = (Object.keys(totals.byCategory) as ExpenseCategory[])
     .filter((c) => totals.byCategory[c] > 0)
     .sort((a, b) => totals.byCategory[b] - totals.byCategory[a]);
-
   const monthLabel = new Date().toLocaleDateString(undefined, { month: "long", year: "numeric" });
 
   return (
@@ -81,11 +116,8 @@ function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-enter [animation-delay:100ms]">
             <Stat label="Net income" value={formatCurrency(totals.netIncome, currency)} />
             <Stat label="Total expenses" value={formatCurrency(totals.totalExpenses, currency)} />
-            <Stat
-              label="Monthly burn"
-              value={formatPercent(totals.burnRate, 0)}
-              tone={totals.burnRate > 80 ? "alert" : totals.burnRate > 60 ? "caution" : "default"}
-            />
+            <Stat label="Monthly burn" value={formatPercent(totals.burnRate, 0)}
+              tone={totals.burnRate > 80 ? "alert" : totals.burnRate > 60 ? "caution" : "default"} />
           </div>
 
           <section className="animate-enter [animation-delay:200ms]">
@@ -96,22 +128,14 @@ function Dashboard() {
               {cats.length === 0 ? (
                 <div className="text-center py-8 text-sm text-muted-foreground">
                   No expenses yet.{" "}
-                  <Link to="/expenses" className="text-accent underline-offset-2 hover:underline">
-                    Add some →
-                  </Link>
+                  <Link to="/expenses" className="text-accent underline-offset-2 hover:underline">Add some →</Link>
                 </div>
               ) : (
                 <>
                   <div className="flex h-3 w-full rounded-full overflow-hidden bg-background gap-0.5">
                     {cats.map((c) => (
-                      <div
-                        key={c}
-                        className="h-full transition-all"
-                        style={{
-                          width: `${(totals.byCategory[c] / totals.totalExpenses) * 100}%`,
-                          backgroundColor: CATEGORY_COLORS[c],
-                        }}
-                      />
+                      <div key={c} className="h-full transition-all"
+                        style={{ width: `${(totals.byCategory[c] / totals.totalExpenses) * 100}%`, backgroundColor: CATEGORY_COLORS[c] }} />
                     ))}
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
@@ -121,9 +145,7 @@ function Dashboard() {
                           <span className="size-1.5 rounded-full" style={{ backgroundColor: CATEGORY_COLORS[c] }} />
                           {CATEGORY_LABELS[c]}
                         </span>
-                        <span className="text-sm font-medium">
-                          {formatCurrency(totals.byCategory[c], currency)}
-                        </span>
+                        <span className="text-sm font-medium">{formatCurrency(totals.byCategory[c], currency)}</span>
                       </div>
                     ))}
                   </div>
@@ -134,16 +156,12 @@ function Dashboard() {
         </div>
 
         <div className="xl:col-span-4 flex flex-col gap-6">
-          <Link
-            to="/checker"
-            className="bg-foreground text-background rounded-xl p-8 animate-enter [animation-delay:300ms] hover:opacity-95 transition-opacity block"
-          >
+          <Link to="/checker"
+            className="bg-foreground text-background rounded-xl p-8 animate-enter [animation-delay:300ms] hover:opacity-95 transition-opacity block">
             <h2 className="text-[10px] font-mono font-bold uppercase tracking-widest opacity-60 mb-6">
               Affordability Checker
             </h2>
-            <p className="text-2xl font-bold tracking-tight leading-tight">
-              Thinking about a purchase?
-            </p>
+            <p className="text-2xl font-bold tracking-tight leading-tight">Thinking about a purchase?</p>
             <p className="text-sm opacity-70 mt-2 leading-relaxed">
               Get a clear yes, maybe, or hold — with the reasoning, not just a number.
             </p>
@@ -151,6 +169,34 @@ function Dashboard() {
               Open checker <ArrowRight className="size-3" />
             </div>
           </Link>
+
+          <form onSubmit={quickAdd} className="bg-surface border border-border rounded-xl p-5 space-y-3 animate-enter [animation-delay:400ms]">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[10px] font-mono font-bold uppercase tracking-widest text-muted-foreground">Quick-add expense</h3>
+              <Link to="/expenses" className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground">Full page →</Link>
+            </div>
+            <input value={qName} onChange={(e) => setQName(e.target.value)} placeholder="Name"
+              className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+            <input value={qAmount} onChange={(e) => setQAmount(e.target.value)} type="number" step="0.01" placeholder="Amount"
+              className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+            <div className="grid grid-cols-2 gap-2">
+              <select value={qCategory} onChange={(e) => setQCategory(e.target.value as ExpenseCategory)}
+                className="bg-background border border-border rounded-lg px-2 py-2 text-xs focus:outline-none">
+                {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+              </select>
+              <select value={qFrequency} onChange={(e) => setQFrequency(e.target.value as ExpenseFrequency)}
+                className="bg-background border border-border rounded-lg px-2 py-2 text-xs focus:outline-none">
+                <option value="monthly">Monthly</option>
+                <option value="weekly">Weekly</option>
+                <option value="yearly">Yearly</option>
+                <option value="one_off">One-off</option>
+              </select>
+            </div>
+            <button type="submit" disabled={saving}
+              className="w-full bg-accent text-accent-foreground rounded-lg py-2 text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50">
+              <Plus className="size-3.5" /> {saving ? "Saving…" : "Add"}
+            </button>
+          </form>
         </div>
       </div>
     </div>
