@@ -3,9 +3,11 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
+import budgeLogo from "@/assets/budge-logo.png";
+
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Sign in — CanIAfford" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Budge" }] }),
   component: AuthPage,
 });
 
@@ -77,10 +79,8 @@ function AuthPage() {
       {/* Left panel — brand */}
       <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 bg-surface border-r border-border">
         <Link to="/auth" className="flex items-center gap-3">
-          <div className="size-8 bg-accent rounded-sm flex items-center justify-center">
-            <div className="size-3 border-2 border-background rotate-45" />
-          </div>
-          <span className="font-mono text-sm tracking-tight font-bold uppercase">CanIAfford</span>
+          <img src={budgeLogo} alt="Budge logo" className="h-8 w-auto" />
+          <span className="font-mono text-sm tracking-tight font-bold uppercase">Budge</span>
         </Link>
         <div className="space-y-6 max-w-md">
           <h1 className="text-5xl font-black tracking-tighter italic leading-[0.95]">
@@ -100,10 +100,8 @@ function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm space-y-8 animate-enter">
           <div className="lg:hidden flex items-center gap-3">
-            <div className="size-8 bg-accent rounded-sm flex items-center justify-center">
-              <div className="size-3 border-2 border-background rotate-45" />
-            </div>
-            <span className="font-mono text-sm tracking-tight font-bold uppercase">CanIAfford</span>
+            <img src={budgeLogo} alt="Budge logo" className="h-8 w-auto" />
+            <span className="font-mono text-sm tracking-tight font-bold uppercase">Budge</span>
           </div>
 
           <div className="space-y-2">
