@@ -50,6 +50,8 @@ function SettingsPage() {
   const [search, setSearch] = useState("");
   const [emailN, setEmailN] = useState(false);
   const [pushN, setPushN] = useState(false);
+  const [allocMode, setAllocMode] = useState<"weighted" | "sequential">("weighted");
+  const [autoTiming, setAutoTiming] = useState<"monthly_1st" | "on_demand" | "estimate_only">("on_demand");
 
   // Income stream form
   const [sName, setSName] = useState("");
