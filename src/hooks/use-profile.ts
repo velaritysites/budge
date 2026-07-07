@@ -14,6 +14,8 @@ export type Profile = {
   email_notifications: boolean;
   push_notifications: boolean;
   push_token: string | null;
+  auto_allocation_mode?: "weighted" | "sequential";
+  auto_contribution_timing?: "monthly_1st" | "on_demand" | "estimate_only";
 };
 
 export type IncomeStream = {
