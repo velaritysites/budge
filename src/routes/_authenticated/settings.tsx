@@ -269,6 +269,44 @@ function SettingsPage() {
             checked={pushN} onChange={setPushN} />
         </Section>
 
+        <Section title="Goals — auto progress">
+          <p className="text-xs text-muted-foreground -mt-2">
+            How auto-goals share your monthly disposable, and when the contribution actually gets logged.
+          </p>
+          <Field label="Allocation mode">
+            <div className="grid grid-cols-2 gap-2">
+              {(["weighted", "sequential"] as const).map((m) => (
+                <button key={m} type="button" onClick={() => setAllocMode(m)}
+                  className={`py-2.5 rounded-lg border text-xs font-medium uppercase tracking-widest transition ${allocMode === m ? "bg-foreground text-background border-foreground" : "bg-surface border-border text-muted-foreground"}`}>
+                  {m === "weighted" ? "Weighted split" : "Fill in order"}
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              {allocMode === "weighted"
+                ? "Each auto-goal receives a share of your monthly disposable proportional to its weight."
+                : "Fills the top-priority auto-goal first; overflow spills to the next."}
+            </p>
+          </Field>
+          <Field label="When to log auto contributions">
+            <div className="grid grid-cols-1 gap-2">
+              {([
+                ["monthly_1st", "Monthly on the 1st", "Auto-log for the previous month when you open the app."],
+                ["on_demand", "On-demand", "Show a suggested amount; you click 'Apply' to log it."],
+                ["estimate_only", "Estimate only", "Just show the projection; nothing gets logged automatically."],
+              ] as const).map(([val, title, desc]) => (
+                <button key={val} type="button" onClick={() => setAutoTiming(val)}
+                  className={`text-left p-3 rounded-lg border transition ${autoTiming === val ? "border-accent bg-accent/10" : "border-border bg-surface"}`}>
+                  <div className="text-sm font-bold">{title}</div>
+                  <div className="text-[11px] text-muted-foreground">{desc}</div>
+                </button>
+              ))}
+            </div>
+          </Field>
+        </Section>
+
+
+
         <Section title="Safety buffer">
           <Field label="Buffer % of net income (default 12.5%)">
             <input type="number" step="0.5" min="0" max="50" value={buffer} onChange={(e) => setBuffer(e.target.value)}
