@@ -100,7 +100,9 @@ function SettingsPage() {
       currency_code: currency,
       email_notifications: emailN,
       push_notifications: pushN,
-    });
+      auto_allocation_mode: allocMode,
+      auto_contribution_timing: autoTiming,
+    } as any);
     if (pushN && !profile.push_token) {
       const token = await registerPushToken();
       if (token) await supabase.from("profiles").update({ push_token: token }).eq("id", profile.id);
