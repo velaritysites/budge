@@ -64,10 +64,46 @@ function GoalsPage() {
   );
   const disposable = totals?.disposable ?? 0;
   const allocMode: AutoAllocationMode = (profile as any)?.auto_allocation_mode ?? "weighted";
+  const autoTiming: string = (profile as any)?.auto_contribution_timing ?? "on_demand";
   const allocations = useMemo(
     () => computeAutoAllocations(goals, Math.max(0, disposable), allocMode),
     [goals, disposable, allocMode],
   );
+
+  // Auto-apply on the 1st: if timing is monthly_1st and any auto goal hasn't
+  // been applied for this period yet, log those contributions once per session.
+  const appliedRef = useRef(false);
+  useEffect(() => {
+    if (appliedRef.current) return;
+    if (autoTiming !== "monthly_1st") return;
+    if (!goals.length) return;
+    const period = currentPeriodKey();
+    const toApply = goals.filter(
+      (g) => g.progress_mode === "auto" && !g.completed_at && g.last_auto_period !== period && (allocations[g.id] ?? 0) > 0,
+    );
+    if (toApply.length === 0) return;
+    appliedRef.current = true;
+    (async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return;
+      for (const g of toApply) {
+        const amt = allocations[g.id] ?? 0;
+        await supabase.from("goal_contributions").insert({
+          user_id: u.user.id, goal_id: g.id, amount: amt,
+          occurred_on: new Date().toISOString().slice(0, 10),
+          note: `Auto (monthly, ${allocMode})`, source: "auto",
+        });
+        const newAmount = g.current_amount + amt;
+        await supabase.from("savings_goals").update({
+          current_amount: newAmount,
+          last_auto_period: period,
+          completed_at: newAmount >= g.target_amount ? new Date().toISOString() : null,
+        }).eq("id", g.id);
+      }
+      qc.invalidateQueries({ queryKey: ["goals"] });
+      toast.success(`Auto-applied ${toApply.length} goal${toApply.length > 1 ? "s" : ""} for this month`);
+    })();
+  }, [goals, allocations, autoTiming, allocMode, qc]);
 
   async function addGoal(e: React.FormEvent) {
     e.preventDefault();
