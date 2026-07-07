@@ -101,6 +101,50 @@ export type Database = {
         }
         Relationships: []
       }
+      goal_contributions: {
+        Row: {
+          amount: number
+          created_at: string
+          goal_id: string
+          id: string
+          note: string | null
+          occurred_on: string
+          source: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          goal_id: string
+          id?: string
+          note?: string | null
+          occurred_on?: string
+          source?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          goal_id?: string
+          id?: string
+          note?: string | null
+          occurred_on?: string
+          source?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goal_contributions_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "savings_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       income_streams: {
         Row: {
           created_at: string
@@ -184,6 +228,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          auto_allocation_mode: string
+          auto_contribution_timing: string
           created_at: string
           currency_code: string
           display_name: string | null
@@ -199,6 +245,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          auto_allocation_mode?: string
+          auto_contribution_timing?: string
           created_at?: string
           currency_code?: string
           display_name?: string | null
@@ -214,6 +262,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          auto_allocation_mode?: string
+          auto_contribution_timing?: string
           created_at?: string
           currency_code?: string
           display_name?: string | null
@@ -232,34 +282,49 @@ export type Database = {
       }
       savings_goals: {
         Row: {
+          completed_at: string | null
           created_at: string
           current_amount: number
           id: string
+          last_auto_period: string | null
           name: string
+          priority: number
+          progress_mode: string
           target_amount: number
           target_date: string | null
           updated_at: string
           user_id: string
+          weight: number
         }
         Insert: {
+          completed_at?: string | null
           created_at?: string
           current_amount?: number
           id?: string
+          last_auto_period?: string | null
           name: string
+          priority?: number
+          progress_mode?: string
           target_amount: number
           target_date?: string | null
           updated_at?: string
           user_id: string
+          weight?: number
         }
         Update: {
+          completed_at?: string | null
           created_at?: string
           current_amount?: number
           id?: string
+          last_auto_period?: string | null
           name?: string
+          priority?: number
+          progress_mode?: string
           target_amount?: number
           target_date?: string | null
           updated_at?: string
           user_id?: string
+          weight?: number
         }
         Relationships: []
       }
