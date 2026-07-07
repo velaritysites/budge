@@ -228,7 +228,74 @@ function StatsPage() {
                 </div>
               )}
             </section>
+
+            {/* Goals overview */}
+            <section className="animate-enter [animation-delay:400ms] space-y-3">
+              <h2 className="text-xl font-bold tracking-tight">Goals</h2>
+              {goals.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No goals yet.</p>
+              ) : (
+                <>
+                  {(() => {
+                    const active = goals.filter((g: any) => !g.completed_at);
+                    const done = goals.filter((g: any) => g.completed_at);
+                    const totalTarget = active.reduce((s: number, g: any) => s + g.target_amount, 0);
+                    const totalSaved = active.reduce((s: number, g: any) => s + g.current_amount, 0);
+                    return (
+                      <>
+                        <div className="grid grid-cols-3 gap-3">
+                          <SnapStat label="Active" value={String(active.length)} delta={null} />
+                          <SnapStat label="Completed" value={String(done.length)} delta={null} />
+                          <SnapStat label="Saved / target"
+                            value={`${formatCurrency(totalSaved, currency)} / ${formatCurrency(totalTarget, currency)}`}
+                            delta={null} />
+                        </div>
+                        {active.length > 0 && (
+                          <div className="border border-border rounded-lg divide-y divide-border overflow-hidden">
+                            {active.map((g: any) => {
+                              const pct = Math.min(100, (g.current_amount / Math.max(1, g.target_amount)) * 100);
+                              return (
+                                <div key={g.id} className="p-3 bg-surface/40">
+                                  <div className="flex items-center justify-between gap-3">
+                                    <span className="text-sm font-medium truncate">{g.name}</span>
+                                    <span className="text-[10px] font-mono text-muted-foreground">
+                                      {formatCurrency(g.current_amount, currency)} / {formatCurrency(g.target_amount, currency)}
+                                    </span>
+                                  </div>
+                                  <div className="mt-2 h-1.5 bg-background rounded-full overflow-hidden">
+                                    <div className="h-full bg-accent" style={{ width: `${pct}%` }} />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        {done.length > 0 && (
+                          <div className="space-y-1">
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Completed</span>
+                            <div className="border border-border rounded-lg divide-y divide-border overflow-hidden">
+                              {done.map((g: any) => (
+                                <div key={g.id} className="p-3 bg-surface/40 flex items-center justify-between gap-3">
+                                  <span className="text-sm font-medium truncate flex items-center gap-2">
+                                    <span className="size-2 rounded-full bg-accent" />
+                                    {g.name}
+                                  </span>
+                                  <span className="text-[10px] font-mono text-muted-foreground">
+                                    {new Date(g.completed_at).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
+                </>
+              )}
+            </section>
           </>
+
         )}
       </div>
     </div>
