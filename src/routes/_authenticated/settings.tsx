@@ -69,6 +69,8 @@ function SettingsPage() {
       setCurrency(profile.currency_code);
       setEmailN(profile.email_notifications);
       setPushN(profile.push_notifications);
+      setAllocMode(((profile as any).auto_allocation_mode as any) ?? "weighted");
+      setAutoTiming(((profile as any).auto_contribution_timing as any) ?? "on_demand");
     }
   }, [profile]);
 
