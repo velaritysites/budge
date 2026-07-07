@@ -62,6 +62,21 @@ function StatsPage() {
     },
   });
 
+  const { data: goals = [] } = useQuery({
+    queryKey: ["goals_stats"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("savings_goals")
+        .select("id, name, target_amount, current_amount, target_date, completed_at, progress_mode")
+        .order("completed_at", { ascending: false, nullsFirst: true });
+      return (data ?? []).map((r: any) => ({
+        id: r.id, name: r.name,
+        target_amount: Number(r.target_amount), current_amount: Number(r.current_amount),
+        target_date: r.target_date, completed_at: r.completed_at, progress_mode: r.progress_mode,
+      }));
+    },
+  });
+
   const ranged = useMemo(() => snapshots.slice(0, range).reverse(), [snapshots, range]);
   const active = useMemo(() => snapshots.find((s) => s.month === selectedMonth) ?? snapshots[0], [snapshots, selectedMonth]);
   const prev = useMemo(() => {
