@@ -226,6 +226,39 @@ export type Database = {
         }
         Relationships: []
       }
+      planner_plans: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          phases: Json
+          tax_rate_pct: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          phases?: Json
+          tax_rate_pct?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phases?: Json
+          tax_rate_pct?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           auto_allocation_mode: string
