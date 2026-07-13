@@ -12,7 +12,7 @@ import {
   type Goal,
   type AutoAllocationMode,
 } from "@/lib/goals";
-import { Plus, Trash2, ChevronRight, Zap, Hand, Sparkles } from "lucide-react";
+import { Plus, Trash2, ChevronRight, Zap, Hand, Sparkles, TrendingDown } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/goals")({
@@ -178,6 +178,28 @@ function GoalsPage() {
     toast.success(`Applied ${formatCurrency(amount, currency)}`);
   }
 
+  async function quickAddContribution(goalId: string, amount: number, kind: "deposit" | "withdrawal") {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return;
+    const goal = goals.find((g) => g.id === goalId);
+    if (!goal) return;
+    const signed = kind === "withdrawal" ? -Math.abs(amount) : Math.abs(amount);
+    const { error } = await supabase.from("goal_contributions").insert({
+      user_id: u.user.id, goal_id: goalId, amount: signed,
+      occurred_on: new Date().toISOString().slice(0, 10),
+      note: null, source: "manual",
+    });
+    if (error) return toast.error(error.message);
+    const newAmount = goal.current_amount + signed;
+    await supabase.from("savings_goals").update({
+      current_amount: newAmount,
+      completed_at: newAmount >= goal.target_amount ? new Date().toISOString() : null,
+    }).eq("id", goalId);
+    qc.invalidateQueries({ queryKey: ["goals"] });
+    qc.invalidateQueries({ queryKey: ["goal_contributions", goalId] });
+    toast.success(kind === "withdrawal" ? "Withdrawal logged" : `Added ${formatCurrency(Math.abs(amount), currency)}`);
+  }
+
   const currency = profile?.currency_code ?? "USD";
   const active = goals.filter((g) => !g.completed_at);
   const completed = goals.filter((g) => g.completed_at);
@@ -244,7 +266,8 @@ function GoalsPage() {
               autoAlloc={g.progress_mode === "auto" ? allocations[g.id] ?? 0 : null}
               period={currentPeriodKey()}
               onApply={() => applyAuto(g.id, allocations[g.id] ?? 0)}
-              onDelete={() => deleteGoal(g.id)} />
+              onDelete={() => deleteGoal(g.id)}
+              onQuickAdd={(amt, kind) => quickAddContribution(g.id, amt, kind)} />
           ))}
         </section>
 
@@ -255,7 +278,7 @@ function GoalsPage() {
             </h2>
             {completed.map((g) => (
               <GoalCard key={g.id} g={g} currency={currency} autoAlloc={null} period={currentPeriodKey()}
-                onApply={() => {}} onDelete={() => deleteGoal(g.id)} completed />
+                onApply={() => {}} onDelete={() => deleteGoal(g.id)} onQuickAdd={() => {}} completed />
             ))}
           </section>
         )}
@@ -264,10 +287,14 @@ function GoalsPage() {
   );
 }
 
-function GoalCard({ g, currency, autoAlloc, period, onApply, onDelete, completed }: {
+function GoalCard({ g, currency, autoAlloc, period, onApply, onDelete, onQuickAdd, completed }: {
   g: Goal; currency: string; autoAlloc: number | null; period: string;
-  onApply: () => void; onDelete: () => void; completed?: boolean;
+  onApply: () => void; onDelete: () => void;
+  onQuickAdd: (amount: number, kind: "deposit" | "withdrawal") => void;
+  completed?: boolean;
 }) {
+  const [open, setOpen] = useState(false);
+  const [quickAmt, setQuickAmt] = useState("");
   const pct = Math.min(100, (g.current_amount / Math.max(1, g.target_amount)) * 100);
   const appliedThisMonth = g.last_auto_period === period;
   return (
@@ -322,6 +349,34 @@ function GoalCard({ g, currency, autoAlloc, period, onApply, onDelete, completed
             className="text-[10px] font-mono uppercase tracking-widest px-3 py-1.5 rounded bg-foreground text-background disabled:opacity-40 hover:opacity-90">
             Apply
           </button>
+        </div>
+      )}
+      {!completed && (
+        <div className="mt-3 pt-3 border-t border-border">
+          {open ? (
+            <div className="flex items-center gap-2">
+              <input type="number" step="0.01" autoFocus value={quickAmt} onChange={(e) => setQuickAmt(e.target.value)}
+                placeholder="Amount"
+                className="flex-1 bg-background border border-border rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+              <button
+                onClick={() => { const v = parseFloat(quickAmt); if (!v) return; onQuickAdd(v, "deposit"); setQuickAmt(""); setOpen(false); }}
+                className="text-[10px] font-mono uppercase tracking-widest px-3 py-1.5 rounded bg-accent text-accent-foreground hover:opacity-90">
+                + Add
+              </button>
+              <button
+                onClick={() => { const v = parseFloat(quickAmt); if (!v) return; onQuickAdd(v, "withdrawal"); setQuickAmt(""); setOpen(false); }}
+                title="Withdraw"
+                className="text-muted-foreground hover:text-alert p-1.5">
+                <TrendingDown className="size-3.5" />
+              </button>
+              <button onClick={() => { setOpen(false); setQuickAmt(""); }} className="text-muted-foreground hover:text-foreground text-xs px-1">✕</button>
+            </div>
+          ) : (
+            <button onClick={() => setOpen(true)}
+              className="w-full text-[10px] font-mono uppercase tracking-widest py-1.5 rounded border border-dashed border-border hover:border-accent hover:text-accent text-muted-foreground flex items-center justify-center gap-1">
+              <Plus className="size-3" /> Add payment
+            </button>
+          )}
         </div>
       )}
     </div>
