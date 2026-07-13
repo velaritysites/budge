@@ -178,6 +178,28 @@ function GoalsPage() {
     toast.success(`Applied ${formatCurrency(amount, currency)}`);
   }
 
+  async function quickAddContribution(goalId: string, amount: number, kind: "deposit" | "withdrawal") {
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return;
+    const goal = goals.find((g) => g.id === goalId);
+    if (!goal) return;
+    const signed = kind === "withdrawal" ? -Math.abs(amount) : Math.abs(amount);
+    const { error } = await supabase.from("goal_contributions").insert({
+      user_id: u.user.id, goal_id: goalId, amount: signed,
+      occurred_on: new Date().toISOString().slice(0, 10),
+      note: null, source: "manual",
+    });
+    if (error) return toast.error(error.message);
+    const newAmount = goal.current_amount + signed;
+    await supabase.from("savings_goals").update({
+      current_amount: newAmount,
+      completed_at: newAmount >= goal.target_amount ? new Date().toISOString() : null,
+    }).eq("id", goalId);
+    qc.invalidateQueries({ queryKey: ["goals"] });
+    qc.invalidateQueries({ queryKey: ["goal_contributions", goalId] });
+    toast.success(kind === "withdrawal" ? "Withdrawal logged" : `Added ${formatCurrency(Math.abs(amount), currency)}`);
+  }
+
   const currency = profile?.currency_code ?? "USD";
   const active = goals.filter((g) => !g.completed_at);
   const completed = goals.filter((g) => g.completed_at);
