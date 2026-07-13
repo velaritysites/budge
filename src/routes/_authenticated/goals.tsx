@@ -351,6 +351,34 @@ function GoalCard({ g, currency, autoAlloc, period, onApply, onDelete, onQuickAd
           </button>
         </div>
       )}
+      {!completed && (
+        <div className="mt-3 pt-3 border-t border-border">
+          {open ? (
+            <div className="flex items-center gap-2">
+              <input type="number" step="0.01" autoFocus value={quickAmt} onChange={(e) => setQuickAmt(e.target.value)}
+                placeholder="Amount"
+                className="flex-1 bg-background border border-border rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+              <button
+                onClick={() => { const v = parseFloat(quickAmt); if (!v) return; onQuickAdd(v, "deposit"); setQuickAmt(""); setOpen(false); }}
+                className="text-[10px] font-mono uppercase tracking-widest px-3 py-1.5 rounded bg-accent text-accent-foreground hover:opacity-90">
+                + Add
+              </button>
+              <button
+                onClick={() => { const v = parseFloat(quickAmt); if (!v) return; onQuickAdd(v, "withdrawal"); setQuickAmt(""); setOpen(false); }}
+                title="Withdraw"
+                className="text-muted-foreground hover:text-alert p-1.5">
+                <TrendingDown className="size-3.5" />
+              </button>
+              <button onClick={() => { setOpen(false); setQuickAmt(""); }} className="text-muted-foreground hover:text-foreground text-xs px-1">✕</button>
+            </div>
+          ) : (
+            <button onClick={() => setOpen(true)}
+              className="w-full text-[10px] font-mono uppercase tracking-widest py-1.5 rounded border border-dashed border-border hover:border-accent hover:text-accent text-muted-foreground flex items-center justify-center gap-1">
+              <Plus className="size-3" /> Add payment
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
