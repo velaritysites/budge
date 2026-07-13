@@ -12,7 +12,7 @@ import {
   type Goal,
   type AutoAllocationMode,
 } from "@/lib/goals";
-import { Plus, Trash2, ChevronRight, Zap, Hand, Sparkles } from "lucide-react";
+import { Plus, Trash2, ChevronRight, Zap, Hand, Sparkles, TrendingDown } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/goals")({
