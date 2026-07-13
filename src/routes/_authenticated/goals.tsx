@@ -266,7 +266,8 @@ function GoalsPage() {
               autoAlloc={g.progress_mode === "auto" ? allocations[g.id] ?? 0 : null}
               period={currentPeriodKey()}
               onApply={() => applyAuto(g.id, allocations[g.id] ?? 0)}
-              onDelete={() => deleteGoal(g.id)} />
+              onDelete={() => deleteGoal(g.id)}
+              onQuickAdd={(amt, kind) => quickAddContribution(g.id, amt, kind)} />
           ))}
         </section>
 
@@ -277,7 +278,7 @@ function GoalsPage() {
             </h2>
             {completed.map((g) => (
               <GoalCard key={g.id} g={g} currency={currency} autoAlloc={null} period={currentPeriodKey()}
-                onApply={() => {}} onDelete={() => deleteGoal(g.id)} completed />
+                onApply={() => {}} onDelete={() => deleteGoal(g.id)} onQuickAdd={() => {}} completed />
             ))}
           </section>
         )}
@@ -286,10 +287,14 @@ function GoalsPage() {
   );
 }
 
-function GoalCard({ g, currency, autoAlloc, period, onApply, onDelete, completed }: {
+function GoalCard({ g, currency, autoAlloc, period, onApply, onDelete, onQuickAdd, completed }: {
   g: Goal; currency: string; autoAlloc: number | null; period: string;
-  onApply: () => void; onDelete: () => void; completed?: boolean;
+  onApply: () => void; onDelete: () => void;
+  onQuickAdd: (amount: number, kind: "deposit" | "withdrawal") => void;
+  completed?: boolean;
 }) {
+  const [open, setOpen] = useState(false);
+  const [quickAmt, setQuickAmt] = useState("");
   const pct = Math.min(100, (g.current_amount / Math.max(1, g.target_amount)) * 100);
   const appliedThisMonth = g.last_auto_period === period;
   return (
