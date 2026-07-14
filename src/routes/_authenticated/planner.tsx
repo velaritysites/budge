@@ -274,33 +274,28 @@ function PlannerPage() {
       {showLibrary && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-start justify-center p-6 overflow-y-auto"
           onClick={() => setShowLibrary(false)}>
-          <div className="bg-surface border border-border rounded-xl max-w-lg w-full mt-16 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-surface border border-border rounded-xl max-w-2xl w-full mt-16 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-4 border-b border-border">
-              <h3 className="text-sm font-bold">Saved plans</h3>
+              <div>
+                <h3 className="text-sm font-bold flex items-center gap-2"><Clock className="size-3.5" /> Plan history</h3>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mt-1">
+                  {savedPlans.length} saved · newest first
+                </p>
+              </div>
               <button onClick={() => setShowLibrary(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="size-4" />
               </button>
             </div>
-            <div className="p-4 space-y-2 max-h-[60vh] overflow-y-auto">
+            <div className="p-4 space-y-2 max-h-[70vh] overflow-y-auto">
               {savedPlans.length === 0 ? (
                 <p className="text-sm text-muted-foreground py-8 text-center">No saved plans yet.</p>
               ) : savedPlans.map((p) => (
-                <div key={p.id} className={`group flex items-center gap-3 p-3 rounded-lg border transition ${
-                  currentPlanId === p.id ? "border-accent bg-accent/5" : "border-border hover:border-muted-foreground"
-                }`}>
-                  <button onClick={() => loadPlan(p)} className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-medium truncate">{p.name}</div>
-                    <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
-                      {p.phases.length} phase{p.phases.length !== 1 ? "s" : ""} · Updated {new Date(p.updated_at).toLocaleDateString()}
-                    </div>
-                  </button>
-                  <button onClick={() => deletePlan(p.id)} className="text-muted-foreground hover:text-alert opacity-0 group-hover:opacity-100 transition">
-                    <Trash2 className="size-3.5" />
-                  </button>
-                </div>
+                <SavedPlanRow key={p.id} p={p} currency={currency} isCurrent={currentPlanId === p.id}
+                  onLoad={() => loadPlan(p)} onDelete={() => deletePlan(p.id)} onApply={() => applyPlanToExpenses(p)} />
               ))}
             </div>
           </div>
+
         </div>
       )}
 
