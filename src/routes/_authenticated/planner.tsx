@@ -497,6 +497,30 @@ function PlannerPage() {
                 <Copy className="size-3" /> Save as new
               </button>
             </div>
+            <button
+              onClick={async () => {
+                // Apply the current in-editor state as a plan (save first if unsaved to keep traceability).
+                let planToApply: SavedPlan | null = savedPlans.find((sp) => sp.id === currentPlanId) ?? null;
+                if (!planToApply) {
+                  if (!confirm("Save this plan first, then apply its expenses?")) return;
+                  await savePlan(false);
+                  // fall through: use in-memory phases as source of truth
+                }
+                const live: SavedPlan = planToApply ?? {
+                  id: currentPlanId ?? "temp",
+                  name: planName || "Untitled plan",
+                  tax_rate_pct: parseFloat(taxRatePct || "0"),
+                  phases,
+                  notes: notes || null,
+                  updated_at: new Date().toISOString(),
+                };
+                // use in-memory phases if editing
+                await applyPlanToExpenses({ ...live, phases });
+              }}
+              className="w-full border border-accent/40 text-accent rounded-lg py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-accent/10">
+              <Send className="size-3" /> Apply plan to expenses
+            </button>
+
 
             <p className="text-[10px] text-muted-foreground leading-relaxed pt-2 border-t border-border">
               Rough estimate — real payroll deductions vary by locale, pension, benefits, and bracket edges.
