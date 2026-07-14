@@ -319,15 +319,30 @@ function PlannerPage() {
               <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                 <Layers className="size-3" /> Phases
               </span>
-              {phases.map((p) => (
-                <button key={p.id} onClick={() => setActivePhaseId(p.id)}
-                  className={`text-xs px-3 py-1.5 rounded-lg border transition ${
-                    activePhaseId === p.id ? "border-accent bg-accent/10 text-accent" : "border-border text-muted-foreground hover:border-muted-foreground"
-                  }`}>
-                  {p.name}
-                  <span className="ml-2 text-[9px] font-mono opacity-60">{formatCurrency(phaseMonthly(p), currency)}</span>
-                </button>
+              {phases.map((p, idx) => (
+                <div key={p.id} className={`flex items-center rounded-lg border transition ${
+                  activePhaseId === p.id ? "border-accent bg-accent/10" : "border-border hover:border-muted-foreground"
+                }`}>
+                  <button onClick={() => setActivePhaseId(p.id)}
+                    className={`text-xs px-3 py-1.5 ${activePhaseId === p.id ? "text-accent" : "text-muted-foreground"}`}>
+                    {p.name}
+                    <span className="ml-2 text-[9px] font-mono opacity-60">{formatCurrency(phaseMonthly(p), currency)}</span>
+                  </button>
+                  {phases.length > 1 && (
+                    <div className="flex items-center border-l border-border">
+                      <button onClick={() => movePhase(p.id, -1)} disabled={idx === 0}
+                        title="Move left" className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30">
+                        <ArrowUp className="size-3 -rotate-90" />
+                      </button>
+                      <button onClick={() => movePhase(p.id, 1)} disabled={idx === phases.length - 1}
+                        title="Move right" className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30 border-l border-border">
+                        <ArrowDown className="size-3 -rotate-90" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
+
               <button onClick={addPhase}
                 className="text-[10px] font-mono uppercase tracking-widest px-3 py-1.5 rounded-lg border border-dashed border-border hover:border-accent hover:text-accent flex items-center gap-1">
                 <Plus className="size-3" /> Phase
