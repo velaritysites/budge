@@ -542,3 +542,74 @@ function ResultRow({ label, value, strong, muted, accent }: { label: string; val
     </div>
   );
 }
+
+function SavedPlanRow({ p, currency, isCurrent, onLoad, onDelete, onApply }: {
+  p: SavedPlan; currency: string; isCurrent: boolean;
+  onLoad: () => void; onDelete: () => void; onApply: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const phaseMonthly = (ph: Phase) => ph.items.reduce((s, i) => s + monthlyEquivalent(i), 0);
+  const totalMonthly = p.phases.reduce((s, ph) => s + phaseMonthly(ph), 0);
+  const totalItems = p.phases.reduce((s, ph) => s + ph.items.length, 0);
+  const ts = new Date(p.updated_at);
+  return (
+    <div className={`rounded-lg border transition ${isCurrent ? "border-accent bg-accent/5" : "border-border"}`}>
+      <div className="flex items-center gap-2 p-3">
+        <button onClick={() => setOpen((v) => !v)} className="text-muted-foreground hover:text-foreground">
+          {open ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+        </button>
+        <button onClick={onLoad} className="flex-1 min-w-0 text-left">
+          <div className="text-sm font-medium truncate">{p.name}</div>
+          <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+            {p.phases.length} phase{p.phases.length !== 1 ? "s" : ""} · {totalItems} item{totalItems !== 1 ? "s" : ""} · {formatCurrency(totalMonthly, currency)}/mo
+          </div>
+          <div className="text-[10px] font-mono text-muted-foreground/70 mt-0.5">
+            {ts.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })} · {ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </div>
+        </button>
+        <button onClick={onApply} title="Apply expenses to your real expense list"
+          className="text-[10px] font-mono uppercase tracking-widest px-2 py-1.5 rounded border border-accent/40 text-accent hover:bg-accent/10 flex items-center gap-1">
+          <Send className="size-3" /> Apply
+        </button>
+        <button onClick={onDelete} className="text-muted-foreground hover:text-alert" title="Delete plan">
+          <Trash2 className="size-3.5" />
+        </button>
+      </div>
+      {open && (
+        <div className="border-t border-border p-3 space-y-3 bg-background/40">
+          {p.notes && (
+            <p className="text-xs text-muted-foreground italic border-l-2 border-border pl-2">{p.notes}</p>
+          )}
+          {p.phases.map((ph) => (
+            <div key={ph.id} className="space-y-1">
+              <div className="flex items-baseline justify-between">
+                <span className="text-xs font-bold">{ph.name}</span>
+                <span className="text-[10px] font-mono text-muted-foreground">
+                  {formatCurrency(phaseMonthly(ph), currency)}/mo
+                  {ph.leftover > 0 && <> · +{formatCurrency(ph.leftover, currency)} leftover</>}
+                </span>
+              </div>
+              {ph.items.length === 0 ? (
+                <p className="text-[10px] text-muted-foreground italic pl-2">No items</p>
+              ) : (
+                <ul className="pl-2 space-y-0.5">
+                  {ph.items.map((i) => (
+                    <li key={i.id} className="flex items-baseline justify-between text-[11px]">
+                      <span className="truncate text-muted-foreground">{i.name} <span className="opacity-60">· {i.frequency}</span></span>
+                      <span className="font-mono">{formatCurrency(i.amount, currency)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+          <div className="pt-2 border-t border-border flex items-baseline justify-between">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Tax rate</span>
+            <span className="text-xs font-mono">{p.tax_rate_pct}%</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
