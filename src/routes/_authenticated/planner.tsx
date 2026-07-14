@@ -132,6 +132,48 @@ function PlannerPage() {
     if (activePhaseId === id) setActivePhaseId(next[0].id);
   }
 
+  function movePhase(id: string, dir: -1 | 1) {
+    const idx = phases.findIndex((p) => p.id === id);
+    if (idx === -1) return;
+    const target = idx + dir;
+    if (target < 0 || target >= phases.length) return;
+    const next = [...phases];
+    [next[idx], next[target]] = [next[target], next[idx]];
+    setPhases(next);
+  }
+
+  // Map planner categories to a valid expenses.category value.
+  function mapCat(c: ExpenseCategory): ExpenseCategory {
+    const allowed: ExpenseCategory[] = [
+      "housing_rent","transport_fuel","debt","subscriptions","food",
+      "groceries","vehicle_finance","insurance","medical_insurance","other",
+    ];
+    return allowed.includes(c) ? c : "other";
+  }
+
+  async function applyPlanToExpenses(plan: SavedPlan) {
+    const totalItems = plan.phases.reduce((s, p) => s + p.items.length, 0);
+    if (totalItems === 0) return toast.error("This plan has no expenses to apply");
+    if (!confirm(`Add ${totalItems} planned expense${totalItems === 1 ? "" : "s"} from "${plan.name}" to your real expenses?`)) return;
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return;
+    const rows = plan.phases.flatMap((ph) =>
+      ph.items.map((i) => ({
+        user_id: u.user!.id,
+        name: plan.phases.length > 1 ? `[${ph.name}] ${i.name}` : i.name,
+        amount: i.amount,
+        category: mapCat(i.category),
+        frequency: i.frequency,
+        is_fixed: true,
+      })),
+    );
+    const { error } = await supabase.from("expenses").insert(rows);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["expenses"] });
+    toast.success(`Applied ${rows.length} expense${rows.length === 1 ? "" : "s"} from "${plan.name}"`);
+  }
+
+
   function addItem(e: React.FormEvent) {
     e.preventDefault();
     const amt = parseFloat(amount);
