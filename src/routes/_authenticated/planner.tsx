@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { CATEGORY_LABELS, type ExpenseCategory, type ExpenseFrequency, monthlyEquivalent } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
-import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil } from "lucide-react";
+import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Send, Clock } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/planner")({
@@ -132,6 +132,48 @@ function PlannerPage() {
     if (activePhaseId === id) setActivePhaseId(next[0].id);
   }
 
+  function movePhase(id: string, dir: -1 | 1) {
+    const idx = phases.findIndex((p) => p.id === id);
+    if (idx === -1) return;
+    const target = idx + dir;
+    if (target < 0 || target >= phases.length) return;
+    const next = [...phases];
+    [next[idx], next[target]] = [next[target], next[idx]];
+    setPhases(next);
+  }
+
+  // Map planner categories to a valid expenses.category value.
+  function mapCat(c: ExpenseCategory): ExpenseCategory {
+    const allowed: ExpenseCategory[] = [
+      "housing_rent","transport_fuel","debt","subscriptions","food",
+      "groceries","vehicle_finance","insurance","medical_insurance","other",
+    ];
+    return allowed.includes(c) ? c : "other";
+  }
+
+  async function applyPlanToExpenses(plan: SavedPlan) {
+    const totalItems = plan.phases.reduce((s, p) => s + p.items.length, 0);
+    if (totalItems === 0) return toast.error("This plan has no expenses to apply");
+    if (!confirm(`Add ${totalItems} planned expense${totalItems === 1 ? "" : "s"} from "${plan.name}" to your real expenses?`)) return;
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) return;
+    const rows = plan.phases.flatMap((ph) =>
+      ph.items.map((i) => ({
+        user_id: u.user!.id,
+        name: plan.phases.length > 1 ? `[${ph.name}] ${i.name}` : i.name,
+        amount: i.amount,
+        category: mapCat(i.category),
+        frequency: i.frequency,
+        is_fixed: true,
+      })),
+    );
+    const { error } = await supabase.from("expenses").insert(rows);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["expenses"] });
+    toast.success(`Applied ${rows.length} expense${rows.length === 1 ? "" : "s"} from "${plan.name}"`);
+  }
+
+
   function addItem(e: React.FormEvent) {
     e.preventDefault();
     const amt = parseFloat(amount);
@@ -232,33 +274,28 @@ function PlannerPage() {
       {showLibrary && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-start justify-center p-6 overflow-y-auto"
           onClick={() => setShowLibrary(false)}>
-          <div className="bg-surface border border-border rounded-xl max-w-lg w-full mt-16 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-surface border border-border rounded-xl max-w-2xl w-full mt-16 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-4 border-b border-border">
-              <h3 className="text-sm font-bold">Saved plans</h3>
+              <div>
+                <h3 className="text-sm font-bold flex items-center gap-2"><Clock className="size-3.5" /> Plan history</h3>
+                <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mt-1">
+                  {savedPlans.length} saved · newest first
+                </p>
+              </div>
               <button onClick={() => setShowLibrary(false)} className="text-muted-foreground hover:text-foreground">
                 <X className="size-4" />
               </button>
             </div>
-            <div className="p-4 space-y-2 max-h-[60vh] overflow-y-auto">
+            <div className="p-4 space-y-2 max-h-[70vh] overflow-y-auto">
               {savedPlans.length === 0 ? (
                 <p className="text-sm text-muted-foreground py-8 text-center">No saved plans yet.</p>
               ) : savedPlans.map((p) => (
-                <div key={p.id} className={`group flex items-center gap-3 p-3 rounded-lg border transition ${
-                  currentPlanId === p.id ? "border-accent bg-accent/5" : "border-border hover:border-muted-foreground"
-                }`}>
-                  <button onClick={() => loadPlan(p)} className="flex-1 min-w-0 text-left">
-                    <div className="text-sm font-medium truncate">{p.name}</div>
-                    <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
-                      {p.phases.length} phase{p.phases.length !== 1 ? "s" : ""} · Updated {new Date(p.updated_at).toLocaleDateString()}
-                    </div>
-                  </button>
-                  <button onClick={() => deletePlan(p.id)} className="text-muted-foreground hover:text-alert opacity-0 group-hover:opacity-100 transition">
-                    <Trash2 className="size-3.5" />
-                  </button>
-                </div>
+                <SavedPlanRow key={p.id} p={p} currency={currency} isCurrent={currentPlanId === p.id}
+                  onLoad={() => loadPlan(p)} onDelete={() => deletePlan(p.id)} onApply={() => applyPlanToExpenses(p)} />
               ))}
             </div>
           </div>
+
         </div>
       )}
 
@@ -282,15 +319,30 @@ function PlannerPage() {
               <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                 <Layers className="size-3" /> Phases
               </span>
-              {phases.map((p) => (
-                <button key={p.id} onClick={() => setActivePhaseId(p.id)}
-                  className={`text-xs px-3 py-1.5 rounded-lg border transition ${
-                    activePhaseId === p.id ? "border-accent bg-accent/10 text-accent" : "border-border text-muted-foreground hover:border-muted-foreground"
-                  }`}>
-                  {p.name}
-                  <span className="ml-2 text-[9px] font-mono opacity-60">{formatCurrency(phaseMonthly(p), currency)}</span>
-                </button>
+              {phases.map((p, idx) => (
+                <div key={p.id} className={`flex items-center rounded-lg border transition ${
+                  activePhaseId === p.id ? "border-accent bg-accent/10" : "border-border hover:border-muted-foreground"
+                }`}>
+                  <button onClick={() => setActivePhaseId(p.id)}
+                    className={`text-xs px-3 py-1.5 ${activePhaseId === p.id ? "text-accent" : "text-muted-foreground"}`}>
+                    {p.name}
+                    <span className="ml-2 text-[9px] font-mono opacity-60">{formatCurrency(phaseMonthly(p), currency)}</span>
+                  </button>
+                  {phases.length > 1 && (
+                    <div className="flex items-center border-l border-border">
+                      <button onClick={() => movePhase(p.id, -1)} disabled={idx === 0}
+                        title="Move left" className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30">
+                        <ArrowUp className="size-3 -rotate-90" />
+                      </button>
+                      <button onClick={() => movePhase(p.id, 1)} disabled={idx === phases.length - 1}
+                        title="Move right" className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30 border-l border-border">
+                        <ArrowDown className="size-3 -rotate-90" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
+
               <button onClick={addPhase}
                 className="text-[10px] font-mono uppercase tracking-widest px-3 py-1.5 rounded-lg border border-dashed border-border hover:border-accent hover:text-accent flex items-center gap-1">
                 <Plus className="size-3" /> Phase
@@ -445,6 +497,30 @@ function PlannerPage() {
                 <Copy className="size-3" /> Save as new
               </button>
             </div>
+            <button
+              onClick={async () => {
+                // Apply the current in-editor state as a plan (save first if unsaved to keep traceability).
+                let planToApply: SavedPlan | null = savedPlans.find((sp) => sp.id === currentPlanId) ?? null;
+                if (!planToApply) {
+                  if (!confirm("Save this plan first, then apply its expenses?")) return;
+                  await savePlan(false);
+                  // fall through: use in-memory phases as source of truth
+                }
+                const live: SavedPlan = planToApply ?? {
+                  id: currentPlanId ?? "temp",
+                  name: planName || "Untitled plan",
+                  tax_rate_pct: parseFloat(taxRatePct || "0"),
+                  phases,
+                  notes: notes || null,
+                  updated_at: new Date().toISOString(),
+                };
+                // use in-memory phases if editing
+                await applyPlanToExpenses({ ...live, phases });
+              }}
+              className="w-full border border-accent/40 text-accent rounded-lg py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-accent/10">
+              <Send className="size-3" /> Apply plan to expenses
+            </button>
+
 
             <p className="text-[10px] text-muted-foreground leading-relaxed pt-2 border-t border-border">
               Rough estimate — real payroll deductions vary by locale, pension, benefits, and bracket edges.
@@ -466,3 +542,74 @@ function ResultRow({ label, value, strong, muted, accent }: { label: string; val
     </div>
   );
 }
+
+function SavedPlanRow({ p, currency, isCurrent, onLoad, onDelete, onApply }: {
+  p: SavedPlan; currency: string; isCurrent: boolean;
+  onLoad: () => void; onDelete: () => void; onApply: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const phaseMonthly = (ph: Phase) => ph.items.reduce((s, i) => s + monthlyEquivalent(i), 0);
+  const totalMonthly = p.phases.reduce((s, ph) => s + phaseMonthly(ph), 0);
+  const totalItems = p.phases.reduce((s, ph) => s + ph.items.length, 0);
+  const ts = new Date(p.updated_at);
+  return (
+    <div className={`rounded-lg border transition ${isCurrent ? "border-accent bg-accent/5" : "border-border"}`}>
+      <div className="flex items-center gap-2 p-3">
+        <button onClick={() => setOpen((v) => !v)} className="text-muted-foreground hover:text-foreground">
+          {open ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+        </button>
+        <button onClick={onLoad} className="flex-1 min-w-0 text-left">
+          <div className="text-sm font-medium truncate">{p.name}</div>
+          <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+            {p.phases.length} phase{p.phases.length !== 1 ? "s" : ""} · {totalItems} item{totalItems !== 1 ? "s" : ""} · {formatCurrency(totalMonthly, currency)}/mo
+          </div>
+          <div className="text-[10px] font-mono text-muted-foreground/70 mt-0.5">
+            {ts.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })} · {ts.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          </div>
+        </button>
+        <button onClick={onApply} title="Apply expenses to your real expense list"
+          className="text-[10px] font-mono uppercase tracking-widest px-2 py-1.5 rounded border border-accent/40 text-accent hover:bg-accent/10 flex items-center gap-1">
+          <Send className="size-3" /> Apply
+        </button>
+        <button onClick={onDelete} className="text-muted-foreground hover:text-alert" title="Delete plan">
+          <Trash2 className="size-3.5" />
+        </button>
+      </div>
+      {open && (
+        <div className="border-t border-border p-3 space-y-3 bg-background/40">
+          {p.notes && (
+            <p className="text-xs text-muted-foreground italic border-l-2 border-border pl-2">{p.notes}</p>
+          )}
+          {p.phases.map((ph) => (
+            <div key={ph.id} className="space-y-1">
+              <div className="flex items-baseline justify-between">
+                <span className="text-xs font-bold">{ph.name}</span>
+                <span className="text-[10px] font-mono text-muted-foreground">
+                  {formatCurrency(phaseMonthly(ph), currency)}/mo
+                  {ph.leftover > 0 && <> · +{formatCurrency(ph.leftover, currency)} leftover</>}
+                </span>
+              </div>
+              {ph.items.length === 0 ? (
+                <p className="text-[10px] text-muted-foreground italic pl-2">No items</p>
+              ) : (
+                <ul className="pl-2 space-y-0.5">
+                  {ph.items.map((i) => (
+                    <li key={i.id} className="flex items-baseline justify-between text-[11px]">
+                      <span className="truncate text-muted-foreground">{i.name} <span className="opacity-60">· {i.frequency}</span></span>
+                      <span className="font-mono">{formatCurrency(i.amount, currency)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+          <div className="pt-2 border-t border-border flex items-baseline justify-between">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Tax rate</span>
+            <span className="text-xs font-mono">{p.tax_rate_pct}%</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
