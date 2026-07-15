@@ -65,6 +65,11 @@ function PlannerPage() {
   const [category, setCategory] = useState<ExpenseCategory>("housing_rent");
   const [frequency, setFrequency] = useState<ExpenseFrequency>("monthly");
 
+  // export state
+  const exportRef = useRef<HTMLDivElement>(null);
+  const [exportTarget, setExportTarget] = useState<ExportPlan | null>(null);
+  const [exportBusy, setExportBusy] = useState<null | "png" | "pdf">(null);
+
   const currency = profile?.currency_code ?? "USD";
 
   // initialize active phase & tax pre-fill once profile loads
