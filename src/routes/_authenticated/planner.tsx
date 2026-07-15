@@ -581,6 +581,13 @@ function PlannerPage() {
           </div>
         </div>
       </div>
+
+      {/* Hidden export sheet — rendered off-screen while an export is in flight */}
+      {exportTarget && (
+        <div style={{ position: "fixed", left: -10000, top: 0, pointerEvents: "none", zIndex: -1 }} aria-hidden>
+          <PlanExportSheet plan={exportTarget} currency={currency} innerRef={exportRef} />
+        </div>
+      )}
     </div>
   );
 }
