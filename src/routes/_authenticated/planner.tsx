@@ -555,6 +555,23 @@ function PlannerPage() {
               <Send className="size-3" /> Apply plan to expenses
             </button>
 
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => runExport(currentAsExportPlan(), "pdf")}
+                disabled={!!exportBusy}
+                className="border border-border rounded-lg py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:border-accent disabled:opacity-50">
+                <Download className="size-3" /> {exportBusy === "pdf" ? "Exporting…" : "Download PDF"}
+              </button>
+              <button
+                onClick={() => runExport(currentAsExportPlan(), "png")}
+                disabled={!!exportBusy}
+                className="border border-border rounded-lg py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:border-accent disabled:opacity-50">
+                <ImageIcon className="size-3" /> {exportBusy === "png" ? "Exporting…" : "Download PNG"}
+              </button>
+            </div>
+
+
+
 
             <p className="text-[10px] text-muted-foreground leading-relaxed pt-2 border-t border-border">
               Rough estimate — real payroll deductions vary by locale, pension, benefits, and bracket edges.
