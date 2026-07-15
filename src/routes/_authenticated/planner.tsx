@@ -246,6 +246,34 @@ function PlannerPage() {
     toast.success("Deleted");
   }
 
+  async function runExport(plan: ExportPlan, kind: "png" | "pdf") {
+    setExportTarget(plan);
+    setExportBusy(kind);
+    // Wait two frames so the hidden sheet is in the DOM and laid out.
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    try {
+      const node = exportRef.current;
+      if (!node) throw new Error("Export node not ready");
+      if (kind === "png") await exportPlanImage(node, plan.name);
+      else await exportPlanPdf(node, plan.name);
+      toast.success(kind === "png" ? "Image downloaded" : "PDF downloaded");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Export failed");
+    } finally {
+      setExportBusy(null);
+      setExportTarget(null);
+    }
+  }
+
+  function currentAsExportPlan(): ExportPlan {
+    return {
+      name: planName || "Untitled plan",
+      tax_rate_pct: parseFloat(taxRatePct || "0"),
+      phases,
+      notes: notes || null,
+    };
+  }
+
   // computations
   const phaseMonthly = (p: Phase) => p.items.reduce((s, i) => s + monthlyEquivalent(i), 0);
   const totalMonthly = phases.reduce((s, p) => s + phaseMonthly(p), 0);
