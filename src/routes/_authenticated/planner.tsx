@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { CATEGORY_LABELS, type ExpenseCategory, type ExpenseFrequency, monthlyEquivalent } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
-import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Send, Clock } from "lucide-react";
+import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Send, Clock, Download, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { PlanExportSheet, exportPlanImage, exportPlanPdf, type ExportPlan } from "@/lib/export-plan";
 
 export const Route = createFileRoute("/_authenticated/planner")({
   head: () => ({ meta: [{ title: "Salary Planner — Budge" }] }),
