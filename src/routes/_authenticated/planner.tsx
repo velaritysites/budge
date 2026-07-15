@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { CATEGORY_LABELS, type ExpenseCategory, type ExpenseFrequency, monthlyEquivalent } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
-import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Send, Clock } from "lucide-react";
+import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Send, Clock, Download, Image as ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { PlanExportSheet, exportPlanImage, exportPlanPdf, type ExportPlan } from "@/lib/export-plan";
 
 export const Route = createFileRoute("/_authenticated/planner")({
   head: () => ({ meta: [{ title: "Salary Planner — Budge" }] }),
@@ -63,6 +64,11 @@ function PlannerPage() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<ExpenseCategory>("housing_rent");
   const [frequency, setFrequency] = useState<ExpenseFrequency>("monthly");
+
+  // export state
+  const exportRef = useRef<HTMLDivElement>(null);
+  const [exportTarget, setExportTarget] = useState<ExportPlan | null>(null);
+  const [exportBusy, setExportBusy] = useState<null | "png" | "pdf">(null);
 
   const currency = profile?.currency_code ?? "USD";
 
@@ -240,6 +246,34 @@ function PlannerPage() {
     toast.success("Deleted");
   }
 
+  async function runExport(plan: ExportPlan, kind: "png" | "pdf") {
+    setExportTarget(plan);
+    setExportBusy(kind);
+    // Wait two frames so the hidden sheet is in the DOM and laid out.
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    try {
+      const node = exportRef.current;
+      if (!node) throw new Error("Export node not ready");
+      if (kind === "png") await exportPlanImage(node, plan.name);
+      else await exportPlanPdf(node, plan.name);
+      toast.success(kind === "png" ? "Image downloaded" : "PDF downloaded");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Export failed");
+    } finally {
+      setExportBusy(null);
+      setExportTarget(null);
+    }
+  }
+
+  function currentAsExportPlan(): ExportPlan {
+    return {
+      name: planName || "Untitled plan",
+      tax_rate_pct: parseFloat(taxRatePct || "0"),
+      phases,
+      notes: notes || null,
+    };
+  }
+
   // computations
   const phaseMonthly = (p: Phase) => p.items.reduce((s, i) => s + monthlyEquivalent(i), 0);
   const totalMonthly = phases.reduce((s, p) => s + phaseMonthly(p), 0);
@@ -291,7 +325,9 @@ function PlannerPage() {
                 <p className="text-sm text-muted-foreground py-8 text-center">No saved plans yet.</p>
               ) : savedPlans.map((p) => (
                 <SavedPlanRow key={p.id} p={p} currency={currency} isCurrent={currentPlanId === p.id}
-                  onLoad={() => loadPlan(p)} onDelete={() => deletePlan(p.id)} onApply={() => applyPlanToExpenses(p)} />
+                  onLoad={() => loadPlan(p)} onDelete={() => deletePlan(p.id)} onApply={() => applyPlanToExpenses(p)}
+                  onExport={(kind) => runExport({ name: p.name, tax_rate_pct: p.tax_rate_pct, phases: p.phases, notes: p.notes }, kind)}
+                  exportBusy={exportBusy} />
               ))}
             </div>
           </div>
@@ -521,6 +557,23 @@ function PlannerPage() {
               <Send className="size-3" /> Apply plan to expenses
             </button>
 
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => runExport(currentAsExportPlan(), "pdf")}
+                disabled={!!exportBusy}
+                className="border border-border rounded-lg py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:border-accent disabled:opacity-50">
+                <Download className="size-3" /> {exportBusy === "pdf" ? "Exporting…" : "Download PDF"}
+              </button>
+              <button
+                onClick={() => runExport(currentAsExportPlan(), "png")}
+                disabled={!!exportBusy}
+                className="border border-border rounded-lg py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:border-accent disabled:opacity-50">
+                <ImageIcon className="size-3" /> {exportBusy === "png" ? "Exporting…" : "Download PNG"}
+              </button>
+            </div>
+
+
+
 
             <p className="text-[10px] text-muted-foreground leading-relaxed pt-2 border-t border-border">
               Rough estimate — real payroll deductions vary by locale, pension, benefits, and bracket edges.
@@ -528,6 +581,13 @@ function PlannerPage() {
           </div>
         </div>
       </div>
+
+      {/* Hidden export sheet — rendered off-screen while an export is in flight */}
+      {exportTarget && (
+        <div style={{ position: "fixed", left: -10000, top: 0, pointerEvents: "none", zIndex: -1 }} aria-hidden>
+          <PlanExportSheet plan={exportTarget} currency={currency} innerRef={exportRef} />
+        </div>
+      )}
     </div>
   );
 }
@@ -543,9 +603,10 @@ function ResultRow({ label, value, strong, muted, accent }: { label: string; val
   );
 }
 
-function SavedPlanRow({ p, currency, isCurrent, onLoad, onDelete, onApply }: {
+function SavedPlanRow({ p, currency, isCurrent, onLoad, onDelete, onApply, onExport, exportBusy }: {
   p: SavedPlan; currency: string; isCurrent: boolean;
   onLoad: () => void; onDelete: () => void; onApply: () => void;
+  onExport: (kind: "png" | "pdf") => void; exportBusy: null | "png" | "pdf";
 }) {
   const [open, setOpen] = useState(false);
   const phaseMonthly = (ph: Phase) => ph.items.reduce((s, i) => s + monthlyEquivalent(i), 0);
@@ -606,6 +667,16 @@ function SavedPlanRow({ p, currency, isCurrent, onLoad, onDelete, onApply }: {
           <div className="pt-2 border-t border-border flex items-baseline justify-between">
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Tax rate</span>
             <span className="text-xs font-mono">{p.tax_rate_pct}%</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 pt-2">
+            <button onClick={() => onExport("pdf")} disabled={!!exportBusy}
+              className="text-[10px] font-mono uppercase tracking-widest px-2 py-1.5 rounded border border-border hover:border-accent flex items-center justify-center gap-1 disabled:opacity-50">
+              <Download className="size-3" /> {exportBusy === "pdf" ? "Exporting…" : "PDF"}
+            </button>
+            <button onClick={() => onExport("png")} disabled={!!exportBusy}
+              className="text-[10px] font-mono uppercase tracking-widest px-2 py-1.5 rounded border border-border hover:border-accent flex items-center justify-center gap-1 disabled:opacity-50">
+              <ImageIcon className="size-3" /> {exportBusy === "png" ? "Exporting…" : "Image"}
+            </button>
           </div>
         </div>
       )}
