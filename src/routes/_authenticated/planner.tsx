@@ -325,7 +325,9 @@ function PlannerPage() {
                 <p className="text-sm text-muted-foreground py-8 text-center">No saved plans yet.</p>
               ) : savedPlans.map((p) => (
                 <SavedPlanRow key={p.id} p={p} currency={currency} isCurrent={currentPlanId === p.id}
-                  onLoad={() => loadPlan(p)} onDelete={() => deletePlan(p.id)} onApply={() => applyPlanToExpenses(p)} />
+                  onLoad={() => loadPlan(p)} onDelete={() => deletePlan(p.id)} onApply={() => applyPlanToExpenses(p)}
+                  onExport={(kind) => runExport({ name: p.name, tax_rate_pct: p.tax_rate_pct, phases: p.phases, notes: p.notes }, kind)}
+                  exportBusy={exportBusy} />
               ))}
             </div>
           </div>
