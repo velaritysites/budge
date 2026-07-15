@@ -603,9 +603,10 @@ function ResultRow({ label, value, strong, muted, accent }: { label: string; val
   );
 }
 
-function SavedPlanRow({ p, currency, isCurrent, onLoad, onDelete, onApply }: {
+function SavedPlanRow({ p, currency, isCurrent, onLoad, onDelete, onApply, onExport, exportBusy }: {
   p: SavedPlan; currency: string; isCurrent: boolean;
   onLoad: () => void; onDelete: () => void; onApply: () => void;
+  onExport: (kind: "png" | "pdf") => void; exportBusy: null | "png" | "pdf";
 }) {
   const [open, setOpen] = useState(false);
   const phaseMonthly = (ph: Phase) => ph.items.reduce((s, i) => s + monthlyEquivalent(i), 0);
