@@ -668,6 +668,16 @@ function SavedPlanRow({ p, currency, isCurrent, onLoad, onDelete, onApply, onExp
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Tax rate</span>
             <span className="text-xs font-mono">{p.tax_rate_pct}%</span>
           </div>
+          <div className="grid grid-cols-2 gap-2 pt-2">
+            <button onClick={() => onExport("pdf")} disabled={!!exportBusy}
+              className="text-[10px] font-mono uppercase tracking-widest px-2 py-1.5 rounded border border-border hover:border-accent flex items-center justify-center gap-1 disabled:opacity-50">
+              <Download className="size-3" /> {exportBusy === "pdf" ? "Exporting…" : "PDF"}
+            </button>
+            <button onClick={() => onExport("png")} disabled={!!exportBusy}
+              className="text-[10px] font-mono uppercase tracking-widest px-2 py-1.5 rounded border border-border hover:border-accent flex items-center justify-center gap-1 disabled:opacity-50">
+              <ImageIcon className="size-3" /> {exportBusy === "png" ? "Exporting…" : "Image"}
+            </button>
+          </div>
         </div>
       )}
     </div>
