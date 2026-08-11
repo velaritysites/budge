@@ -46,7 +46,7 @@ const CATEGORIES: ExpenseCategory[] = [
 ];
 
 function makePhase(name = "Phase 1"): Phase {
-  return { id: crypto.randomUUID(), name, leftover: 0, items: [] };
+  return { id: crypto.randomUUID(), name, leftover: 0, items: [], trash: [] };
 }
 
 function PlannerPage() {
