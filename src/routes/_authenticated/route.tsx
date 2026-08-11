@@ -20,6 +20,7 @@ const NAV = [
   { to: "/checker", label: "Checker", icon: Sparkles },
   { to: "/expenses", label: "Expenses", icon: Wallet },
   { to: "/planner", label: "Planner", icon: Calculator },
+  { to: "/compare", label: "Compare", icon: GitCompare },
   { to: "/stats", label: "Stats", icon: BarChart3 },
   { to: "/goals", label: "Goals", icon: Target },
   { to: "/settings", label: "Settings", icon: Settings },
