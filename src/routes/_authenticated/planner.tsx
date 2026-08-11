@@ -67,6 +67,13 @@ function PlannerPage() {
   const [category, setCategory] = useState<ExpenseCategory>("housing_rent");
   const [frequency, setFrequency] = useState<ExpenseFrequency>("monthly");
 
+  // inline item editing
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState<{ name: string; amount: string; category: ExpenseCategory; frequency: ExpenseFrequency }>(
+    { name: "", amount: "", category: "housing_rent", frequency: "monthly" },
+  );
+  const [showTrash, setShowTrash] = useState(false);
+
   // export state
   const exportRef = useRef<HTMLDivElement>(null);
   const [exportTarget, setExportTarget] = useState<ExportPlan | null>(null);
