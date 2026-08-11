@@ -500,28 +500,102 @@ function PlannerPage() {
                 Start sketching this phase above.
               </p>
             ) : activePhase.items.map((i) => (
-              <div key={i.id} className="group flex items-center gap-3 p-3 hover:bg-surface rounded-lg transition">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium truncate">{i.name}</span>
-                    <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground">
-                      {CATEGORY_LABELS[i.category]} · {i.frequency}
-                    </span>
+              editingId === i.id ? (
+                <div key={i.id} className="bg-surface border border-accent/40 rounded-lg p-3 space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <input value={editDraft.name} onChange={(e) => setEditDraft({ ...editDraft, name: e.target.value })}
+                      placeholder="Name"
+                      className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                    <input value={editDraft.amount} onChange={(e) => setEditDraft({ ...editDraft, amount: e.target.value })}
+                      type="number" step="0.01" placeholder="Amount"
+                      className="bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
+                    <select value={editDraft.category} onChange={(e) => setEditDraft({ ...editDraft, category: e.target.value as ExpenseCategory })}
+                      className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                      {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                    </select>
+                    <select value={editDraft.frequency} onChange={(e) => setEditDraft({ ...editDraft, frequency: e.target.value as ExpenseFrequency })}
+                      className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                      <option value="monthly">Monthly</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="yearly">Yearly</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={saveEdit}
+                      className="bg-accent text-accent-foreground rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5">
+                      <Check className="size-3" /> Save
+                    </button>
+                    <button onClick={() => setEditingId(null)}
+                      className="border border-border rounded-lg px-3 py-1.5 text-xs font-bold hover:border-accent">
+                      Cancel
+                    </button>
                   </div>
                 </div>
-                <span className="font-mono text-sm">
-                  {formatCurrency(i.amount, currency)}
-                  {i.frequency !== "monthly" && (
-                    <span className="text-muted-foreground text-xs"> ({formatCurrency(monthlyEquivalent(i), currency)}/mo)</span>
-                  )}
-                </span>
-                <button onClick={() => removeItem(i.id)}
-                  className="opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-alert">
-                  <Trash2 className="size-3.5" />
-                </button>
-              </div>
+              ) : (
+                <div key={i.id} className="group flex items-center gap-3 p-3 hover:bg-surface rounded-lg transition">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium truncate">{i.name}</span>
+                      <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground">
+                        {CATEGORY_LABELS[i.category]} · {i.frequency}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="font-mono text-sm">
+                    {formatCurrency(i.amount, currency)}
+                    {i.frequency !== "monthly" && (
+                      <span className="text-muted-foreground text-xs"> ({formatCurrency(monthlyEquivalent(i), currency)}/mo)</span>
+                    )}
+                  </span>
+                  <button onClick={() => startEdit(i)} title="Edit"
+                    className="opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-accent">
+                    <Pencil className="size-3.5" />
+                  </button>
+                  <button onClick={() => removeItem(i.id)} title="Remove"
+                    className="opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-alert">
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
+              )
             ))}
           </div>
+
+          {/* Recently removed from this phase */}
+          {activePhase && (activePhase.trash?.length ?? 0) > 0 && (
+            <div className="border border-border rounded-lg bg-surface/50">
+              <button onClick={() => setShowTrash((v) => !v)}
+                className="w-full flex items-center justify-between px-4 py-2.5 text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground">
+                <span className="flex items-center gap-2">
+                  <Undo2 className="size-3" /> Recently removed ({activePhase.trash!.length})
+                </span>
+                {showTrash ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+              </button>
+              {showTrash && (
+                <div className="border-t border-border p-2 space-y-1">
+                  {activePhase.trash!.map((i) => (
+                    <div key={i.id} className="flex items-center gap-3 px-2 py-1.5 rounded hover:bg-surface">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs truncate text-muted-foreground">{i.name}</span>
+                        <span className="ml-2 text-[9px] font-mono uppercase tracking-widest text-muted-foreground/70">
+                          {CATEGORY_LABELS[i.category]} · {i.frequency}
+                        </span>
+                      </div>
+                      <span className="font-mono text-xs text-muted-foreground">{formatCurrency(i.amount, currency)}</span>
+                      <button onClick={() => restoreItem(i.id)}
+                        className="text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded border border-accent/40 text-accent hover:bg-accent/10">
+                        Restore
+                      </button>
+                      <button onClick={() => purgeItem(i.id)} title="Remove permanently"
+                        className="text-muted-foreground hover:text-alert">
+                        <X className="size-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
 
           <label className="block space-y-1 pt-4">
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Notes (optional)</span>
