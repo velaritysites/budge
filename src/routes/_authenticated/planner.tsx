@@ -201,7 +201,49 @@ function PlannerPage() {
 
   function removeItem(itemId: string) {
     if (!activePhase) return;
-    updatePhase(activePhase.id, { items: activePhase.items.filter((i) => i.id !== itemId) });
+    const item = activePhase.items.find((i) => i.id === itemId);
+    if (!item) return;
+    updatePhase(activePhase.id, {
+      items: activePhase.items.filter((i) => i.id !== itemId),
+      trash: [item, ...(activePhase.trash ?? [])],
+    });
+    if (editingId === itemId) setEditingId(null);
+    toast("Removed — restore it from Recently removed", { duration: 3000 });
+  }
+
+  function restoreItem(itemId: string) {
+    if (!activePhase) return;
+    const item = (activePhase.trash ?? []).find((i) => i.id === itemId);
+    if (!item) return;
+    updatePhase(activePhase.id, {
+      items: [...activePhase.items, item],
+      trash: (activePhase.trash ?? []).filter((i) => i.id !== itemId),
+    });
+    toast.success(`Restored "${item.name}"`);
+  }
+
+  function purgeItem(itemId: string) {
+    if (!activePhase) return;
+    updatePhase(activePhase.id, { trash: (activePhase.trash ?? []).filter((i) => i.id !== itemId) });
+  }
+
+  function startEdit(item: IdealExpense) {
+    setEditingId(item.id);
+    setEditDraft({ name: item.name, amount: String(item.amount), category: item.category, frequency: item.frequency });
+  }
+
+  function saveEdit() {
+    if (!activePhase || !editingId) return;
+    const amt = parseFloat(editDraft.amount);
+    if (!editDraft.name.trim() || !Number.isFinite(amt)) return toast.error("Name and amount are required");
+    updatePhase(activePhase.id, {
+      items: activePhase.items.map((i) =>
+        i.id === editingId
+          ? { ...i, name: editDraft.name.trim(), amount: amt, category: editDraft.category, frequency: editDraft.frequency }
+          : i,
+      ),
+    });
+    setEditingId(null);
   }
 
   function newPlan() {
