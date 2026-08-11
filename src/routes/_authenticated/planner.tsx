@@ -27,6 +27,8 @@ type Phase = {
   name: string;
   leftover: number;
   items: IdealExpense[];
+  /** Soft-deleted items, kept so users can restore anything removed by accident. */
+  trash?: IdealExpense[];
 };
 
 type SavedPlan = {
