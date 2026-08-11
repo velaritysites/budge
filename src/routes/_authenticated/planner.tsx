@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { CATEGORY_LABELS, type ExpenseCategory, type ExpenseFrequency, monthlyEquivalent } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
-import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Send, Clock, Download, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Send, Clock, Download, Image as ImageIcon, Check, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 import { PlanExportSheet, exportPlanImage, exportPlanPdf, type ExportPlan } from "@/lib/export-plan";
 
@@ -27,6 +27,8 @@ type Phase = {
   name: string;
   leftover: number;
   items: IdealExpense[];
+  /** Soft-deleted items, kept so users can restore anything removed by accident. */
+  trash?: IdealExpense[];
 };
 
 type SavedPlan = {
@@ -44,7 +46,7 @@ const CATEGORIES: ExpenseCategory[] = [
 ];
 
 function makePhase(name = "Phase 1"): Phase {
-  return { id: crypto.randomUUID(), name, leftover: 0, items: [] };
+  return { id: crypto.randomUUID(), name, leftover: 0, items: [], trash: [] };
 }
 
 function PlannerPage() {
@@ -64,6 +66,13 @@ function PlannerPage() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<ExpenseCategory>("housing_rent");
   const [frequency, setFrequency] = useState<ExpenseFrequency>("monthly");
+
+  // inline item editing
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState<{ name: string; amount: string; category: ExpenseCategory; frequency: ExpenseFrequency }>(
+    { name: "", amount: "", category: "housing_rent", frequency: "monthly" },
+  );
+  const [showTrash, setShowTrash] = useState(false);
 
   // export state
   const exportRef = useRef<HTMLDivElement>(null);
@@ -192,7 +201,49 @@ function PlannerPage() {
 
   function removeItem(itemId: string) {
     if (!activePhase) return;
-    updatePhase(activePhase.id, { items: activePhase.items.filter((i) => i.id !== itemId) });
+    const item = activePhase.items.find((i) => i.id === itemId);
+    if (!item) return;
+    updatePhase(activePhase.id, {
+      items: activePhase.items.filter((i) => i.id !== itemId),
+      trash: [item, ...(activePhase.trash ?? [])],
+    });
+    if (editingId === itemId) setEditingId(null);
+    toast("Removed — restore it from Recently removed", { duration: 3000 });
+  }
+
+  function restoreItem(itemId: string) {
+    if (!activePhase) return;
+    const item = (activePhase.trash ?? []).find((i) => i.id === itemId);
+    if (!item) return;
+    updatePhase(activePhase.id, {
+      items: [...activePhase.items, item],
+      trash: (activePhase.trash ?? []).filter((i) => i.id !== itemId),
+    });
+    toast.success(`Restored "${item.name}"`);
+  }
+
+  function purgeItem(itemId: string) {
+    if (!activePhase) return;
+    updatePhase(activePhase.id, { trash: (activePhase.trash ?? []).filter((i) => i.id !== itemId) });
+  }
+
+  function startEdit(item: IdealExpense) {
+    setEditingId(item.id);
+    setEditDraft({ name: item.name, amount: String(item.amount), category: item.category, frequency: item.frequency });
+  }
+
+  function saveEdit() {
+    if (!activePhase || !editingId) return;
+    const amt = parseFloat(editDraft.amount);
+    if (!editDraft.name.trim() || !Number.isFinite(amt)) return toast.error("Name and amount are required");
+    updatePhase(activePhase.id, {
+      items: activePhase.items.map((i) =>
+        i.id === editingId
+          ? { ...i, name: editDraft.name.trim(), amount: amt, category: editDraft.category, frequency: editDraft.frequency }
+          : i,
+      ),
+    });
+    setEditingId(null);
   }
 
   function newPlan() {
@@ -449,28 +500,102 @@ function PlannerPage() {
                 Start sketching this phase above.
               </p>
             ) : activePhase.items.map((i) => (
-              <div key={i.id} className="group flex items-center gap-3 p-3 hover:bg-surface rounded-lg transition">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium truncate">{i.name}</span>
-                    <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground">
-                      {CATEGORY_LABELS[i.category]} · {i.frequency}
-                    </span>
+              editingId === i.id ? (
+                <div key={i.id} className="bg-surface border border-accent/40 rounded-lg p-3 space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <input value={editDraft.name} onChange={(e) => setEditDraft({ ...editDraft, name: e.target.value })}
+                      placeholder="Name"
+                      className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                    <input value={editDraft.amount} onChange={(e) => setEditDraft({ ...editDraft, amount: e.target.value })}
+                      type="number" step="0.01" placeholder="Amount"
+                      className="bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
+                    <select value={editDraft.category} onChange={(e) => setEditDraft({ ...editDraft, category: e.target.value as ExpenseCategory })}
+                      className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                      {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                    </select>
+                    <select value={editDraft.frequency} onChange={(e) => setEditDraft({ ...editDraft, frequency: e.target.value as ExpenseFrequency })}
+                      className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">
+                      <option value="monthly">Monthly</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="yearly">Yearly</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={saveEdit}
+                      className="bg-accent text-accent-foreground rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5">
+                      <Check className="size-3" /> Save
+                    </button>
+                    <button onClick={() => setEditingId(null)}
+                      className="border border-border rounded-lg px-3 py-1.5 text-xs font-bold hover:border-accent">
+                      Cancel
+                    </button>
                   </div>
                 </div>
-                <span className="font-mono text-sm">
-                  {formatCurrency(i.amount, currency)}
-                  {i.frequency !== "monthly" && (
-                    <span className="text-muted-foreground text-xs"> ({formatCurrency(monthlyEquivalent(i), currency)}/mo)</span>
-                  )}
-                </span>
-                <button onClick={() => removeItem(i.id)}
-                  className="opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-alert">
-                  <Trash2 className="size-3.5" />
-                </button>
-              </div>
+              ) : (
+                <div key={i.id} className="group flex items-center gap-3 p-3 hover:bg-surface rounded-lg transition">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-medium truncate">{i.name}</span>
+                      <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground">
+                        {CATEGORY_LABELS[i.category]} · {i.frequency}
+                      </span>
+                    </div>
+                  </div>
+                  <span className="font-mono text-sm">
+                    {formatCurrency(i.amount, currency)}
+                    {i.frequency !== "monthly" && (
+                      <span className="text-muted-foreground text-xs"> ({formatCurrency(monthlyEquivalent(i), currency)}/mo)</span>
+                    )}
+                  </span>
+                  <button onClick={() => startEdit(i)} title="Edit"
+                    className="opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-accent">
+                    <Pencil className="size-3.5" />
+                  </button>
+                  <button onClick={() => removeItem(i.id)} title="Remove"
+                    className="opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-alert">
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
+              )
             ))}
           </div>
+
+          {/* Recently removed from this phase */}
+          {activePhase && (activePhase.trash?.length ?? 0) > 0 && (
+            <div className="border border-border rounded-lg bg-surface/50">
+              <button onClick={() => setShowTrash((v) => !v)}
+                className="w-full flex items-center justify-between px-4 py-2.5 text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground">
+                <span className="flex items-center gap-2">
+                  <Undo2 className="size-3" /> Recently removed ({activePhase.trash!.length})
+                </span>
+                {showTrash ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+              </button>
+              {showTrash && (
+                <div className="border-t border-border p-2 space-y-1">
+                  {activePhase.trash!.map((i) => (
+                    <div key={i.id} className="flex items-center gap-3 px-2 py-1.5 rounded hover:bg-surface">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs truncate text-muted-foreground">{i.name}</span>
+                        <span className="ml-2 text-[9px] font-mono uppercase tracking-widest text-muted-foreground/70">
+                          {CATEGORY_LABELS[i.category]} · {i.frequency}
+                        </span>
+                      </div>
+                      <span className="font-mono text-xs text-muted-foreground">{formatCurrency(i.amount, currency)}</span>
+                      <button onClick={() => restoreItem(i.id)}
+                        className="text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded border border-accent/40 text-accent hover:bg-accent/10">
+                        Restore
+                      </button>
+                      <button onClick={() => purgeItem(i.id)} title="Remove permanently"
+                        className="text-muted-foreground hover:text-alert">
+                        <X className="size-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
 
           <label className="block space-y-1 pt-4">
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Notes (optional)</span>
