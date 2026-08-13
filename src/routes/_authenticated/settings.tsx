@@ -152,14 +152,14 @@ function SettingsPage() {
         <Section title="Profile">
           <Field label="Display name">
             <input value={name} onChange={(e) => setName(e.target.value)}
-              className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+              className="w-full panel px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
           </Field>
         </Section>
 
         <Section title="Currency & pay">
           <Field label="Currency">
             <button type="button" onClick={() => setCurrOpen(!currOpen)}
-              className="w-full flex items-center justify-between bg-surface border border-border rounded-lg px-3 py-2.5 text-sm">
+              className="w-full flex items-center justify-between panel px-3 py-2.5 text-sm">
               <span className="flex items-center gap-2">
                 <span>{selectedCurrency?.flag}</span>
                 <span className="font-mono">{selectedCurrency?.code}</span>
@@ -167,7 +167,7 @@ function SettingsPage() {
               </span>
             </button>
             {currOpen && (
-              <div className="mt-2 bg-surface border border-border rounded-lg p-2 space-y-1 max-h-64 overflow-y-auto">
+              <div className="mt-2 panel p-2 space-y-1 max-h-64 overflow-y-auto">
                 <div className="flex items-center gap-2 px-2 py-1.5">
                   <Search className="size-3.5 text-muted-foreground" />
                   <input autoFocus value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search..."
@@ -200,11 +200,11 @@ function SettingsPage() {
         <Section title="Income (totals)">
           <Field label="Gross income (monthly)">
             <input type="number" step="0.01" value={gross} onChange={(e) => setGross(e.target.value)}
-              className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-lg font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
+              className="w-full panel px-3 py-2.5 text-lg font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
           </Field>
           <Field label="Net / take-home (monthly)">
             <input type="number" step="0.01" value={net} onChange={(e) => setNet(e.target.value)}
-              className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-lg font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
+              className="w-full panel px-3 py-2.5 text-lg font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
           </Field>
           <p className="text-xs text-muted-foreground">
             These are the numbers used across the app. If you have multiple income streams, list them below for your records — then update these totals to match the sum.
@@ -236,10 +236,10 @@ function SettingsPage() {
               </div>
             ))}
           </div>
-          <div className="bg-surface border border-border rounded-lg p-3 space-y-2 mt-2">
+          <div className="panel p-3 space-y-2 mt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <input value={sName} onChange={(e) => setSName(e.target.value)} placeholder="Stream name (e.g. Freelance)"
-                className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <select value={sFreq} onChange={(e) => setSFreq(e.target.value as IncomeStream["frequency"])}
                 className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">
                 <option value="monthly">Monthly</option>
@@ -248,9 +248,9 @@ function SettingsPage() {
                 <option value="yearly">Yearly</option>
               </select>
               <input value={sGross} onChange={(e) => setSGross(e.target.value)} type="number" step="0.01" placeholder="Gross"
-                className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <input value={sNet} onChange={(e) => setSNet(e.target.value)} type="number" step="0.01" placeholder="Net"
-                className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
             </div>
             <button type="button" onClick={addStream}
               className="w-full bg-foreground text-background rounded-lg py-2 text-xs font-bold flex items-center justify-center gap-2">
@@ -310,7 +310,7 @@ function SettingsPage() {
         <Section title="Safety buffer">
           <Field label="Buffer % of net income (default 12.5%)">
             <input type="number" step="0.5" min="0" max="50" value={buffer} onChange={(e) => setBuffer(e.target.value)}
-              className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+              className="w-full panel px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
             <p className="text-xs text-muted-foreground">The cushion the affordability checker keeps untouched.</p>
           </Field>
         </Section>
@@ -325,7 +325,7 @@ function SettingsPage() {
 
 function ToggleRow({ icon, label, desc, checked, onChange }: { icon: React.ReactNode; label: string; desc: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div className="flex items-center justify-between gap-4 bg-surface border border-border rounded-lg p-3">
+    <div className="flex items-center justify-between gap-4 panel p-3">
       <div className="flex items-center gap-3 min-w-0">
         <div className="text-muted-foreground">{icon}</div>
         <div className="min-w-0">

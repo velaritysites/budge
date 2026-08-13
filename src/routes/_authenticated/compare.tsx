@@ -268,7 +268,7 @@ function ComparePage() {
               <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Export</span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {rows.map(({ plan }) => (
-                  <div key={plan.id} className="bg-surface border border-border rounded-lg p-4 space-y-3">
+                  <div key={plan.id} className="panel p-4 space-y-3">
                     <div className="text-sm font-bold truncate">{plan.name}</div>
                     <div className="grid grid-cols-2 gap-2">
                       <button onClick={() => runExport(plan, "pdf")} disabled={!!exportBusy}

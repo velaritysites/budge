@@ -359,7 +359,7 @@ function PlannerPage() {
       {showLibrary && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-start justify-center p-6 overflow-y-auto"
           onClick={() => setShowLibrary(false)}>
-          <div className="bg-surface border border-border rounded-xl max-w-2xl w-full mt-16 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="panel max-w-2xl w-full mt-16 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-4 border-b border-border">
               <div>
                 <h3 className="text-sm font-bold flex items-center gap-2"><Clock className="size-3.5" /> Plan history</h3>
@@ -437,12 +437,12 @@ function PlannerPage() {
             </div>
 
             {activePhase && (
-              <div className="bg-surface border border-border rounded-lg p-4 space-y-3">
+              <div className="panel p-4 space-y-3">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <label className="md:col-span-2 block space-y-1">
                     <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Phase name</span>
                     <input value={activePhase.name} onChange={(e) => updatePhase(activePhase.id, { name: e.target.value })}
-                      className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                      className="field" />
                   </label>
                   <label className="block space-y-1">
                     <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Leftover this phase</span>
@@ -469,15 +469,15 @@ function PlannerPage() {
             )}
           </section>
 
-          <form onSubmit={addItem} className="bg-surface border border-border rounded-lg p-5 space-y-3 animate-enter [animation-delay:100ms]">
+          <form onSubmit={addItem} className="panel p-5 space-y-3 animate-enter [animation-delay:100ms]">
             <h3 className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
               Add expense to "{activePhase?.name}"
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Dream apartment"
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" step="0.01" placeholder="Amount"
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
                 className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none">
                 {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
@@ -505,7 +505,7 @@ function PlannerPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <input value={editDraft.name} onChange={(e) => setEditDraft({ ...editDraft, name: e.target.value })}
                       placeholder="Name"
-                      className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                      className="field" />
                     <input value={editDraft.amount} onChange={(e) => setEditDraft({ ...editDraft, amount: e.target.value })}
                       type="number" step="0.01" placeholder="Amount"
                       className="bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
@@ -601,12 +601,12 @@ function PlannerPage() {
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Notes (optional)</span>
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2}
               placeholder="Assumptions, context, anything worth remembering later…"
-              className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent resize-none" />
+              className="field resize-none" />
           </label>
         </div>
 
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-surface border border-border rounded-xl p-5 space-y-4 sticky top-6">
+          <div className="panel p-5 space-y-4 sticky top-6">
             <h3 className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Your target</h3>
 
             <div className="space-y-2">

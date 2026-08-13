@@ -136,7 +136,7 @@ function AuthPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full panel px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             <div className="space-y-2">
@@ -147,7 +147,7 @@ function AuthPage() {
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full panel px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             <button

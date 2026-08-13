@@ -184,7 +184,7 @@ function ExpensesPage() {
         </div>
 
         {bulkMode ? (
-          <div className="bg-surface border border-border rounded-lg p-5 space-y-3 animate-enter">
+          <div className="panel p-5 space-y-3 animate-enter">
             <p className="text-xs text-muted-foreground">
               One per line: <span className="font-mono">name, amount, category</span>. Defaults to monthly + fixed.
             </p>
@@ -194,22 +194,22 @@ function ExpensesPage() {
             <button onClick={addBulk} className="w-full bg-accent text-accent-foreground rounded-lg py-2.5 text-sm font-bold">Add all</button>
           </div>
         ) : (
-          <form onSubmit={addOne} className="bg-surface border border-border rounded-lg p-5 space-y-3 animate-enter">
+          <form onSubmit={addOne} className="panel p-5 space-y-3 animate-enter">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name (e.g. Rent)"
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" step="0.01" placeholder="Amount"
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent">
+                className="field">
                 {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
               </select>
               <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent">
+                className="field">
                 {FREQUENCIES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
               </select>
               <input value={dueDay} onChange={(e) => setDueDay(e.target.value)} type="number" min="1" max="31" placeholder="Due day of month (optional)"
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <div className="flex items-center gap-2">
                 <button type="button" onClick={() => setNotify(!notify)}
                   className={`flex-1 py-2.5 rounded-lg border text-xs font-medium transition flex items-center justify-center gap-1.5 ${notify ? "bg-accent/10 border-accent/40 text-accent" : "bg-background border-border text-muted-foreground"}`}>

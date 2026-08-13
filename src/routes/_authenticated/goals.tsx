@@ -219,9 +219,9 @@ function GoalsPage() {
           </p>
         </div>
 
-        <form onSubmit={addGoal} className="bg-surface border border-border rounded-lg p-5 space-y-3 animate-enter [animation-delay:100ms]">
+        <form onSubmit={addGoal} className="panel p-5 space-y-3 animate-enter [animation-delay:100ms]">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Goal name (e.g. Emergency fund)"
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+            className="field" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <LabeledInput label="Target amount" value={target} setValue={setTarget} type="number" />
             <LabeledInput label="Already saved" value={initial} setValue={setInitial} type="number" placeholder="0" />
@@ -298,7 +298,7 @@ function GoalCard({ g, currency, autoAlloc, period, onApply, onDelete, onQuickAd
   const pct = Math.min(100, (g.current_amount / Math.max(1, g.target_amount)) * 100);
   const appliedThisMonth = g.last_auto_period === period;
   return (
-    <div className={`bg-surface border border-border rounded-lg p-5 group animate-enter ${completed ? "opacity-70" : ""}`}>
+    <div className={`panel p-5 group animate-enter ${completed ? "opacity-70" : ""}`}>
       <div className="flex items-start justify-between gap-3">
         <Link to="/goals/$goalId" params={{ goalId: g.id }} className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -402,7 +402,7 @@ function LabeledInput({ label, value, setValue, type, placeholder }: {
     <label className="block space-y-1">
       <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{label}</span>
       <input value={value} onChange={(e) => setValue(e.target.value)} type={type} step="0.01" placeholder={placeholder}
-        className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+        className="field" />
     </label>
   );
 }

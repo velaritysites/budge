@@ -117,7 +117,7 @@ function StatsPage() {
                 <select
                   value={active?.month ?? ""}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="bg-surface border border-border rounded-lg px-3 py-2 text-sm font-mono"
+                  className="panel px-3 py-2 text-sm font-mono"
                 >
                   {snapshots.map((s) => (
                     <option key={s.month} value={s.month}>
@@ -135,7 +135,7 @@ function StatsPage() {
                 </div>
               )}
               {active && (
-                <div className="bg-surface border border-border rounded-lg p-5">
+                <div className="panel p-5">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Spend by category</span>
                   <div className="mt-3 space-y-2">
                     {(Object.keys(active.expenses_by_category) as ExpenseCategory[])
@@ -187,7 +187,7 @@ function StatsPage() {
                   ))}
                 </div>
               </div>
-              <div className="bg-surface border border-border rounded-lg p-5">
+              <div className="panel p-5">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Disposable income</span>
                 <div className="flex items-end gap-2 mt-4 h-32">
                   {ranged.map((s) => {
