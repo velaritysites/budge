@@ -83,7 +83,7 @@ function AuthPage() {
           <span className="font-mono text-sm tracking-tight font-bold uppercase">Budge</span>
         </Link>
         <div className="space-y-6 max-w-md">
-          <h1 className="text-5xl font-black tracking-tighter italic leading-[0.95]">
+          <h1 className="text-5xl font-display font-extrabold tracking-tight leading-[0.95]">
             A calm view of your money.
           </h1>
           <p className="text-muted-foreground text-sm leading-relaxed">
@@ -136,7 +136,7 @@ function AuthPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full panel px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             <div className="space-y-2">
@@ -147,13 +147,13 @@ function AuthPage() {
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full panel px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             <button
               type="submit"
               disabled={busy}
-              className="w-full bg-accent text-accent-foreground rounded-lg py-3 text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full btn-accent py-3 text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {mode === "signin" ? "Sign in" : "Create account"}
             </button>

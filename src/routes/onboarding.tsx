@@ -76,18 +76,18 @@ function OnboardingPage() {
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter italic">{steps[step].title}</h1>
+          <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">{steps[step].title}</h1>
           <p className="text-muted-foreground text-sm">{steps[step].subtitle}</p>
         </div>
 
         {step === 0 && (
           <div className="space-y-3">
-            <div className="flex items-center gap-2 bg-surface border border-border rounded-lg px-3 py-2.5">
+            <div className="flex items-center gap-2 panel px-3 py-2.5">
               <Search className="size-4 text-muted-foreground" />
               <input autoFocus value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search currencies"
                 className="flex-1 bg-transparent text-sm focus:outline-none" />
             </div>
-            <div className="bg-surface border border-border rounded-lg p-2 max-h-64 overflow-y-auto space-y-1">
+            <div className="panel p-2 max-h-64 overflow-y-auto space-y-1">
               {filtered.map((c) => (
                 <button key={c.code} onClick={() => setCurrency(c.code)}
                   className="w-full flex items-center gap-2 px-2 py-2 text-sm hover:bg-background rounded text-left">
@@ -125,14 +125,14 @@ function OnboardingPage() {
             <div className="space-y-2">
               <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Gross (before tax)</label>
               <input type="number" step="0.01" value={gross} onChange={(e) => setGross(e.target.value)} placeholder="0.00"
-                className="w-full bg-surface border border-border rounded-lg px-3 py-3 text-2xl font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="w-full panel px-3 py-3 text-2xl font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Net (take-home)</label>
               <input type="number" step="0.01" value={net} onChange={(e) => setNet(e.target.value)} placeholder="0.00"
-                className="w-full bg-surface border border-border rounded-lg px-3 py-3 text-2xl font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="w-full panel px-3 py-3 text-2xl font-bold font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed bg-surface border border-border rounded-lg p-3">
+            <p className="text-xs text-muted-foreground leading-relaxed panel p-3">
               Got more than one income stream? No problem — add your primary here and you can add or remove others anytime from <span className="text-foreground font-medium">Settings → Income streams</span>.
             </p>
           </div>
@@ -146,12 +146,12 @@ function OnboardingPage() {
           )}
           {step < 2 ? (
             <button onClick={() => setStep(step + 1)}
-              className="flex-1 bg-accent text-accent-foreground rounded-lg py-3 text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90">
+              className="flex-1 btn-accent py-3 text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90">
               Continue <ArrowRight className="size-4" />
             </button>
           ) : (
             <button onClick={finish} disabled={busy}
-              className="flex-1 bg-accent text-accent-foreground rounded-lg py-3 text-sm font-bold disabled:opacity-50">
+              className="flex-1 btn-accent py-3 text-sm font-bold disabled:opacity-50">
               {busy ? "Saving…" : "Take me in"}
             </button>
           )}

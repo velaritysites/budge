@@ -107,7 +107,7 @@ function CheckerPage() {
 
       <div className="p-6 md:p-8 max-w-3xl mx-auto w-full space-y-10">
         <section className="space-y-2 animate-enter">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter italic">Thinking it through.</h1>
+          <h1 className="text-4xl md:text-5xl font-display font-extrabold tracking-tight">Thinking it through.</h1>
           <p className="text-muted-foreground text-sm max-w-md leading-relaxed">
             Give us the item and amount. We'll do the math against your real numbers and tell you straight.
           </p>
@@ -117,11 +117,11 @@ function CheckerPage() {
           <Field label="What is it?">
             <input value={name} onChange={(e) => setName(e.target.value)}
               placeholder="e.g. New bike, gym membership"
-              className="w-full bg-surface border border-border rounded-lg px-3 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+              className="w-full panel px-3 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
           </Field>
           <Field label={`Amount (${profile.currency_code})`}>
             <input type="number" step="0.01" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00"
-              className="w-full bg-surface border border-border rounded-lg px-3 py-3 text-2xl font-bold tracking-tight focus:outline-none focus:ring-1 focus:ring-accent" />
+              className="w-full panel px-3 py-3 text-2xl font-bold tracking-tight focus:outline-none focus:ring-1 focus:ring-accent" />
           </Field>
           <div className="space-y-2">
             <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Cost type</label>
@@ -133,7 +133,7 @@ function CheckerPage() {
             </div>
           </div>
           <button type="submit" disabled={submitting}
-            className="w-full bg-accent text-accent-foreground rounded-lg py-3 text-sm font-bold hover:opacity-90 transition disabled:opacity-50">
+            className="w-full btn-accent py-3 text-sm font-bold hover:opacity-90 transition disabled:opacity-50">
             Run the check
           </button>
         </form>
@@ -178,7 +178,7 @@ function CheckerPage() {
 
       {addOpen && (
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setAddOpen(false)}>
-          <div onClick={(e) => e.stopPropagation()} className="bg-surface border border-border rounded-xl p-6 w-full max-w-sm space-y-4 animate-enter">
+          <div onClick={(e) => e.stopPropagation()} className="panel p-6 w-full max-w-sm space-y-4 animate-enter">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold">Add to expenses</h3>
               <button onClick={() => setAddOpen(false)} className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
@@ -189,20 +189,20 @@ function CheckerPage() {
             <div className="space-y-2">
               <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Category</label>
               <select value={addCategory} onChange={(e) => setAddCategory(e.target.value as ExpenseCategory)}
-                className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent">
+                className="field">
                 {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
               </select>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Frequency</label>
               <select value={addFrequency} onChange={(e) => setAddFrequency(e.target.value as ExpenseFrequency)}
-                className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent">
+                className="field">
                 <option value="monthly">Monthly</option>
                 <option value="weekly">Weekly</option>
                 <option value="yearly">Yearly</option>
               </select>
             </div>
-            <button onClick={addToExpenses} className="w-full bg-accent text-accent-foreground rounded-lg py-2.5 text-sm font-bold">
+            <button onClick={addToExpenses} className="w-full btn-accent py-2.5 text-sm font-bold">
               Add expense
             </button>
           </div>

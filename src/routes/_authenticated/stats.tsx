@@ -105,7 +105,7 @@ function StatsPage() {
       <div className="p-6 md:p-8 space-y-10 max-w-6xl mx-auto w-full">
         {snapshots.length === 0 ? (
           <div className="text-center py-16">
-            <h1 className="text-3xl font-black tracking-tighter italic mb-2">No history yet.</h1>
+            <h1 className="text-3xl font-display font-extrabold tracking-tight mb-2">No history yet.</h1>
             <p className="text-sm text-muted-foreground">Add income and expenses to start building your monthly snapshots.</p>
           </div>
         ) : (
@@ -113,11 +113,11 @@ function StatsPage() {
             {/* Snapshot picker */}
             <section className="animate-enter space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <h2 className="text-3xl md:text-4xl font-black tracking-tighter italic">Monthly snapshot.</h2>
+                <h2 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">Monthly snapshot.</h2>
                 <select
                   value={active?.month ?? ""}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="bg-surface border border-border rounded-lg px-3 py-2 text-sm font-mono"
+                  className="panel px-3 py-2 text-sm font-mono"
                 >
                   {snapshots.map((s) => (
                     <option key={s.month} value={s.month}>
@@ -135,7 +135,7 @@ function StatsPage() {
                 </div>
               )}
               {active && (
-                <div className="bg-surface border border-border rounded-lg p-5">
+                <div className="panel p-5">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Spend by category</span>
                   <div className="mt-3 space-y-2">
                     {(Object.keys(active.expenses_by_category) as ExpenseCategory[])
@@ -187,7 +187,7 @@ function StatsPage() {
                   ))}
                 </div>
               </div>
-              <div className="bg-surface border border-border rounded-lg p-5">
+              <div className="panel p-5">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Disposable income</span>
                 <div className="flex items-end gap-2 mt-4 h-32">
                   {ranged.map((s) => {

@@ -176,7 +176,7 @@ function ExpensesPage() {
 
       <div className="p-6 md:p-8 max-w-4xl mx-auto w-full space-y-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter italic">Where the money goes.</h1>
+          <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">Where the money goes.</h1>
           <button onClick={() => setBulkMode(!bulkMode)}
             className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground">
             {bulkMode ? "← Single" : "Bulk add"}
@@ -184,32 +184,32 @@ function ExpensesPage() {
         </div>
 
         {bulkMode ? (
-          <div className="bg-surface border border-border rounded-lg p-5 space-y-3 animate-enter">
+          <div className="panel p-5 space-y-3 animate-enter">
             <p className="text-xs text-muted-foreground">
               One per line: <span className="font-mono">name, amount, category</span>. Defaults to monthly + fixed.
             </p>
             <textarea value={bulkText} onChange={(e) => setBulkText(e.target.value)} rows={6}
               placeholder="Rent, 1200, housing_rent&#10;Spotify, 11, subscriptions&#10;Groceries, 400, groceries"
               className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
-            <button onClick={addBulk} className="w-full bg-accent text-accent-foreground rounded-lg py-2.5 text-sm font-bold">Add all</button>
+            <button onClick={addBulk} className="w-full btn-accent py-2.5 text-sm font-bold">Add all</button>
           </div>
         ) : (
-          <form onSubmit={addOne} className="bg-surface border border-border rounded-lg p-5 space-y-3 animate-enter">
+          <form onSubmit={addOne} className="panel p-5 space-y-3 animate-enter">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name (e.g. Rent)"
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" step="0.01" placeholder="Amount"
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent">
+                className="field">
                 {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
               </select>
               <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent">
+                className="field">
                 {FREQUENCIES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
               </select>
               <input value={dueDay} onChange={(e) => setDueDay(e.target.value)} type="number" min="1" max="31" placeholder="Due day of month (optional)"
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <div className="flex items-center gap-2">
                 <button type="button" onClick={() => setNotify(!notify)}
                   className={`flex-1 py-2.5 rounded-lg border text-xs font-medium transition flex items-center justify-center gap-1.5 ${notify ? "bg-accent/10 border-accent/40 text-accent" : "bg-background border-border text-muted-foreground"}`}>
@@ -232,7 +232,7 @@ function ExpensesPage() {
                 className={`flex-1 py-2 rounded-lg border text-xs font-medium transition ${isFixed ? "bg-foreground text-background border-foreground" : "bg-background border-border text-muted-foreground"}`}>
                 {isFixed ? "Fixed" : "Variable"}
               </button>
-              <button type="submit" className="flex-1 bg-accent text-accent-foreground rounded-lg py-2 text-sm font-bold flex items-center justify-center gap-2">
+              <button type="submit" className="flex-1 btn-accent py-2 text-sm font-bold flex items-center justify-center gap-2">
                 <Plus className="size-3.5" /> Add
               </button>
             </div>

@@ -152,7 +152,7 @@ function GoalDetailPage() {
         {/* Overview */}
         <section className="animate-enter space-y-4">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-3xl md:text-4xl font-black tracking-tighter italic">{goal.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">{goal.name}</h1>
             <span className={`text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded ${
               goal.progress_mode === "auto" ? "bg-accent/20 text-accent" : "bg-muted text-muted-foreground"
             }`}>{goal.progress_mode}</span>
@@ -160,7 +160,7 @@ function GoalDetailPage() {
               <span className="text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded bg-accent text-accent-foreground">Completed</span>
             )}
           </div>
-          <div className="bg-surface border border-border rounded-lg p-5 space-y-3">
+          <div className="panel p-5 space-y-3">
             <div className="flex items-baseline justify-between">
               <span className="text-2xl font-black font-mono">{formatCurrency(goal.current_amount, currency)}</span>
               <span className="font-mono text-sm text-muted-foreground">/ {formatCurrency(goal.target_amount, currency)}</span>
@@ -192,7 +192,7 @@ function GoalDetailPage() {
         {/* Add contribution */}
         <section className="space-y-3 animate-enter [animation-delay:100ms]">
           <h2 className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Log a contribution</h2>
-          <form onSubmit={addContribution} className="bg-surface border border-border rounded-lg p-4 space-y-3">
+          <form onSubmit={addContribution} className="panel p-4 space-y-3">
             <div className="grid grid-cols-2 gap-2">
               <button type="button" onClick={() => setKind("deposit")}
                 className={`py-2 rounded-lg border text-xs font-bold flex items-center justify-center gap-2 ${kind === "deposit" ? "border-accent bg-accent/10 text-accent" : "border-border text-muted-foreground"}`}>
@@ -205,13 +205,13 @@ function GoalDetailPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <input type="number" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Amount"
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
               <input type="date" value={when} onChange={(e) => setWhen(e.target.value)}
-                className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+                className="field" />
             </div>
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note (optional)"
-              className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
-            <button type="submit" className="w-full bg-accent text-accent-foreground rounded-lg py-2.5 text-sm font-bold flex items-center justify-center gap-2">
+              className="field" />
+            <button type="submit" className="w-full btn-accent py-2.5 text-sm font-bold flex items-center justify-center gap-2">
               <Plus className="size-3.5" /> Log entry
             </button>
           </form>

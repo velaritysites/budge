@@ -212,16 +212,16 @@ function GoalsPage() {
 
       <div className="p-6 md:p-8 max-w-3xl mx-auto w-full space-y-8">
         <div className="animate-enter">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter italic">What are you saving for?</h1>
+          <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">What are you saving for?</h1>
           <p className="text-xs text-muted-foreground font-mono mt-2">
             Monthly disposable: <span className="text-accent">{formatCurrency(Math.max(0, disposable), currency)}</span> ·
             Auto mode: <span className="text-foreground uppercase">{allocMode}</span>
           </p>
         </div>
 
-        <form onSubmit={addGoal} className="bg-surface border border-border rounded-lg p-5 space-y-3 animate-enter [animation-delay:100ms]">
+        <form onSubmit={addGoal} className="panel p-5 space-y-3 animate-enter [animation-delay:100ms]">
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Goal name (e.g. Emergency fund)"
-            className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+            className="field" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <LabeledInput label="Target amount" value={target} setValue={setTarget} type="number" />
             <LabeledInput label="Already saved" value={initial} setValue={setInitial} type="number" placeholder="0" />
@@ -252,7 +252,7 @@ function GoalsPage() {
             )}
           </div>
 
-          <button type="submit" className="w-full bg-accent text-accent-foreground rounded-lg py-2.5 text-sm font-bold flex items-center justify-center gap-2">
+          <button type="submit" className="w-full btn-accent py-2.5 text-sm font-bold flex items-center justify-center gap-2">
             <Plus className="size-3.5" /> Add goal
           </button>
         </form>
@@ -298,7 +298,7 @@ function GoalCard({ g, currency, autoAlloc, period, onApply, onDelete, onQuickAd
   const pct = Math.min(100, (g.current_amount / Math.max(1, g.target_amount)) * 100);
   const appliedThisMonth = g.last_auto_period === period;
   return (
-    <div className={`bg-surface border border-border rounded-lg p-5 group animate-enter ${completed ? "opacity-70" : ""}`}>
+    <div className={`panel p-5 group animate-enter ${completed ? "opacity-70" : ""}`}>
       <div className="flex items-start justify-between gap-3">
         <Link to="/goals/$goalId" params={{ goalId: g.id }} className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -402,7 +402,7 @@ function LabeledInput({ label, value, setValue, type, placeholder }: {
     <label className="block space-y-1">
       <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">{label}</span>
       <input value={value} onChange={(e) => setValue(e.target.value)} type={type} step="0.01" placeholder={placeholder}
-        className="w-full bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
+        className="field" />
     </label>
   );
 }
