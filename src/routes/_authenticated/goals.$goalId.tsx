@@ -152,7 +152,7 @@ function GoalDetailPage() {
         {/* Overview */}
         <section className="animate-enter space-y-4">
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-3xl md:text-4xl font-black tracking-tighter italic">{goal.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">{goal.name}</h1>
             <span className={`text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded ${
               goal.progress_mode === "auto" ? "bg-accent/20 text-accent" : "bg-muted text-muted-foreground"
             }`}>{goal.progress_mode}</span>
@@ -211,7 +211,7 @@ function GoalDetailPage() {
             </div>
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Note (optional)"
               className="field" />
-            <button type="submit" className="w-full bg-accent text-accent-foreground rounded-lg py-2.5 text-sm font-bold flex items-center justify-center gap-2">
+            <button type="submit" className="w-full btn-accent py-2.5 text-sm font-bold flex items-center justify-center gap-2">
               <Plus className="size-3.5" /> Log entry
             </button>
           </form>

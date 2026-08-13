@@ -105,7 +105,7 @@ function StatsPage() {
       <div className="p-6 md:p-8 space-y-10 max-w-6xl mx-auto w-full">
         {snapshots.length === 0 ? (
           <div className="text-center py-16">
-            <h1 className="text-3xl font-black tracking-tighter italic mb-2">No history yet.</h1>
+            <h1 className="text-3xl font-display font-extrabold tracking-tight mb-2">No history yet.</h1>
             <p className="text-sm text-muted-foreground">Add income and expenses to start building your monthly snapshots.</p>
           </div>
         ) : (
@@ -113,7 +113,7 @@ function StatsPage() {
             {/* Snapshot picker */}
             <section className="animate-enter space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <h2 className="text-3xl md:text-4xl font-black tracking-tighter italic">Monthly snapshot.</h2>
+                <h2 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">Monthly snapshot.</h2>
                 <select
                   value={active?.month ?? ""}
                   onChange={(e) => setSelectedMonth(e.target.value)}

@@ -176,7 +176,7 @@ function ExpensesPage() {
 
       <div className="p-6 md:p-8 max-w-4xl mx-auto w-full space-y-8">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter italic">Where the money goes.</h1>
+          <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">Where the money goes.</h1>
           <button onClick={() => setBulkMode(!bulkMode)}
             className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground">
             {bulkMode ? "← Single" : "Bulk add"}
@@ -191,7 +191,7 @@ function ExpensesPage() {
             <textarea value={bulkText} onChange={(e) => setBulkText(e.target.value)} rows={6}
               placeholder="Rent, 1200, housing_rent&#10;Spotify, 11, subscriptions&#10;Groceries, 400, groceries"
               className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
-            <button onClick={addBulk} className="w-full bg-accent text-accent-foreground rounded-lg py-2.5 text-sm font-bold">Add all</button>
+            <button onClick={addBulk} className="w-full btn-accent py-2.5 text-sm font-bold">Add all</button>
           </div>
         ) : (
           <form onSubmit={addOne} className="panel p-5 space-y-3 animate-enter">
@@ -232,7 +232,7 @@ function ExpensesPage() {
                 className={`flex-1 py-2 rounded-lg border text-xs font-medium transition ${isFixed ? "bg-foreground text-background border-foreground" : "bg-background border-border text-muted-foreground"}`}>
                 {isFixed ? "Fixed" : "Variable"}
               </button>
-              <button type="submit" className="flex-1 bg-accent text-accent-foreground rounded-lg py-2 text-sm font-bold flex items-center justify-center gap-2">
+              <button type="submit" className="flex-1 btn-accent py-2 text-sm font-bold flex items-center justify-center gap-2">
                 <Plus className="size-3.5" /> Add
               </button>
             </div>

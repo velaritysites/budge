@@ -212,7 +212,7 @@ function GoalsPage() {
 
       <div className="p-6 md:p-8 max-w-3xl mx-auto w-full space-y-8">
         <div className="animate-enter">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter italic">What are you saving for?</h1>
+          <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">What are you saving for?</h1>
           <p className="text-xs text-muted-foreground font-mono mt-2">
             Monthly disposable: <span className="text-accent">{formatCurrency(Math.max(0, disposable), currency)}</span> ·
             Auto mode: <span className="text-foreground uppercase">{allocMode}</span>
@@ -252,7 +252,7 @@ function GoalsPage() {
             )}
           </div>
 
-          <button type="submit" className="w-full bg-accent text-accent-foreground rounded-lg py-2.5 text-sm font-bold flex items-center justify-center gap-2">
+          <button type="submit" className="w-full btn-accent py-2.5 text-sm font-bold flex items-center justify-center gap-2">
             <Plus className="size-3.5" /> Add goal
           </button>
         </form>

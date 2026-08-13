@@ -393,7 +393,7 @@ function PlannerPage() {
             <div className="flex items-center gap-2">
               <Pencil className="size-3 text-muted-foreground shrink-0" />
               <input value={planName} onChange={(e) => setPlanName(e.target.value)}
-                className="flex-1 bg-transparent border-none text-3xl md:text-4xl font-black tracking-tighter italic focus:outline-none" />
+                className="flex-1 bg-transparent border-none text-3xl md:text-4xl font-display font-extrabold tracking-tight focus:outline-none" />
             </div>
             <p className="text-muted-foreground text-sm max-w-md leading-relaxed">
               Sketch the life you want across one or more phases — different lifestyles, timelines, or "what-ifs". We'll tell you what your paycheck needs to be.
@@ -489,7 +489,7 @@ function PlannerPage() {
                 <option value="yearly">Yearly</option>
               </select>
             </div>
-            <button type="submit" className="w-full bg-accent text-accent-foreground rounded-lg py-2 text-sm font-bold flex items-center justify-center gap-2">
+            <button type="submit" className="w-full btn-accent py-2 text-sm font-bold flex items-center justify-center gap-2">
               <Plus className="size-3.5" /> Add
             </button>
           </form>
@@ -522,7 +522,7 @@ function PlannerPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button onClick={saveEdit}
-                      className="bg-accent text-accent-foreground rounded-lg px-3 py-1.5 text-xs font-bold flex items-center gap-1.5">
+                      className="btn-accent px-3 py-1.5 text-xs font-bold flex items-center gap-1.5">
                       <Check className="size-3" /> Save
                     </button>
                     <button onClick={() => setEditingId(null)}
@@ -650,7 +650,7 @@ function PlannerPage() {
 
             <div className="pt-3 border-t border-border grid grid-cols-2 gap-2">
               <button onClick={() => savePlan(false)}
-                className="bg-accent text-accent-foreground rounded-lg py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:opacity-90">
+                className="btn-accent py-2 text-xs font-bold flex items-center justify-center gap-1.5 hover:opacity-90">
                 <Save className="size-3" /> {currentPlanId ? "Update" : "Save"}
               </button>
               <button onClick={() => savePlan(true)}

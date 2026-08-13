@@ -76,7 +76,7 @@ function OnboardingPage() {
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter italic">{steps[step].title}</h1>
+          <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">{steps[step].title}</h1>
           <p className="text-muted-foreground text-sm">{steps[step].subtitle}</p>
         </div>
 
@@ -146,12 +146,12 @@ function OnboardingPage() {
           )}
           {step < 2 ? (
             <button onClick={() => setStep(step + 1)}
-              className="flex-1 bg-accent text-accent-foreground rounded-lg py-3 text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90">
+              className="flex-1 btn-accent py-3 text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90">
               Continue <ArrowRight className="size-4" />
             </button>
           ) : (
             <button onClick={finish} disabled={busy}
-              className="flex-1 bg-accent text-accent-foreground rounded-lg py-3 text-sm font-bold disabled:opacity-50">
+              className="flex-1 btn-accent py-3 text-sm font-bold disabled:opacity-50">
               {busy ? "Saving…" : "Take me in"}
             </button>
           )}

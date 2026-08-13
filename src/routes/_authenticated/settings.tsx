@@ -147,7 +147,7 @@ function SettingsPage() {
       </header>
 
       <form onSubmit={save} className="p-6 md:p-8 max-w-2xl mx-auto w-full space-y-8">
-        <h1 className="text-3xl md:text-4xl font-black tracking-tighter italic">Your setup.</h1>
+        <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">Your setup.</h1>
 
         <Section title="Profile">
           <Field label="Display name">
@@ -315,7 +315,7 @@ function SettingsPage() {
           </Field>
         </Section>
 
-        <button type="submit" disabled={update.isPending} className="w-full bg-accent text-accent-foreground rounded-lg py-3 text-sm font-bold disabled:opacity-50">
+        <button type="submit" disabled={update.isPending} className="w-full btn-accent py-3 text-sm font-bold disabled:opacity-50">
           {update.isPending ? "Saving…" : "Save changes"}
         </button>
       </form>

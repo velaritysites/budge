@@ -107,7 +107,7 @@ function CheckerPage() {
 
       <div className="p-6 md:p-8 max-w-3xl mx-auto w-full space-y-10">
         <section className="space-y-2 animate-enter">
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter italic">Thinking it through.</h1>
+          <h1 className="text-4xl md:text-5xl font-display font-extrabold tracking-tight">Thinking it through.</h1>
           <p className="text-muted-foreground text-sm max-w-md leading-relaxed">
             Give us the item and amount. We'll do the math against your real numbers and tell you straight.
           </p>
@@ -133,7 +133,7 @@ function CheckerPage() {
             </div>
           </div>
           <button type="submit" disabled={submitting}
-            className="w-full bg-accent text-accent-foreground rounded-lg py-3 text-sm font-bold hover:opacity-90 transition disabled:opacity-50">
+            className="w-full btn-accent py-3 text-sm font-bold hover:opacity-90 transition disabled:opacity-50">
             Run the check
           </button>
         </form>
@@ -202,7 +202,7 @@ function CheckerPage() {
                 <option value="yearly">Yearly</option>
               </select>
             </div>
-            <button onClick={addToExpenses} className="w-full bg-accent text-accent-foreground rounded-lg py-2.5 text-sm font-bold">
+            <button onClick={addToExpenses} className="w-full btn-accent py-2.5 text-sm font-bold">
               Add expense
             </button>
           </div>

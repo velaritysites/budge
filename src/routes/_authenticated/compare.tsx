@@ -135,7 +135,7 @@ function ComparePage() {
 
       <div className="p-6 md:p-8 max-w-6xl mx-auto w-full space-y-8">
         <section className="space-y-2 animate-enter">
-          <h1 className="text-3xl md:text-4xl font-black tracking-tighter italic">Side by side</h1>
+          <h1 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">Side by side</h1>
           <p className="text-muted-foreground text-sm max-w-lg leading-relaxed">
             Pick up to four saved plans and see exactly what each one asks of your paycheck — no guessing which life is the affordable one.
           </p>
