@@ -295,12 +295,13 @@ function MiniMetric({ label, value, accent = false }: { label: string; value: st
 function Stat({ label, value, tone = "default", icon }: { label: string; value: string; tone?: "default" | "caution" | "alert"; icon?: React.ReactNode }) {
   const color = tone === "alert" ? "text-alert" : tone === "caution" ? "text-caution" : "text-foreground";
   return (
-    <div className="panel panel-hover p-5">
-      <div className="flex items-center justify-between">
-        <span className="label-xs">{label}</span>
-        <span className="text-muted-foreground/70">{icon}</span>
+    <div className="tile p-6">
+      <div className="flex items-start justify-between">
+        <span className="icon-chip">{icon}</span>
       </div>
-      <div className={`numeric font-display mt-3 text-2xl font-bold tracking-tight ${color}`}>{value}</div>
+      <p className="mt-5 text-[13px] text-muted-foreground">{label}</p>
+      <div className={`numeric font-display mt-1 text-2xl font-bold tracking-tight ${color}`}>{value}</div>
     </div>
   );
 }
+
