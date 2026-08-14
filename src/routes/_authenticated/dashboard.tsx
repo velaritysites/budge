@@ -104,19 +104,33 @@ function Dashboard() {
 
       <div className="grid grid-cols-1 gap-5 p-5 md:p-8 xl:grid-cols-12">
         {/* Hero */}
-        <section className="animate-enter panel-raised relative overflow-hidden p-7 md:p-9 xl:col-span-8">
+        <section className="animate-enter glow-frame panel-raised relative overflow-hidden p-7 md:p-10 xl:col-span-8">
           <div className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-accent/10 blur-3xl" />
-          <div className="relative flex flex-wrap items-start justify-between gap-4">
+          <div className="relative flex flex-wrap items-start justify-between gap-8">
             <div>
               <span className="label-xs">Available this month</span>
-              <h1 className="numeric font-display mt-3 text-[clamp(2.6rem,7vw,5rem)] font-extrabold leading-[0.92] tracking-[-0.045em]">
+              <h1 className="numeric font-display mt-3 text-[clamp(2.6rem,7vw,5rem)] font-extrabold leading-[0.92] tracking-[-0.05em]">
                 {formatCurrency(animatedDisposable, currency)}
               </h1>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <span className={`rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] ${levelStyles[level]}`}>
+                  {HEALTH_LABEL[level]}
+                </span>
+                <span className="text-[11px] text-muted-foreground/70">Live snapshot · {monthLabel}</span>
+              </div>
             </div>
-            <span className={`rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] ${levelStyles[level]}`}>
-              {HEALTH_LABEL[level]}
-            </span>
+            <div className="flex gap-6">
+              <div className="border-l border-hairline pl-4">
+                <p className="label-xs">Burn rate</p>
+                <p className="numeric font-display mt-1.5 text-lg font-bold">{formatPercent(totals.burnRate, 0)}</p>
+              </div>
+              <div className="border-l border-hairline pl-4">
+                <p className="label-xs">Savings rate</p>
+                <p className="numeric font-display mt-1.5 text-lg font-bold text-accent">{formatPercent(totals.savingsRate)}</p>
+              </div>
+            </div>
           </div>
+
 
           <p className="relative mt-5 max-w-md text-sm leading-relaxed text-muted-foreground">
             {totals.netIncome === 0
