@@ -180,12 +180,12 @@ function Dashboard() {
 
         {/* Stats row */}
         <div className="animate-enter grid grid-cols-1 gap-5 [animation-delay:140ms] md:grid-cols-3 xl:col-span-8">
-          <Stat label="Net income" value={formatCurrency(totals.netIncome, currency)} icon={<Wallet className="size-3.5" />} />
-          <Stat label="Total expenses" value={formatCurrency(totals.totalExpenses, currency)} icon={<TrendingDown className="size-3.5" />} />
+          <Stat label="Net income" value={formatCurrency(totals.netIncome, currency)} icon={<Wallet className="size-5" />} />
+          <Stat label="Total expenses" value={formatCurrency(totals.totalExpenses, currency)} icon={<TrendingDown className="size-5" />} />
           <Stat
             label="Monthly burn"
             value={formatPercent(totals.burnRate, 0)}
-            icon={<TrendingUp className="size-3.5" />}
+            icon={<TrendingUp className="size-5" />}
             tone={totals.burnRate > 80 ? "alert" : totals.burnRate > 60 ? "caution" : "default"}
           />
         </div>
@@ -230,9 +230,9 @@ function Dashboard() {
         </form>
 
         {/* Distribution */}
-        <section className="animate-enter panel p-6 [animation-delay:260ms] xl:col-span-8">
+        <section className="animate-enter panel p-8 [animation-delay:260ms] xl:col-span-8">
           <div className="mb-5 flex items-center justify-between">
-            <h3 className="label-xs">Spending distribution</h3>
+            <h3 className="font-display text-lg font-bold tracking-tight text-foreground">Spending distribution</h3>
             <span className="numeric font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
               {cats.length} {cats.length === 1 ? "category" : "categories"}
             </span>
