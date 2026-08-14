@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } fro
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon, Calculator, GitCompare } from "lucide-react";
+import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon, Calculator, GitCompare, Plus } from "lucide-react";
 import logo from "@/assets/budge-logo.png";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -122,13 +122,12 @@ function AuthLayout() {
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
                     activeOptions={{ exact: false }}
-                    className="group relative flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium text-muted-foreground
-                      transition-colors duration-200 hover:text-foreground hover:bg-surface-2
+                    className="group relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-[13px] font-medium text-muted-foreground
+                      transition-all duration-200 hover:text-foreground hover:bg-surface-2/70
                       data-[status=active]:text-foreground data-[status=active]:bg-surface-2
-                      data-[status=active]:shadow-[inset_0_1px_0_hsl(0_0%_100%/0.05)]"
+                      data-[status=active]:border data-[status=active]:border-border"
                   >
-                    <span className="absolute left-0 top-1/2 h-0 w-[2px] -translate-y-1/2 rounded-full bg-accent transition-all duration-300 group-data-[status=active]:h-4" />
-                    <Icon className="size-[15px] opacity-70 transition-opacity group-hover:opacity-100 group-data-[status=active]:text-accent group-data-[status=active]:opacity-100" />
+                    <Icon className="size-[17px] opacity-40 transition-opacity group-hover:opacity-70 group-data-[status=active]:text-accent group-data-[status=active]:opacity-100" />
                     {item.label}
                   </Link>
                 );
@@ -136,6 +135,12 @@ function AuthLayout() {
             </div>
           ))}
         </div>
+
+        <Link to="/expenses" onClick={() => setMobileOpen(false)} className="btn-cta">
+          <Plus className="size-4" strokeWidth={3} />
+          New expense
+        </Link>
+
 
         <div className="mt-auto">
           <Link

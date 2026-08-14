@@ -7,9 +7,11 @@ import budgeLogo from "@/assets/budge-logo.png";
 
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   head: () => ({ meta: [{ title: "Sign in — Budge" }] }),
   component: AuthPage,
 });
+
 
 function AuthPage() {
   const navigate = useNavigate();
