@@ -333,3 +333,62 @@
 @utility live-dot {
   animation: pulse-dot 2.4s ease-in-out infinite;
 }
+
+/* Obsidian elevation: gradient halo frame */
+@utility glow-frame {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      100deg,
+      color-mix(in oklab, var(--accent) 30%, transparent),
+      transparent 58%
+    );
+    filter: blur(16px);
+    opacity: 0.3;
+    z-index: -1;
+    transition: opacity 900ms var(--ease-out-expo);
+  }
+  &:hover::before { opacity: 0.5; }
+}
+@utility tile {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  transition: border-color 260ms var(--ease-out-expo), transform 260ms var(--ease-out-expo), box-shadow 260ms var(--ease-out-expo);
+  &:hover {
+    border-color: color-mix(in oklab, var(--accent) 24%, var(--border));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-panel);
+  }
+}
+@utility icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.7rem;
+  padding: 0.5rem;
+  background: color-mix(in oklab, var(--accent) 9%, transparent);
+  color: var(--accent);
+}
+@utility btn-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-weight: 700;
+  font-size: 0.875rem;
+  box-shadow: 0 0 24px -4px color-mix(in oklab, var(--accent) 30%, transparent);
+  transition: box-shadow 260ms var(--ease-out-expo), transform 160ms var(--ease-spring);
+  &:hover { box-shadow: 0 0 34px -2px color-mix(in oklab, var(--accent) 45%, transparent); }
+  &:active { transform: scale(0.985); }
+}
