@@ -48,6 +48,14 @@ function Dashboard() {
   );
   const animatedDisposable = useCountUp(totals.disposable, 900);
 
+  function prefill(name: string, amount: string, category: ExpenseCategory) {
+    setQName(name);
+    setQAmount(amount);
+    setQCategory(category);
+    setQFrequency("monthly");
+  }
+
+
   async function quickAdd(e: React.FormEvent) {
     e.preventDefault();
     if (!qName || !qAmount || !profile) return;
