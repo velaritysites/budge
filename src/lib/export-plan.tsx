@@ -42,12 +42,12 @@ export function PlanExportSheet({
 
   // Explicit hex values (not tokens) so html2canvas renders identical colours
   // regardless of the user's active theme at export time.
-  const bg = "#0A0D12";
-  const surface = "#121620";
-  const border = "rgba(235,238,245,0.12)";
-  const fg = "#E9ECF3";
-  const muted = "#8A93A6";
-  const accent = "#7BC79A";
+  const bg = "#0A0A1A";
+  const surface = "#141432";
+  const border = "rgba(200,205,255,0.14)";
+  const fg = "#ECEDFA";
+  const muted = "#9BA0C6";
+  const accent = "#6C63F5";
 
   return (
     <div
@@ -57,7 +57,7 @@ export function PlanExportSheet({
         padding: 48,
         background: bg,
         color: fg,
-        fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+        fontFamily: "Cabin, ui-sans-serif, system-ui, sans-serif",
         WebkitFontSmoothing: "antialiased",
       }}
     >
@@ -174,7 +174,7 @@ export function PlanExportSheet({
 
 async function snapshot(node: HTMLElement): Promise<HTMLCanvasElement> {
   return html2canvas(node, {
-    backgroundColor: "#0A0D12",
+    backgroundColor: "#0A0A1A",
     scale: 2,
     useCORS: true,
     logging: false,
@@ -226,7 +226,7 @@ export async function exportPlanPdf(node: HTMLElement, planName: string) {
       slice.width = canvas.width;
       slice.height = sliceH;
       const ctx = slice.getContext("2d")!;
-      ctx.fillStyle = "#0A0D12";
+      ctx.fillStyle = "#0A0A1A";
       ctx.fillRect(0, 0, slice.width, slice.height);
       ctx.drawImage(canvas, 0, y, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
       if (!first) {
