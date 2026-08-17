@@ -235,10 +235,25 @@ function Dashboard() {
           </div>
 
           {cats.length === 0 ? (
-            <div className="py-10 text-center text-sm text-muted-foreground">
-              No expenses yet.{" "}
-              <Link to="/expenses" className="text-accent underline-offset-4 hover:underline">Add some →</Link>
-            </div>
+            <EmptyState
+              className="border-0 px-0 py-4"
+              icon={<Sparkles className="size-6" />}
+              title="Nothing tracked yet"
+              description="Add a few recurring costs and Budge starts showing your real monthly position, health and savings rate."
+              steps={[
+                "Set your take-home income in Settings",
+                "Add your fixed costs — rent, transport, insurance",
+                "Run an affordability check before you buy",
+              ]}
+              examples={[
+                { label: "Rent · 8,500 /mo", hint: "Fills the quick-add form", onClick: () => prefill("Rent", "8500", "housing_rent") },
+                { label: "Groceries · 3,200 /mo", onClick: () => prefill("Groceries", "3200", "groceries") },
+                { label: "Car finance · 4,100 /mo", onClick: () => prefill("Car finance", "4100", "vehicle_finance") },
+                { label: "Streaming · 199 /mo", onClick: () => prefill("Streaming", "199", "subscriptions") },
+              ]}
+              action={{ label: "Open expenses", to: "/expenses" }}
+              secondary="Examples fill the quick-add form on the right — edit anything before saving."
+            />
           ) : (
             <>
               <div className="flex h-3.5 w-full gap-1 overflow-hidden rounded-full bg-surface-3 p-0.5">
