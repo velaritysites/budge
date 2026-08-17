@@ -48,95 +48,114 @@
   --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
-/* Default = dark (Obsidian & Mint Glass) */
+/* Default = dark (Midnight Indigo) */
 :root,
 .dark {
-  --radius: 1rem;
-  --background: hsl(210 16% 3%);
-  --foreground: hsl(210 14% 93%);
-  --surface: hsl(210 20% 8%);
-  --surface-2: hsl(202 18% 13%);
-  --surface-3: hsl(202 16% 18%);
-  --card: hsl(210 20% 8%);
-  --card-foreground: hsl(210 14% 93%);
-  --popover: hsl(210 20% 9%);
-  --popover-foreground: hsl(210 14% 93%);
-  --primary: hsl(156 70% 55%);
-  --primary-foreground: hsl(210 30% 3%);
-  --secondary: hsl(202 18% 13%);
-  --secondary-foreground: hsl(210 12% 92%);
-  --muted: hsl(210 20% 10%);
-  --muted-foreground: hsl(210 10% 60%);
-  --accent: hsl(156 70% 55%);
-  --accent-foreground: hsl(210 30% 3%);
-  --caution: hsl(38 88% 64%);
-  --caution-foreground: hsl(210 30% 3%);
-  --alert: hsl(2 78% 62%);
-  --destructive: hsl(2 78% 62%);
-  --destructive-foreground: hsl(210 12% 92%);
-  --border: hsl(0 0% 100% / 0.06);
-  --hairline: hsl(0 0% 100% / 0.045);
-  --input: hsl(0 0% 100% / 0.035);
-  --ring: hsl(156 70% 55%);
+  --radius: 1.15rem;
+  --background: hsl(240 42% 6%);
+  --foreground: hsl(230 30% 94%);
+  --surface: hsl(240 40% 10%);
+  --surface-2: hsl(240 38% 14%);
+  --surface-3: hsl(242 36% 20%);
+  --card: hsl(240 40% 10%);
+  --card-foreground: hsl(230 30% 94%);
+  --popover: hsl(240 42% 9%);
+  --popover-foreground: hsl(230 30% 94%);
+  --primary: hsl(243 75% 63%);
+  --primary-foreground: hsl(240 45% 98%);
+  --secondary: hsl(240 38% 14%);
+  --secondary-foreground: hsl(230 24% 92%);
+  --muted: hsl(240 38% 12%);
+  --muted-foreground: hsl(235 20% 68%);
+  --accent: hsl(243 75% 63%);
+  --accent-foreground: hsl(240 45% 98%);
+  --accent-glow: hsl(258 88% 74%);
+  --positive: hsl(158 66% 50%);
+  --caution: hsl(36 92% 62%);
+  --caution-foreground: hsl(240 45% 8%);
+  --alert: hsl(352 82% 63%);
+  --destructive: hsl(352 82% 63%);
+  --destructive-foreground: hsl(230 24% 96%);
+  --border: hsl(250 100% 92% / 0.10);
+  --hairline: hsl(250 100% 92% / 0.07);
+  --input: hsl(250 100% 92% / 0.05);
+  --ring: hsl(243 75% 63%);
 
   --panel-bg: linear-gradient(
-    165deg,
-    color-mix(in oklab, var(--surface-2) 78%, transparent),
-    color-mix(in oklab, var(--surface) 92%, transparent) 72%
+    162deg,
+    color-mix(in oklab, var(--surface-2) 82%, transparent),
+    color-mix(in oklab, var(--surface) 94%, transparent) 70%
   );
-  --panel-sheen: linear-gradient(180deg, hsl(0 0% 100% / 0.05), hsl(0 0% 100% / 0) 45%);
-  --shadow-panel: 0 1px 0 0 hsl(0 0% 100% / 0.045) inset, 0 24px 48px -32px hsl(210 60% 1% / 0.95);
-  --shadow-raised: 0 1px 0 0 hsl(0 0% 100% / 0.07) inset, 0 40px 80px -40px hsl(210 60% 1% / 1);
-  --glow-accent: 0 0 0 1px color-mix(in oklab, var(--accent) 20%, transparent),
-    0 20px 60px -28px color-mix(in oklab, var(--accent) 42%, transparent);
+  --panel-sheen: linear-gradient(180deg, hsl(250 100% 96% / 0.07), hsl(0 0% 100% / 0) 48%);
+  --shadow-panel: 0 1px 0 0 hsl(250 100% 96% / 0.06) inset, 0 24px 52px -34px hsl(245 80% 2% / 0.95);
+  --shadow-raised: 0 1px 0 0 hsl(250 100% 96% / 0.09) inset, 0 44px 90px -44px hsl(245 80% 2% / 1);
+  --glow-accent: 0 0 0 1px color-mix(in oklab, var(--accent) 28%, transparent),
+    0 24px 70px -30px color-mix(in oklab, var(--accent) 62%, transparent);
   --aura: radial-gradient(
-    1100px 500px at 8% -12%,
-    color-mix(in oklab, var(--accent) 9%, transparent),
-    transparent 60%
-  );
+      1200px 560px at 4% -14%,
+      color-mix(in oklab, var(--accent) 22%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      900px 480px at 98% 4%,
+      color-mix(in oklab, var(--accent-glow) 14%, transparent),
+      transparent 60%
+    );
+  --skeleton-base: color-mix(in oklab, var(--surface-3) 62%, transparent);
+  --skeleton-sheen: hsl(250 100% 96% / 0.09);
 }
 
 
 .light {
-  --background: hsl(40 24% 98%);
-  --foreground: hsl(220 18% 11%);
-  --surface: hsl(40 22% 96%);
-  --surface-2: hsl(40 20% 94%);
-  --surface-3: hsl(40 16% 91%);
+  --background: hsl(240 40% 98%);
+  --foreground: hsl(243 40% 12%);
+  --surface: hsl(240 40% 96%);
+  --surface-2: hsl(240 34% 94%);
+  --surface-3: hsl(240 28% 90%);
   --card: hsl(0 0% 100%);
-  --card-foreground: hsl(220 18% 11%);
+  --card-foreground: hsl(243 40% 12%);
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(220 18% 11%);
-  --primary: hsl(142 50% 34%);
-  --primary-foreground: hsl(40 20% 98%);
-  --secondary: hsl(40 10% 92%);
-  --secondary-foreground: hsl(220 15% 10%);
-  --muted: hsl(40 10% 94%);
-  --muted-foreground: hsl(220 10% 40%);
-  --accent: hsl(142 50% 34%);
-  --accent-foreground: hsl(40 20% 98%);
-  --caution: hsl(32 80% 42%);
-  --caution-foreground: hsl(40 20% 98%);
-  --alert: hsl(0 70% 46%);
-  --destructive: hsl(0 70% 46%);
-  --destructive-foreground: hsl(40 20% 98%);
-  --border: hsl(220 15% 10% / 0.1);
-  --hairline: hsl(220 15% 10% / 0.06);
-  --input: hsl(220 15% 10% / 0.05);
-  --ring: hsl(142 50% 34%);
+  --popover-foreground: hsl(243 40% 12%);
+  --primary: hsl(243 68% 55%);
+  --primary-foreground: hsl(240 40% 99%);
+  --secondary: hsl(240 30% 93%);
+  --secondary-foreground: hsl(243 40% 12%);
+  --muted: hsl(240 30% 95%);
+  --muted-foreground: hsl(240 14% 42%);
+  --accent: hsl(243 68% 55%);
+  --accent-foreground: hsl(240 40% 99%);
+  --accent-glow: hsl(258 78% 64%);
+  --positive: hsl(158 62% 34%);
+  --caution: hsl(30 84% 42%);
+  --caution-foreground: hsl(240 40% 99%);
+  --alert: hsl(352 70% 46%);
+  --destructive: hsl(352 70% 46%);
+  --destructive-foreground: hsl(240 40% 99%);
+  --border: hsl(243 40% 12% / 0.1);
+  --hairline: hsl(243 40% 12% / 0.06);
+  --input: hsl(243 40% 12% / 0.045);
+  --ring: hsl(243 68% 55%);
 
-  --panel-bg: linear-gradient(160deg, hsl(0 0% 100%), var(--surface) 90%);
-  --panel-sheen: linear-gradient(180deg, hsl(0 0% 100% / 0.7), hsl(0 0% 100% / 0) 40%);
-  --shadow-panel: 0 1px 2px hsl(220 20% 10% / 0.05), 0 12px 30px -22px hsl(220 20% 10% / 0.4);
-  --shadow-raised: 0 2px 4px hsl(220 20% 10% / 0.06), 0 26px 50px -30px hsl(220 20% 10% / 0.45);
+  --panel-bg: linear-gradient(160deg, hsl(0 0% 100%), var(--surface) 92%);
+  --panel-sheen: linear-gradient(180deg, hsl(0 0% 100% / 0.75), hsl(0 0% 100% / 0) 42%);
+  --shadow-panel: 0 1px 2px hsl(243 40% 12% / 0.05), 0 14px 32px -24px hsl(243 40% 12% / 0.38);
+  --shadow-raised: 0 2px 4px hsl(243 40% 12% / 0.06), 0 28px 56px -32px hsl(243 40% 12% / 0.42);
   --glow-accent: 0 0 0 1px color-mix(in oklab, var(--accent) 18%, transparent),
-    0 22px 50px -32px color-mix(in oklab, var(--accent) 40%, transparent);
+    0 22px 52px -32px color-mix(in oklab, var(--accent) 42%, transparent);
   --aura: radial-gradient(
-    900px 420px at 12% -8%,
-    color-mix(in oklab, var(--accent) 8%, transparent),
-    transparent 62%
-  );
+      1000px 460px at 8% -10%,
+      color-mix(in oklab, var(--accent) 12%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      800px 400px at 96% 2%,
+      color-mix(in oklab, var(--accent-glow) 9%, transparent),
+      transparent 60%
+    );
+  --skeleton-base: color-mix(in oklab, var(--surface-3) 70%, transparent);
+  --skeleton-sheen: hsl(0 0% 100% / 0.6);
 }
+
 
 @layer base {
   * {
