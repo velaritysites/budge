@@ -67,13 +67,7 @@ function Dashboard() {
     setSaving(false);
   }
 
-  if (!profile) {
-    return (
-      <div className="p-8">
-        <div className="panel shimmer h-40 w-full" />
-      </div>
-    );
-  }
+  if (!profile) return <DashboardSkeleton />;
 
   const level = healthLevel(totals.savingsRate);
   const currency = profile.currency_code;
