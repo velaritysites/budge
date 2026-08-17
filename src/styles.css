@@ -37,10 +37,11 @@
   --color-caution: var(--caution);
   --color-caution-foreground: var(--caution-foreground);
   --color-alert: var(--alert);
-  --color-positive: var(--accent);
+  --color-positive: var(--positive);
+  --color-accent-glow: var(--accent-glow);
 
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Sora", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Cabin", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Cabin", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
