@@ -10,6 +10,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { toast } from "sonner";
+import { DashboardSkeleton, EmptyState } from "@/components/ui/states";
+import { Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
