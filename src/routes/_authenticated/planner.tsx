@@ -199,6 +199,32 @@ function PlannerPage() {
     setName(""); setAmount("");
   }
 
+  function addExample(n: string, amt: number, cat: ExpenseCategory) {
+    if (!activePhase) return;
+    updatePhase(activePhase.id, {
+      items: [...activePhase.items, { id: crypto.randomUUID(), name: n, amount: amt, category: cat, frequency: "monthly" }],
+    });
+  }
+
+  function seedStarterPhase() {
+    if (!activePhase) return;
+    const starter: { n: string; a: number; c: ExpenseCategory }[] = [
+      { n: "Rent", a: 8500, c: "housing_rent" },
+      { n: "Groceries", a: 3200, c: "groceries" },
+      { n: "Transport / fuel", a: 1800, c: "transport_fuel" },
+      { n: "Insurance", a: 950, c: "insurance" },
+      { n: "Subscriptions", a: 400, c: "subscriptions" },
+    ];
+    updatePhase(activePhase.id, {
+      items: [
+        ...activePhase.items,
+        ...starter.map((s) => ({ id: crypto.randomUUID(), name: s.n, amount: s.a, category: s.c, frequency: "monthly" as ExpenseFrequency })),
+      ],
+    });
+  }
+
+
+
   function removeItem(itemId: string) {
     if (!activePhase) return;
     const item = activePhase.items.find((i) => i.id === itemId);
