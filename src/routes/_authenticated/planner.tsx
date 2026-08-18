@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { EmptyState, PlannerSkeleton } from "@/components/ui/states";
 import { useProfile } from "@/hooks/use-profile";
 import { CATEGORY_LABELS, type ExpenseCategory, type ExpenseFrequency, monthlyEquivalent } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
@@ -199,6 +200,32 @@ function PlannerPage() {
     setName(""); setAmount("");
   }
 
+  function addExample(n: string, amt: number, cat: ExpenseCategory) {
+    if (!activePhase) return;
+    updatePhase(activePhase.id, {
+      items: [...activePhase.items, { id: crypto.randomUUID(), name: n, amount: amt, category: cat, frequency: "monthly" }],
+    });
+  }
+
+  function seedStarterPhase() {
+    if (!activePhase) return;
+    const starter: { n: string; a: number; c: ExpenseCategory }[] = [
+      { n: "Rent", a: 8500, c: "housing_rent" },
+      { n: "Groceries", a: 3200, c: "groceries" },
+      { n: "Transport / fuel", a: 1800, c: "transport_fuel" },
+      { n: "Insurance", a: 950, c: "insurance" },
+      { n: "Subscriptions", a: 400, c: "subscriptions" },
+    ];
+    updatePhase(activePhase.id, {
+      items: [
+        ...activePhase.items,
+        ...starter.map((s) => ({ id: crypto.randomUUID(), name: s.n, amount: s.a, category: s.c, frequency: "monthly" as ExpenseFrequency })),
+      ],
+    });
+  }
+
+
+
   function removeItem(itemId: string) {
     if (!activePhase) return;
     const item = activePhase.items.find((i) => i.id === itemId);
@@ -337,8 +364,10 @@ function PlannerPage() {
 
   const activeMonthly = activePhase ? phaseMonthly(activePhase) : 0;
 
+  if (!profile) return <PlannerSkeleton />;
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="page-enter flex flex-col min-h-screen">
       <header className="h-16 border-b border-border flex items-center justify-between px-6 md:px-8 gap-3">
         <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground flex items-center gap-2">
           <Calculator className="size-3.5" /> Salary Planner
@@ -496,9 +525,23 @@ function PlannerPage() {
 
           <div className="space-y-1">
             {!activePhase || activePhase.items.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-6 text-center border border-dashed border-border rounded-lg">
-                Start sketching this phase above.
-              </p>
+              <EmptyState
+                icon={<Calculator className="size-6" />}
+                title="Sketch your ideal month"
+                description="List the life you want to afford, set what you'd like left over, and Budge works backwards to the salary that supports it."
+                steps={[
+                  "Add the expenses this phase should cover",
+                  "Set your target leftover and tax rate",
+                  "Save the plan, then compare or export it",
+                ]}
+                examples={[
+                  { label: "Starter set (5 items)", onClick: seedStarterPhase },
+                  { label: "Rent · 8,500", onClick: () => addExample("Rent", 8500, "housing_rent") },
+                  { label: "Groceries · 3,200", onClick: () => addExample("Groceries", 3200, "groceries") },
+                  { label: "Car finance · 4,100", onClick: () => addExample("Car finance", 4100, "vehicle_finance") },
+                ]}
+                secondary="Everything here is a draft — nothing touches your real expenses until you send it."
+              />
             ) : activePhase.items.map((i) => (
               editingId === i.id ? (
                 <div key={i.id} className="bg-surface border border-accent/40 rounded-lg p-3 space-y-2">
