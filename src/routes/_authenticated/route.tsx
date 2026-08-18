@@ -93,12 +93,13 @@ function AuthLayout() {
         className={`${mobileOpen ? "flex" : "hidden"} md:flex w-full md:w-[264px] shrink-0 flex-col gap-7 p-4 md:p-5
           border-b md:border-b-0 md:border-r border-hairline
           md:sticky md:top-0 md:h-screen
-          bg-[color-mix(in_oklab,var(--surface)_60%,var(--background))]`}
+          bg-[linear-gradient(180deg,color-mix(in_oklab,var(--surface-2)_70%,var(--background)),color-mix(in_oklab,var(--surface)_45%,var(--background)))]
+          backdrop-blur-xl`}
       >
         <Link to="/dashboard" className="hidden md:flex items-center gap-3 px-2 pt-2" onClick={() => setMobileOpen(false)}>
           <span className="relative">
-            <img src={logo} alt="Budge" className="size-9 rounded-lg" />
-            <span className="absolute -inset-1 rounded-xl bg-accent/15 blur-md -z-10" />
+            <img src={logo} alt="Budge" className="size-9 rounded-xl" />
+            <span className="absolute -inset-1.5 rounded-2xl bg-accent/25 blur-lg -z-10" />
           </span>
           <span className="flex flex-col leading-none">
             <span className="font-display text-[15px] font-bold tracking-tight">Budge</span>
@@ -111,7 +112,7 @@ function AuthLayout() {
         <div className="flex flex-col gap-6">
           {NAV_GROUPS.map((group) => (
             <div key={group.label} className="flex flex-col gap-1">
-              <span className="px-3 pb-1.5 text-[9px] font-mono uppercase tracking-[0.2em] text-muted-foreground/70">
+              <span className="px-3 pb-1.5 text-[9px] font-mono uppercase tracking-[0.2em] text-muted-foreground/60">
                 {group.label}
               </span>
               {group.items.map((item) => {
@@ -122,11 +123,13 @@ function AuthLayout() {
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
                     activeOptions={{ exact: false }}
-                    className="group relative flex items-center gap-3 rounded-xl px-4 py-2.5 text-[13px] font-medium text-muted-foreground
-                      transition-all duration-200 hover:text-foreground hover:bg-surface-2/70
-                      data-[status=active]:text-foreground data-[status=active]:bg-surface-2
-                      data-[status=active]:border data-[status=active]:border-border"
+                    className="group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-2.5 text-[13px] font-medium text-muted-foreground
+                      transition-all duration-200 hover:translate-x-[2px] hover:text-foreground hover:bg-surface-2/70
+                      data-[status=active]:text-foreground
+                      data-[status=active]:bg-[linear-gradient(90deg,color-mix(in_oklab,var(--accent)_22%,transparent),transparent)]
+                      data-[status=active]:shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_26%,transparent)]"
                   >
+                    <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-r-full bg-accent transition-all duration-300 group-data-[status=active]:h-5" />
                     <Icon className="size-[17px] opacity-40 transition-opacity group-hover:opacity-70 group-data-[status=active]:text-accent group-data-[status=active]:opacity-100" />
                     {item.label}
                   </Link>
@@ -135,6 +138,7 @@ function AuthLayout() {
             </div>
           ))}
         </div>
+
 
         <Link to="/expenses" onClick={() => setMobileOpen(false)} className="btn-cta">
           <Plus className="size-4" strokeWidth={3} />
