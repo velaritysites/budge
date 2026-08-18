@@ -522,9 +522,23 @@ function PlannerPage() {
 
           <div className="space-y-1">
             {!activePhase || activePhase.items.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-6 text-center border border-dashed border-border rounded-lg">
-                Start sketching this phase above.
-              </p>
+              <EmptyState
+                icon={<Calculator className="size-6" />}
+                title="Sketch your ideal month"
+                description="List the life you want to afford, set what you'd like left over, and Budge works backwards to the salary that supports it."
+                steps={[
+                  "Add the expenses this phase should cover",
+                  "Set your target leftover and tax rate",
+                  "Save the plan, then compare or export it",
+                ]}
+                examples={[
+                  { label: "Starter set (5 items)", onClick: seedStarterPhase },
+                  { label: "Rent · 8,500", onClick: () => addExample("Rent", 8500, "housing_rent") },
+                  { label: "Groceries · 3,200", onClick: () => addExample("Groceries", 3200, "groceries") },
+                  { label: "Car finance · 4,100", onClick: () => addExample("Car finance", 4100, "vehicle_finance") },
+                ]}
+                secondary="Everything here is a draft — nothing touches your real expenses until you send it."
+              />
             ) : activePhase.items.map((i) => (
               editingId === i.id ? (
                 <div key={i.id} className="bg-surface border border-accent/40 rounded-lg p-3 space-y-2">
