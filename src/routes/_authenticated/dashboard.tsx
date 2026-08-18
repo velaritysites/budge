@@ -93,7 +93,7 @@ function Dashboard() {
   const topCat = cats[0];
 
   return (
-    <div className="page-enter surface-mesh flex min-h-screen flex-col">
+    <div className="page-enter flex min-h-screen flex-col">
       {/* Top bar */}
       <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-hairline bg-background/70 px-6 backdrop-blur-xl md:px-8">
         <div className="flex items-center gap-3">

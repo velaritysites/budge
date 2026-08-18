@@ -173,7 +173,9 @@ function AuthLayout() {
       </nav>
 
       <main className="aura min-w-0 flex-1">
-        <Outlet />
+        <div key={location.pathname} className="animate-fade">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

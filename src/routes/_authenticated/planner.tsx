@@ -367,7 +367,7 @@ function PlannerPage() {
   if (!profile) return <PlannerSkeleton />;
 
   return (
-    <div className="page-enter surface-mesh flex flex-col min-h-screen">
+    <div className="page-enter flex flex-col min-h-screen">
       <header className="h-16 border-b border-border flex items-center justify-between px-6 md:px-8 gap-3">
         <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground flex items-center gap-2">
           <Calculator className="size-3.5" /> Salary Planner
