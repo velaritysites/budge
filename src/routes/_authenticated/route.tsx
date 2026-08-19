@@ -90,31 +90,53 @@ function AuthLayout() {
 
       {/* Sidebar */}
       <nav
-        className={`${mobileOpen ? "flex" : "hidden"} md:flex w-full md:w-[264px] shrink-0 flex-col gap-7 p-4 md:p-5
+        data-collapsed={collapsed ? "true" : "false"}
+        className={`${mobileOpen ? "flex" : "hidden"} group/nav relative md:flex w-full ${collapsed ? "md:w-[78px]" : "md:w-[264px]"} shrink-0 flex-col gap-7 p-4 md:p-5
           border-b md:border-b-0 md:border-r border-hairline
           md:sticky md:top-0 md:h-screen
+          transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
           bg-[linear-gradient(180deg,color-mix(in_oklab,var(--surface-2)_70%,var(--background)),color-mix(in_oklab,var(--surface)_45%,var(--background)))]
           backdrop-blur-xl`}
       >
-        <Link to="/dashboard" className="hidden md:flex items-center gap-3 px-2 pt-2" onClick={() => setMobileOpen(false)}>
-          <span className="relative">
+        {/* Collapse toggle (desktop) */}
+        <button
+          onClick={toggleCollapsed}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className="absolute -right-3 top-8 z-30 hidden size-6 place-items-center rounded-full border border-border bg-surface-2 text-muted-foreground shadow-[0_6px_18px_-8px_hsl(240_60%_2%/0.9)] transition-all duration-200 hover:border-accent/40 hover:text-accent md:grid"
+        >
+          {collapsed ? <ChevronRight className="size-3.5" /> : <ChevronLeft className="size-3.5" />}
+        </button>
+
+        <Link
+          to="/dashboard"
+          className={`hidden md:flex items-center gap-3 pt-2 ${collapsed ? "justify-center px-0" : "px-2"}`}
+          onClick={() => setMobileOpen(false)}
+        >
+          <span className="relative shrink-0">
             <img src={logo} alt="Budge" className="size-9 rounded-xl" />
             <span className="absolute -inset-1.5 rounded-2xl bg-accent/25 blur-lg -z-10" />
           </span>
-          <span className="flex flex-col leading-none">
-            <span className="font-display text-[15px] font-bold tracking-tight">Budge</span>
-            <span className="mt-1 text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
-              Calm money
+          {!collapsed && (
+            <span className="flex min-w-0 flex-col leading-none">
+              <span className="font-display text-[15px] font-bold tracking-tight">Budge</span>
+              <span className="mt-1 text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+                Calm money
+              </span>
             </span>
-          </span>
+          )}
         </Link>
 
         <div className="flex flex-col gap-6">
           {NAV_GROUPS.map((group) => (
             <div key={group.label} className="flex flex-col gap-1">
-              <span className="px-3 pb-1.5 text-[9px] font-mono uppercase tracking-[0.2em] text-muted-foreground/60">
-                {group.label}
-              </span>
+              {collapsed ? (
+                <span className="mx-auto mb-1 h-px w-6 bg-[var(--hairline)] md:block hidden" />
+              ) : (
+                <span className="px-3 pb-1.5 text-[9px] font-mono uppercase tracking-[0.2em] text-muted-foreground/60">
+                  {group.label}
+                </span>
+              )}
               {group.items.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -122,16 +144,18 @@ function AuthLayout() {
                     key={item.to}
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
+                    title={collapsed ? item.label : undefined}
                     activeOptions={{ exact: false }}
-                    className="group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-2.5 text-[13px] font-medium text-muted-foreground
-                      transition-all duration-200 hover:translate-x-[2px] hover:text-foreground hover:bg-surface-2/70
+                    className={`group relative flex items-center gap-3 overflow-hidden rounded-xl py-2.5 text-[13px] font-medium text-muted-foreground
+                      ${collapsed ? "md:justify-center md:px-0 px-4" : "px-4"}
+                      transition-all duration-200 hover:text-foreground hover:bg-surface-2/70
                       data-[status=active]:text-foreground
                       data-[status=active]:bg-[linear-gradient(90deg,color-mix(in_oklab,var(--accent)_22%,transparent),transparent)]
-                      data-[status=active]:shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_26%,transparent)]"
+                      data-[status=active]:shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_26%,transparent)]`}
                   >
                     <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-r-full bg-accent transition-all duration-300 group-data-[status=active]:h-5" />
-                    <Icon className="size-[17px] opacity-40 transition-opacity group-hover:opacity-70 group-data-[status=active]:text-accent group-data-[status=active]:opacity-100" />
-                    {item.label}
+                    <Icon className="size-[17px] shrink-0 opacity-40 transition-opacity group-hover:opacity-70 group-data-[status=active]:text-accent group-data-[status=active]:opacity-100" />
+                    <span className={collapsed ? "md:hidden" : ""}>{item.label}</span>
                   </Link>
                 );
               })}
@@ -140,9 +164,14 @@ function AuthLayout() {
         </div>
 
 
-        <Link to="/expenses" onClick={() => setMobileOpen(false)} className="btn-cta">
-          <Plus className="size-4" strokeWidth={3} />
-          New expense
+        <Link
+          to="/expenses"
+          onClick={() => setMobileOpen(false)}
+          title={collapsed ? "New expense" : undefined}
+          className={`btn-cta ${collapsed ? "md:!px-0" : ""}`}
+        >
+          <Plus className="size-4 shrink-0" strokeWidth={3} />
+          <span className={collapsed ? "md:hidden" : ""}>New expense</span>
         </Link>
 
 
@@ -150,17 +179,18 @@ function AuthLayout() {
           <Link
             to="/settings"
             onClick={() => setMobileOpen(false)}
-            className="mb-3 flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground data-[status=active]:bg-surface-2 data-[status=active]:text-foreground"
+            title={collapsed ? "Settings" : undefined}
+            className={`mb-3 flex items-center gap-3 rounded-lg py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground data-[status=active]:bg-surface-2 data-[status=active]:text-foreground ${collapsed ? "md:justify-center md:px-0 px-3" : "px-3"}`}
           >
-            <Settings className="size-[15px] opacity-70" />
-            Settings
+            <Settings className="size-[15px] shrink-0 opacity-70" />
+            <span className={collapsed ? "md:hidden" : ""}>Settings</span>
           </Link>
 
-          <div className="panel flex items-center gap-3 p-3">
+          <div className={`panel flex items-center gap-3 p-3 ${collapsed ? "md:flex-col md:gap-2 md:p-2" : ""}`}>
             <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/12 font-mono text-[10px] font-bold text-accent">
               {initials}
             </div>
-            <div className="flex min-w-0 flex-1 flex-col">
+            <div className={`flex min-w-0 flex-1 flex-col ${collapsed ? "md:hidden" : ""}`}>
               <span className="truncate text-xs font-semibold">{profile?.display_name ?? "You"}</span>
               <span className="truncate font-mono text-[10px] tracking-wider text-muted-foreground">
                 {profile?.currency_code}
@@ -175,6 +205,7 @@ function AuthLayout() {
           </div>
         </div>
       </nav>
+
 
       <main className="aura min-w-0 flex-1">
         <div key={location.pathname} className="animate-fade">
