@@ -57,22 +57,11 @@ export function computeTotals(
   grossIncome: number,
   expenses: Expense[],
 ): Totals {
-  const byCategory: Record<ExpenseCategory, number> = {
-    housing_rent: 0,
-    transport_fuel: 0,
-    vehicle_finance: 0,
-    insurance: 0,
-    medical_insurance: 0,
-    groceries: 0,
-    debt: 0,
-    subscriptions: 0,
-    food: 0,
-    other: 0,
-  };
+  const byCategory = emptyCategoryTotals();
   let total = 0;
   for (const e of expenses) {
     const m = monthlyEquivalent(e);
-    byCategory[e.category] += m;
+    byCategory[normalizeCategory(e.category)] += m;
     total += m;
   }
   const disposable = netIncome - total;
