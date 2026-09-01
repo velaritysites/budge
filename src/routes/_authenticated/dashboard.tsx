@@ -28,6 +28,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { toast } from "sonner";
 import { DashboardSkeleton, EmptyState } from "@/components/ui/states";
+import { CATEGORY_KEYS } from "@/lib/categories";
+import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -43,10 +45,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const CATEGORIES: ExpenseCategory[] = [
-  "housing_rent", "transport_fuel", "vehicle_finance", "insurance",
-  "medical_insurance", "groceries", "debt", "subscriptions", "food", "other",
-];
 
 type Snap = { month: string; disposable_income: number; total_expenses: number; savings_rate: number; net_income: number };
 
@@ -130,6 +128,9 @@ function Dashboard() {
   const cats = (Object.keys(totals.byCategory) as ExpenseCategory[])
     .filter((c) => totals.byCategory[c] > 0)
     .sort((a, b) => totals.byCategory[b] - totals.byCategory[a]);
+  const spendCats = cats.filter((c) => !isPositiveCategory(c));
+  const saveCats = cats.filter((c) => isPositiveCategory(c));
+  const savingTotal = saveCats.reduce((s, c) => s + totals.byCategory[c], 0);
   const now = new Date();
   const monthLabel = now.toLocaleDateString(undefined, { month: "long", year: "numeric" });
   const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 18 ? "Good afternoon" : "Good evening";
@@ -319,7 +320,7 @@ function Dashboard() {
             <input value={qAmount} onChange={(e) => setQAmount(e.target.value)} type="number" step="0.01" placeholder="Amount" className="field numeric" />
             <div className="grid grid-cols-2 gap-2">
               <select value={qCategory} onChange={(e) => setQCategory(e.target.value as ExpenseCategory)} className="field !py-2 !text-xs">
-                {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                <CategoryOptions />
               </select>
               <select value={qFrequency} onChange={(e) => setQFrequency(e.target.value as ExpenseFrequency)} className="field !py-2 !text-xs">
                 <option value="monthly">Monthly</option>
@@ -368,7 +369,7 @@ function Dashboard() {
                 "Run an affordability check before you buy",
               ]}
               examples={[
-                { label: "Rent · 8,500 /mo", hint: "Fills the quick-add form", onClick: () => prefill("Rent", "8500", "housing_rent") },
+                { label: "Rent · 8,500 /mo", hint: "Fills the quick-add form", onClick: () => prefill("Rent", "8500", "housing") },
                 { label: "Groceries · 3,200 /mo", onClick: () => prefill("Groceries", "3200", "groceries") },
                 { label: "Car finance · 4,100 /mo", onClick: () => prefill("Car finance", "4100", "vehicle_finance") },
                 { label: "Streaming · 199 /mo", onClick: () => prefill("Streaming", "199", "subscriptions") },
@@ -377,26 +378,70 @@ function Dashboard() {
               secondary="Examples fill the quick-add form on the right — edit anything before saving."
             />
           ) : (
-            <div className="flex flex-col items-center gap-8 md:flex-row md:items-center">
-              <Donut
-                segments={cats.map((c) => ({ value: totals.byCategory[c], color: CATEGORY_COLORS[c] }))}
-                centerLabel="Committed"
-                centerValue={formatCurrency(totals.totalExpenses, currency)}
-              />
-              <div className="w-full flex-1 divide-y divide-[var(--hairline)]">
-                {cats.slice(0, 6).map((c) => {
-                  const share = (totals.byCategory[c] / totals.totalExpenses) * 100;
-                  return (
-                    <div key={c} className="flex items-center gap-3 py-2.5">
-                      <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: CATEGORY_COLORS[c] }} />
-                      <span className="flex-1 truncate text-[13px] font-medium">{CATEGORY_LABELS[c]}</span>
-                      <span className="numeric w-10 text-right font-mono text-[11px] text-muted-foreground">{share.toFixed(0)}%</span>
-                      <span className="numeric w-28 text-right text-[13px] font-semibold">
-                        {formatCurrency(totals.byCategory[c], currency)}
-                      </span>
+            <div className="space-y-6">
+              <div className="flex flex-col items-center gap-8 md:flex-row md:items-center">
+                <Donut
+                  segments={[...spendCats, ...saveCats].map((c) => ({ value: totals.byCategory[c], color: CATEGORY_COLORS[c] }))}
+                  centerLabel="Committed"
+                  centerValue={formatCurrency(totals.totalExpenses, currency)}
+                />
+                <div className="w-full flex-1 space-y-4">
+                  {/* Distribution bar — spending on the left, saving & growing in green at the right */}
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex h-2.5 flex-1 overflow-hidden rounded-full bg-[var(--surface-3)]">
+                      {spendCats.map((c) => (
+                        <span
+                          key={c}
+                          title={`${CATEGORY_LABELS[c]} · ${formatCurrency(totals.byCategory[c], currency)}`}
+                          style={{ width: `${(totals.byCategory[c] / totals.totalExpenses) * 100}%`, backgroundColor: CATEGORY_COLORS[c] }}
+                        />
+                      ))}
                     </div>
-                  );
-                })}
+                    {saveCats.length > 0 && (
+                      <div
+                        className="flex h-2.5 overflow-hidden rounded-full ring-1 ring-accent/40"
+                        style={{ width: `${Math.max(6, (savingTotal / totals.totalExpenses) * 100)}%` }}
+                      >
+                        {saveCats.map((c) => (
+                          <span
+                            key={c}
+                            title={`${CATEGORY_LABELS[c]} · ${formatCurrency(totals.byCategory[c], currency)}`}
+                            style={{ width: `${(totals.byCategory[c] / savingTotal) * 100}%`, backgroundColor: CATEGORY_COLORS[c] }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {GROUPED_CATEGORIES.filter((g) => g.items.some((i) => cats.includes(i.key as ExpenseCategory))).map((g) => {
+                    const rows = g.items.filter((i) => cats.includes(i.key as ExpenseCategory));
+                    const positive = g.group === "Saving & Growing";
+                    return (
+                      <div
+                        key={g.group}
+                        className={positive ? "rounded-xl border border-accent/25 bg-accent/[0.06] p-3" : ""}
+                      >
+                        <p className={`label-xs mb-1 ${positive ? "text-accent" : ""}`}>{g.group}</p>
+                        <div className="divide-y divide-[var(--hairline)]">
+                          {rows.map((i) => {
+                            const c = i.key as ExpenseCategory;
+                            const share = (totals.byCategory[c] / totals.totalExpenses) * 100;
+                            return (
+                              <div key={c} className="flex items-center gap-3 py-2">
+                                <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: CATEGORY_COLORS[c] }} />
+                                <span className={`flex-1 truncate text-[13px] font-medium ${positive ? "text-accent" : ""}`}>{CATEGORY_LABELS[c]}</span>
+                                <span className="numeric w-10 text-right font-mono text-[11px] text-muted-foreground">{share.toFixed(0)}%</span>
+                                <span className="numeric w-28 text-right text-[13px] font-semibold">
+                                  {formatCurrency(totals.byCategory[c], currency)}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}

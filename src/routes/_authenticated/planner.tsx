@@ -9,6 +9,8 @@ import { formatCurrency } from "@/lib/format";
 import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Send, Clock, Download, Image as ImageIcon, Check, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 import { PlanExportSheet, exportPlanImage, exportPlanPdf, type ExportPlan } from "@/lib/export-plan";
+import { CATEGORY_KEYS } from "@/lib/categories";
+import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/planner")({
   head: () => ({ meta: [{ title: "Salary Planner — Budge" }] }),
@@ -41,10 +43,6 @@ type SavedPlan = {
   updated_at: string;
 };
 
-const CATEGORIES: ExpenseCategory[] = [
-  "housing_rent", "transport_fuel", "vehicle_finance", "insurance",
-  "medical_insurance", "groceries", "debt", "subscriptions", "food", "other",
-];
 
 function makePhase(name = "Phase 1"): Phase {
   return { id: crypto.randomUUID(), name, leftover: 0, items: [], trash: [] };
@@ -65,13 +63,13 @@ function PlannerPage() {
   // form state (scoped to active phase)
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<ExpenseCategory>("housing_rent");
+  const [category, setCategory] = useState<ExpenseCategory>("housing");
   const [frequency, setFrequency] = useState<ExpenseFrequency>("monthly");
 
   // inline item editing
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<{ name: string; amount: string; category: ExpenseCategory; frequency: ExpenseFrequency }>(
-    { name: "", amount: "", category: "housing_rent", frequency: "monthly" },
+    { name: "", amount: "", category: "housing", frequency: "monthly" },
   );
   const [showTrash, setShowTrash] = useState(false);
 
@@ -160,11 +158,7 @@ function PlannerPage() {
 
   // Map planner categories to a valid expenses.category value.
   function mapCat(c: ExpenseCategory): ExpenseCategory {
-    const allowed: ExpenseCategory[] = [
-      "housing_rent","transport_fuel","debt","subscriptions","food",
-      "groceries","vehicle_finance","insurance","medical_insurance","other",
-    ];
-    return allowed.includes(c) ? c : "other";
+    return (CATEGORY_KEYS as string[]).includes(c) ? c : "other";
   }
 
   async function applyPlanToExpenses(plan: SavedPlan) {
@@ -210,9 +204,9 @@ function PlannerPage() {
   function seedStarterPhase() {
     if (!activePhase) return;
     const starter: { n: string; a: number; c: ExpenseCategory }[] = [
-      { n: "Rent", a: 8500, c: "housing_rent" },
+      { n: "Rent", a: 8500, c: "housing" },
       { n: "Groceries", a: 3200, c: "groceries" },
-      { n: "Transport / fuel", a: 1800, c: "transport_fuel" },
+      { n: "Transport / fuel", a: 1800, c: "transport" },
       { n: "Insurance", a: 950, c: "insurance" },
       { n: "Subscriptions", a: 400, c: "subscriptions" },
     ];
@@ -509,7 +503,7 @@ function PlannerPage() {
                 className="field" />
               <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
                 className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none">
-                {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                <CategoryOptions />
               </select>
               <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
                 className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none">
@@ -536,7 +530,7 @@ function PlannerPage() {
                 ]}
                 examples={[
                   { label: "Starter set (5 items)", onClick: seedStarterPhase },
-                  { label: "Rent · 8,500", onClick: () => addExample("Rent", 8500, "housing_rent") },
+                  { label: "Rent · 8,500", onClick: () => addExample("Rent", 8500, "housing") },
                   { label: "Groceries · 3,200", onClick: () => addExample("Groceries", 3200, "groceries") },
                   { label: "Car finance · 4,100", onClick: () => addExample("Car finance", 4100, "vehicle_finance") },
                 ]}
@@ -554,7 +548,7 @@ function PlannerPage() {
                       className="bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
                     <select value={editDraft.category} onChange={(e) => setEditDraft({ ...editDraft, category: e.target.value as ExpenseCategory })}
                       className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">
-                      {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                      <CategoryOptions />
                     </select>
                     <select value={editDraft.frequency} onChange={(e) => setEditDraft({ ...editDraft, frequency: e.target.value as ExpenseFrequency })}
                       className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">

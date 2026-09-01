@@ -8,16 +8,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { toast } from "sonner";
 import { Plus, Trash2, RotateCcw, X, Pencil, Bell, BellOff, Check } from "lucide-react";
+import { CATEGORY_KEYS } from "@/lib/categories";
+import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
   head: () => ({ meta: [{ title: "Expenses — Budge" }] }),
   component: ExpensesPage,
 });
 
-const CATEGORIES: ExpenseCategory[] = [
-  "housing_rent", "transport_fuel", "vehicle_finance", "insurance",
-  "medical_insurance", "groceries", "debt", "subscriptions", "food", "other",
-];
 const FREQUENCIES: { value: ExpenseFrequency; label: string }[] = [
   { value: "monthly", label: "Monthly" },
   { value: "weekly", label: "Weekly" },
@@ -36,7 +34,7 @@ function ExpensesPage() {
   const qc = useQueryClient();
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<ExpenseCategory>("housing_rent");
+  const [category, setCategory] = useState<ExpenseCategory>("housing");
   const [frequency, setFrequency] = useState<ExpenseFrequency>("monthly");
   const [isFixed, setIsFixed] = useState(true);
   const [dueDay, setDueDay] = useState("");
@@ -151,7 +149,7 @@ function ExpensesPage() {
       const [n, amt, cat] = parts;
       const amtNum = parseFloat(amt);
       if (!n || !amtNum) return null;
-      const c = (CATEGORIES as string[]).includes(cat) ? (cat as ExpenseCategory) : "other";
+      const c = (CATEGORY_KEYS as string[]).includes(cat) ? (cat as ExpenseCategory) : "other";
       return { user_id: u.user!.id, name: n, amount: amtNum, category: c, frequency: "monthly" as const, is_fixed: true };
     }).filter(Boolean) as any[];
     if (!rows.length) return toast.error("No valid rows");
@@ -189,7 +187,7 @@ function ExpensesPage() {
               One per line: <span className="font-mono">name, amount, category</span>. Defaults to monthly + fixed.
             </p>
             <textarea value={bulkText} onChange={(e) => setBulkText(e.target.value)} rows={6}
-              placeholder="Rent, 1200, housing_rent&#10;Spotify, 11, subscriptions&#10;Groceries, 400, groceries"
+              placeholder="Rent, 1200, housing&#10;Spotify, 11, subscriptions&#10;Groceries, 400, groceries"
               className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
             <button onClick={addBulk} className="w-full btn-accent py-2.5 text-sm font-bold">Add all</button>
           </div>
@@ -202,7 +200,7 @@ function ExpensesPage() {
                 className="field" />
               <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
                 className="field">
-                {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                <CategoryOptions />
               </select>
               <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
                 className="field">

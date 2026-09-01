@@ -8,16 +8,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { toast } from "sonner";
 import { CheckCircle2, AlertTriangle, XCircle, PlusCircle, X } from "lucide-react";
+import { CATEGORY_KEYS } from "@/lib/categories";
+import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/checker")({
   head: () => ({ meta: [{ title: "Affordability Checker — Budge" }] }),
   component: CheckerPage,
 });
 
-const CATEGORIES: ExpenseCategory[] = [
-  "housing_rent", "transport_fuel", "vehicle_finance", "insurance",
-  "medical_insurance", "groceries", "debt", "subscriptions", "food", "other",
-];
 
 function CheckerPage() {
   const { data: profile } = useProfile();
@@ -50,7 +48,7 @@ function CheckerPage() {
   }, [profile, expenses]);
 
   const debtMonthly = useMemo(
-    () => expenses.filter((e) => e.category === "debt").reduce((s, e) => s + monthlyEquivalent(e), 0),
+    () => expenses.filter((e) => e.category === "debt_repayments").reduce((s, e) => s + monthlyEquivalent(e), 0),
     [expenses],
   );
 
@@ -190,7 +188,7 @@ function CheckerPage() {
               <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Category</label>
               <select value={addCategory} onChange={(e) => setAddCategory(e.target.value as ExpenseCategory)}
                 className="field">
-                {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                <CategoryOptions />
               </select>
             </div>
             <div className="space-y-2">
