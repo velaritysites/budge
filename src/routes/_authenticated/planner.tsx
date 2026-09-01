@@ -42,8 +42,8 @@ type SavedPlan = {
 };
 
 const CATEGORIES: ExpenseCategory[] = [
-  "housing_rent", "transport_fuel", "vehicle_finance", "insurance",
-  "medical_insurance", "groceries", "debt", "subscriptions", "food", "other",
+  "housing", "transport", "vehicle_finance", "insurance",
+  "medical_aid", "groceries", "debt_repayments", "subscriptions", "eating_out", "other",
 ];
 
 function makePhase(name = "Phase 1"): Phase {
@@ -65,13 +65,13 @@ function PlannerPage() {
   // form state (scoped to active phase)
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<ExpenseCategory>("housing_rent");
+  const [category, setCategory] = useState<ExpenseCategory>("housing");
   const [frequency, setFrequency] = useState<ExpenseFrequency>("monthly");
 
   // inline item editing
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<{ name: string; amount: string; category: ExpenseCategory; frequency: ExpenseFrequency }>(
-    { name: "", amount: "", category: "housing_rent", frequency: "monthly" },
+    { name: "", amount: "", category: "housing", frequency: "monthly" },
   );
   const [showTrash, setShowTrash] = useState(false);
 
@@ -161,8 +161,8 @@ function PlannerPage() {
   // Map planner categories to a valid expenses.category value.
   function mapCat(c: ExpenseCategory): ExpenseCategory {
     const allowed: ExpenseCategory[] = [
-      "housing_rent","transport_fuel","debt","subscriptions","food",
-      "groceries","vehicle_finance","insurance","medical_insurance","other",
+      "housing","transport","debt_repayments","subscriptions","eating_out",
+      "groceries","vehicle_finance","insurance","medical_aid","other",
     ];
     return allowed.includes(c) ? c : "other";
   }
@@ -210,9 +210,9 @@ function PlannerPage() {
   function seedStarterPhase() {
     if (!activePhase) return;
     const starter: { n: string; a: number; c: ExpenseCategory }[] = [
-      { n: "Rent", a: 8500, c: "housing_rent" },
+      { n: "Rent", a: 8500, c: "housing" },
       { n: "Groceries", a: 3200, c: "groceries" },
-      { n: "Transport / fuel", a: 1800, c: "transport_fuel" },
+      { n: "Transport / fuel", a: 1800, c: "transport" },
       { n: "Insurance", a: 950, c: "insurance" },
       { n: "Subscriptions", a: 400, c: "subscriptions" },
     ];
@@ -536,7 +536,7 @@ function PlannerPage() {
                 ]}
                 examples={[
                   { label: "Starter set (5 items)", onClick: seedStarterPhase },
-                  { label: "Rent · 8,500", onClick: () => addExample("Rent", 8500, "housing_rent") },
+                  { label: "Rent · 8,500", onClick: () => addExample("Rent", 8500, "housing") },
                   { label: "Groceries · 3,200", onClick: () => addExample("Groceries", 3200, "groceries") },
                   { label: "Car finance · 4,100", onClick: () => addExample("Car finance", 4100, "vehicle_finance") },
                 ]}

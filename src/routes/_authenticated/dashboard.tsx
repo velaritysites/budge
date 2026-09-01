@@ -44,8 +44,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 const CATEGORIES: ExpenseCategory[] = [
-  "housing_rent", "transport_fuel", "vehicle_finance", "insurance",
-  "medical_insurance", "groceries", "debt", "subscriptions", "food", "other",
+  "housing", "transport", "vehicle_finance", "insurance",
+  "medical_aid", "groceries", "debt_repayments", "subscriptions", "eating_out", "other",
 ];
 
 type Snap = { month: string; disposable_income: number; total_expenses: number; savings_rate: number; net_income: number };
@@ -368,7 +368,7 @@ function Dashboard() {
                 "Run an affordability check before you buy",
               ]}
               examples={[
-                { label: "Rent · 8,500 /mo", hint: "Fills the quick-add form", onClick: () => prefill("Rent", "8500", "housing_rent") },
+                { label: "Rent · 8,500 /mo", hint: "Fills the quick-add form", onClick: () => prefill("Rent", "8500", "housing") },
                 { label: "Groceries · 3,200 /mo", onClick: () => prefill("Groceries", "3200", "groceries") },
                 { label: "Car finance · 4,100 /mo", onClick: () => prefill("Car finance", "4100", "vehicle_finance") },
                 { label: "Streaming · 199 /mo", onClick: () => prefill("Streaming", "199", "subscriptions") },

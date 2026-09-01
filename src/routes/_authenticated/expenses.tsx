@@ -15,8 +15,8 @@ export const Route = createFileRoute("/_authenticated/expenses")({
 });
 
 const CATEGORIES: ExpenseCategory[] = [
-  "housing_rent", "transport_fuel", "vehicle_finance", "insurance",
-  "medical_insurance", "groceries", "debt", "subscriptions", "food", "other",
+  "housing", "transport", "vehicle_finance", "insurance",
+  "medical_aid", "groceries", "debt_repayments", "subscriptions", "eating_out", "other",
 ];
 const FREQUENCIES: { value: ExpenseFrequency; label: string }[] = [
   { value: "monthly", label: "Monthly" },
@@ -36,7 +36,7 @@ function ExpensesPage() {
   const qc = useQueryClient();
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState<ExpenseCategory>("housing_rent");
+  const [category, setCategory] = useState<ExpenseCategory>("housing");
   const [frequency, setFrequency] = useState<ExpenseFrequency>("monthly");
   const [isFixed, setIsFixed] = useState(true);
   const [dueDay, setDueDay] = useState("");
@@ -189,7 +189,7 @@ function ExpensesPage() {
               One per line: <span className="font-mono">name, amount, category</span>. Defaults to monthly + fixed.
             </p>
             <textarea value={bulkText} onChange={(e) => setBulkText(e.target.value)} rows={6}
-              placeholder="Rent, 1200, housing_rent&#10;Spotify, 11, subscriptions&#10;Groceries, 400, groceries"
+              placeholder="Rent, 1200, housing&#10;Spotify, 11, subscriptions&#10;Groceries, 400, groceries"
               className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
             <button onClick={addBulk} className="w-full btn-accent py-2.5 text-sm font-bold">Add all</button>
           </div>

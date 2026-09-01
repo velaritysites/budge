@@ -15,8 +15,8 @@ export const Route = createFileRoute("/_authenticated/checker")({
 });
 
 const CATEGORIES: ExpenseCategory[] = [
-  "housing_rent", "transport_fuel", "vehicle_finance", "insurance",
-  "medical_insurance", "groceries", "debt", "subscriptions", "food", "other",
+  "housing", "transport", "vehicle_finance", "insurance",
+  "medical_aid", "groceries", "debt_repayments", "subscriptions", "eating_out", "other",
 ];
 
 function CheckerPage() {
@@ -50,7 +50,7 @@ function CheckerPage() {
   }, [profile, expenses]);
 
   const debtMonthly = useMemo(
-    () => expenses.filter((e) => e.category === "debt").reduce((s, e) => s + monthlyEquivalent(e), 0),
+    () => expenses.filter((e) => e.category === "debt_repayments").reduce((s, e) => s + monthlyEquivalent(e), 0),
     [expenses],
   );
 
