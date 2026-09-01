@@ -158,11 +158,7 @@ function PlannerPage() {
 
   // Map planner categories to a valid expenses.category value.
   function mapCat(c: ExpenseCategory): ExpenseCategory {
-    const allowed: ExpenseCategory[] = [
-      "housing","transport","debt_repayments","subscriptions","eating_out",
-      "groceries","vehicle_finance","insurance","medical_aid","other",
-    ];
-    return allowed.includes(c) ? c : "other";
+    return (CATEGORY_KEYS as string[]).includes(c) ? c : "other";
   }
 
   async function applyPlanToExpenses(plan: SavedPlan) {
