@@ -28,6 +28,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { toast } from "sonner";
 import { DashboardSkeleton, EmptyState } from "@/components/ui/states";
+import { CATEGORY_KEYS } from "@/lib/categories";
+import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -43,10 +45,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const CATEGORIES: ExpenseCategory[] = [
-  "housing", "transport", "vehicle_finance", "insurance",
-  "medical_aid", "groceries", "debt_repayments", "subscriptions", "eating_out", "other",
-];
 
 type Snap = { month: string; disposable_income: number; total_expenses: number; savings_rate: number; net_income: number };
 
@@ -319,7 +317,7 @@ function Dashboard() {
             <input value={qAmount} onChange={(e) => setQAmount(e.target.value)} type="number" step="0.01" placeholder="Amount" className="field numeric" />
             <div className="grid grid-cols-2 gap-2">
               <select value={qCategory} onChange={(e) => setQCategory(e.target.value as ExpenseCategory)} className="field !py-2 !text-xs">
-                {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                <CategoryOptions />
               </select>
               <select value={qFrequency} onChange={(e) => setQFrequency(e.target.value as ExpenseFrequency)} className="field !py-2 !text-xs">
                 <option value="monthly">Monthly</option>

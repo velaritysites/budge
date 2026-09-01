@@ -8,16 +8,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { toast } from "sonner";
 import { Plus, Trash2, RotateCcw, X, Pencil, Bell, BellOff, Check } from "lucide-react";
+import { CATEGORY_KEYS } from "@/lib/categories";
+import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
   head: () => ({ meta: [{ title: "Expenses — Budge" }] }),
   component: ExpensesPage,
 });
 
-const CATEGORIES: ExpenseCategory[] = [
-  "housing", "transport", "vehicle_finance", "insurance",
-  "medical_aid", "groceries", "debt_repayments", "subscriptions", "eating_out", "other",
-];
 const FREQUENCIES: { value: ExpenseFrequency; label: string }[] = [
   { value: "monthly", label: "Monthly" },
   { value: "weekly", label: "Weekly" },
@@ -151,7 +149,7 @@ function ExpensesPage() {
       const [n, amt, cat] = parts;
       const amtNum = parseFloat(amt);
       if (!n || !amtNum) return null;
-      const c = (CATEGORIES as string[]).includes(cat) ? (cat as ExpenseCategory) : "other";
+      const c = (CATEGORY_KEYS as string[]).includes(cat) ? (cat as ExpenseCategory) : "other";
       return { user_id: u.user!.id, name: n, amount: amtNum, category: c, frequency: "monthly" as const, is_fixed: true };
     }).filter(Boolean) as any[];
     if (!rows.length) return toast.error("No valid rows");
@@ -202,7 +200,7 @@ function ExpensesPage() {
                 className="field" />
               <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
                 className="field">
-                {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
+                <CategoryOptions />
               </select>
               <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
                 className="field">
