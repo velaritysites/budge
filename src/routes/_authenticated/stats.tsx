@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
-import { CATEGORY_LABELS, CATEGORY_COLORS, type ExpenseCategory } from "@/lib/finance";
+import { type ExpenseCategory } from "@/lib/finance";
+import { GROUPED_CATEGORIES, normalizeCategory, categoryLabel, categoryColor } from "@/lib/categories";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { useMemo, useState } from "react";
 
@@ -171,12 +172,12 @@ function StatsPage() {
                   {drillCategory && (
                     <div className="mt-5 pt-5 border-t border-border">
                       <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
-                        {CATEGORY_LABELS[drillCategory]} over time
+                        {categoryLabel(drillCategory)} over time
                       </span>
                       <TrendBars
                         series={ranged.map((s) => ({ label: s.month, value: s.expenses_by_category?.[drillCategory] ?? 0 }))}
                         currency={currency}
-                        color={CATEGORY_COLORS[drillCategory]}
+                        color={categoryColor(drillCategory)}
                       />
                     </div>
                   )}

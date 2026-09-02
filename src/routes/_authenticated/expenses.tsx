@@ -253,6 +253,7 @@ function ExpensesPage() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 flex-wrap">
+                    <CatAvatar category={e.category} />
                     <span className="text-sm font-medium truncate">{e.name}</span>
                     <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground">
                       {CATEGORY_LABELS[e.category]} · {e.frequency} · {e.is_fixed ? "fixed" : "variable"}
