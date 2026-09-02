@@ -10,7 +10,7 @@ import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil, Chev
 import { toast } from "sonner";
 import { PlanExportSheet, exportPlanImage, exportPlanPdf, type ExportPlan } from "@/lib/export-plan";
 import { CATEGORY_KEYS } from "@/lib/categories";
-import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
+import { CategoryOptions } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/planner")({
   head: () => ({ meta: [{ title: "Salary Planner — Budge" }] }),

@@ -9,7 +9,7 @@ import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { toast } from "sonner";
 import { CheckCircle2, AlertTriangle, XCircle, PlusCircle, X } from "lucide-react";
 import { CATEGORY_KEYS } from "@/lib/categories";
-import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
+import { CategoryOptions } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/checker")({
   head: () => ({ meta: [{ title: "Affordability Checker — Budge" }] }),

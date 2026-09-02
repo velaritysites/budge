@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
-import { CATEGORY_LABELS, CATEGORY_COLORS, type ExpenseCategory } from "@/lib/finance";
+import { type ExpenseCategory } from "@/lib/finance";
+import { GROUPED_CATEGORIES, normalizeCategory, categoryLabel, categoryColor } from "@/lib/categories";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { useMemo, useState } from "react";
 
@@ -137,36 +138,46 @@ function StatsPage() {
               {active && (
                 <div className="panel p-5">
                   <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Spend by category</span>
-                  <div className="mt-3 space-y-2">
-                    {(Object.keys(active.expenses_by_category) as ExpenseCategory[])
-                      .filter((c) => active.expenses_by_category[c] > 0)
-                      .sort((a, b) => active.expenses_by_category[b] - active.expenses_by_category[a])
-                      .map((c) => (
-                        <button
-                          key={c}
-                          onClick={() => setDrillCategory(drillCategory === c ? null : c)}
-                          className="w-full flex items-center gap-3 group"
-                        >
-                          <span className="text-xs w-28 text-left text-muted-foreground">{CATEGORY_LABELS[c]}</span>
-                          <div className="flex-1 h-2 bg-background rounded-full overflow-hidden">
-                            <div className="h-full transition-all" style={{
-                              width: `${(active.expenses_by_category[c] / active.total_expenses) * 100}%`,
-                              backgroundColor: CATEGORY_COLORS[c],
-                            }} />
-                          </div>
-                          <span className="font-mono text-xs w-24 text-right">{formatCurrency(active.expenses_by_category[c], currency)}</span>
-                        </button>
-                      ))}
+                  <div className="mt-3 space-y-4">
+                    {GROUPED_CATEGORIES.map((g) => {
+                      const rows = g.items
+                        .map((i) => normalizeCategory(i.key))
+                        .filter((c) => (active.expenses_by_category[c] ?? 0) > 0)
+                        .sort((a, b) => active.expenses_by_category[b] - active.expenses_by_category[a]);
+                      if (rows.length === 0) return null;
+                      const positive = g.group === "Saving & Growing";
+                      return (
+                        <div key={g.group} className={positive ? "rounded-xl border border-accent/25 bg-accent/[0.06] p-3 space-y-2" : "space-y-2"}>
+                          <p className={`text-[10px] font-mono uppercase tracking-widest ${positive ? "text-accent" : "text-muted-foreground"}`}>{g.group}</p>
+                          {rows.map((c) => (
+                            <button
+                              key={c}
+                              onClick={() => setDrillCategory(drillCategory === c ? null : c)}
+                              className="w-full flex items-center gap-3 group"
+                            >
+                              <span className={`text-xs w-28 text-left ${positive ? "text-accent" : "text-muted-foreground"}`}>{categoryLabel(c)}</span>
+                              <div className="flex-1 h-2 bg-background rounded-full overflow-hidden">
+                                <div className="h-full transition-all" style={{
+                                  width: `${(active.expenses_by_category[c] / active.total_expenses) * 100}%`,
+                                  backgroundColor: categoryColor(c),
+                                }} />
+                              </div>
+                              <span className="font-mono text-xs w-24 text-right">{formatCurrency(active.expenses_by_category[c], currency)}</span>
+                            </button>
+                          ))}
+                        </div>
+                      );
+                    })}
                   </div>
                   {drillCategory && (
                     <div className="mt-5 pt-5 border-t border-border">
                       <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
-                        {CATEGORY_LABELS[drillCategory]} over time
+                        {categoryLabel(drillCategory)} over time
                       </span>
                       <TrendBars
                         series={ranged.map((s) => ({ label: s.month, value: s.expenses_by_category?.[drillCategory] ?? 0 }))}
                         currency={currency}
-                        color={CATEGORY_COLORS[drillCategory]}
+                        color={categoryColor(drillCategory)}
                       />
                     </div>
                   )}

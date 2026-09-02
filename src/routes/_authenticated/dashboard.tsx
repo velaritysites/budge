@@ -28,7 +28,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { toast } from "sonner";
 import { DashboardSkeleton, EmptyState } from "@/components/ui/states";
-import { CATEGORY_KEYS } from "@/lib/categories";
+import { CATEGORY_KEYS, GROUPED_CATEGORIES, isPositiveCategory } from "@/lib/categories";
 import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -292,7 +292,7 @@ function Dashboard() {
               <div className="mt-3 -mx-2">
                 {upcoming.map(({ e, day, away }) => (
                   <div key={e.id} className="ledger-row">
-                    <CategoryAvatar category={e.category} />
+                    <CatAvatar category={e.category} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[13px] font-medium">{e.name}</p>
                       <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
@@ -464,7 +464,7 @@ function Dashboard() {
             <div className="-mx-2">
               {recent.map((e) => (
                 <div key={e.id} className="ledger-row">
-                  <CategoryAvatar category={e.category} />
+                  <CatAvatar category={e.category} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13px] font-medium">{e.name}</p>
                     <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
@@ -560,18 +560,6 @@ function Stat({
   );
 }
 
-function CategoryAvatar({ category }: { category: ExpenseCategory }) {
-  const color = CATEGORY_COLORS[category];
-  const initials = CATEGORY_LABELS[category].replace(/[^A-Za-z/ ]/g, "").split(/[\s/]+/).slice(0, 2).map((w) => w[0]).join("");
-  return (
-    <span
-      className="avatar-cat"
-      style={{ backgroundColor: `color-mix(in oklab, ${color} 16%, transparent)`, color, borderColor: `color-mix(in oklab, ${color} 30%, transparent)` }}
-    >
-      {initials}
-    </span>
-  );
-}
 
 function Donut({ segments, centerLabel, centerValue }: { segments: { value: number; color: string }[]; centerLabel: string; centerValue: string }) {
   const total = segments.reduce((s, x) => s + x.value, 0) || 1;

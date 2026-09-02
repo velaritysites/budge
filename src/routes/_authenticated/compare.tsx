@@ -3,6 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
+import { isPositiveCategory } from "@/lib/categories";
 import { CATEGORY_LABELS, CATEGORY_COLORS, type ExpenseCategory, type ExpenseFrequency, monthlyEquivalent } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
 import { GitCompare, Download, Image as ImageIcon, Check } from "lucide-react";
@@ -93,7 +94,8 @@ function ComparePage() {
   const allCategories = useMemo(() => {
     const set = new Set<ExpenseCategory>();
     for (const r of rows) for (const k of Object.keys(r.stats.byCategory)) set.add(k as ExpenseCategory);
-    return [...set];
+    // Saving & Growing categories always sort to the end, visually separated.
+    return [...set].sort((a, b) => Number(isPositiveCategory(a)) - Number(isPositiveCategory(b)));
   }, [rows]);
 
   function toggle(id: string) {
@@ -244,7 +246,7 @@ function ComparePage() {
                     <tbody>
                       {allCategories.map((c) => (
                         <tr key={c}>
-                          <td className="p-3 text-xs border-b border-border w-44">
+                          <td className={`p-3 text-xs border-b border-border w-44 ${isPositiveCategory(c) ? "text-accent bg-accent/[0.06]" : ""}`}>
                             <span className="inline-flex items-center gap-2">
                               <span className="size-2 rounded-full" style={{ background: CATEGORY_COLORS[c] }} />
                               {CATEGORY_LABELS[c]}
