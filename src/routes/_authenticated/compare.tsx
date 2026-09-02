@@ -94,7 +94,8 @@ function ComparePage() {
   const allCategories = useMemo(() => {
     const set = new Set<ExpenseCategory>();
     for (const r of rows) for (const k of Object.keys(r.stats.byCategory)) set.add(k as ExpenseCategory);
-    return [...set];
+    // Saving & Growing categories always sort to the end, visually separated.
+    return [...set].sort((a, b) => Number(isPositiveCategory(a)) - Number(isPositiveCategory(b)));
   }, [rows]);
 
   function toggle(id: string) {
