@@ -361,6 +361,39 @@ export type Database = {
         }
         Relationships: []
       }
+      statement_analyses: {
+        Row: {
+          bank: string
+          category_totals: Json
+          created_at: string
+          id: string
+          statement_month: string | null
+          total_income: number
+          total_spent: number
+          user_id: string
+        }
+        Insert: {
+          bank: string
+          category_totals?: Json
+          created_at?: string
+          id?: string
+          statement_month?: string | null
+          total_income?: number
+          total_spent?: number
+          user_id: string
+        }
+        Update: {
+          bank?: string
+          category_totals?: Json
+          created_at?: string
+          id?: string
+          statement_month?: string | null
+          total_income?: number
+          total_spent?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
