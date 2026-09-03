@@ -128,3 +128,60 @@ export function normalizeCategory(value: string | null | undefined): ExpenseCate
   if (value in CATEGORY_MAP) return value as ExpenseCategory;
   return LEGACY[value] ?? "other";
 }
+
+/* ------------------------------------------------------------------ */
+/* Merchant matching rules — used by the Statement Analysis parser.     */
+/* Case-insensitive partial matching against transaction descriptions.  */
+/* ------------------------------------------------------------------ */
+
+export const MERCHANT_RULES: Partial<Record<ExpenseCategory, string[]>> = {
+  housing: ["RENT", "RENTAL", "BOND", "ELECTRICITY", "ESKOM", "CITY POWER", "CITIQ", "PREPAID ELEC", "WATER", "MUNICIPAL", "RATES", "BODY CORP", "LEVY", "WIFI", "FIBRE", "OPENSERVE", "VUMATEL", "FROGFOOT"],
+  transport: ["FUEL", "PETROL", "ENGEN", "SHELL", "BP", "SASOL", "CALTEX", "ASTRON", "TOTAL GAS", "TOLLS", "E-TOLL", "SANRAL", "UBER", "BOLT", "TAXI", "PARKING", "GAUTRAIN"],
+  vehicle_finance: ["WFS", "WESBANK", "ABSA VEHICLE", "MFC", "RMB FINANCE", "STANDARD BANK VEHICLE", "NEDBANK VEHICLE", "MOTOR FINANCE", "AUTO FINANCE", "VEHICLE LOAN"],
+  insurance: ["SANLAM", "OLD MUTUAL LIFE", "MOMENTUM LIFE", "OUTSURANCE", "HOLLARD", "MIWAY", "KING PRICE", "BUDGET INSURANCE", "DIAL DIRECT", "SANTAM", "LIBERTY LIFE", "ASSUPOL", "PPS", "CLIENTELE"],
+  medical_aid: ["DISCOVERY HEALTH", "BONITAS", "MEDIHELP", "MOMENTUM HEALTH", "GEMS", "BESTMED", "FEDHEALTH", "CAMAF", "PROFMED", "RESOLUTION HEALTH"],
+  debt_repayments: ["PERSONAL LOAN", "CREDIT CARD PMT", "STORE ACCOUNT", "AFRICAN BANK", "CAPITEC LOAN", "FNB LOAN", "ABSA LOAN", "STANDARD BANK LOAN", "NEDBANK LOAN", "BAYPORT", "WONGA", "LETSATSI"],
+  groceries: ["CHECKERS", "SHOPRITE", "PICK N PAY", "PNP", "WOOLWORTHS FOOD", "FOOD LOVER", "SPAR", "MAKRO", "GAME FOOD", "BOXER", "USAVE", "OK FOODS", "CAMBRIDGE FOOD"],
+  eating_out: ["KFC", "MCDONALD", "NANDOS", "DEBONAIRS", "PIZZA", "STEERS", "BURGER KING", "SUBWAY", "FISHAWAYS", "CHICKEN LICKEN", "ROMAN'S", "OCEAN BASKET", "WIMPY", "MUGG AND BEAN", "TASHAS", "KAUAI", "GALITO", "PANAROTTIS"],
+  coffee_drinks: ["STARBUCKS", "SEATTLE COFFEE", "VIDA E", "BOOTLEGGER", "TRUTH COFFEE", "DELUXE", "PAUL CAFE", "HARRIS"],
+  household: ["BUILDERS", "LEROY MERLIN", "CHAMBERLAINS", "PLASTICS FOR AFRICA", "HIRSCH", "GAME HARDWARE", "MR PRICE HOME", "@HOME", "WOOLWORTHS HOME", "CLEANING", "LAUNDRY", "PEST CONTROL"],
+  clothing_shopping: ["ZARA", "H&M", "EDGARS", "MR PRICE", "FOSCHINI", "LEGIT", "IDENTITY", "RELAY", "TRUWORTHS", "WOOLWORTHS CLOTHING", "COTTON ON", "SUPERBALIST", "TAKEALOT", "BASH", "THE FIX", "ACKERMANS", "PUMA", "ADIDAS", "NIKE"],
+  health_beauty: ["CLICKS", "DISCHEM", "PHARMACY", "VIRGIN ACTIVE", "PLANET FITNESS", "ANYTIME FITNESS", "CURVES", "SALON", "HAIRDRESSER", "SPA", "NAIL", "SKIN RENEWAL", "DERMALOGICA"],
+  subscriptions: ["NETFLIX", "SPOTIFY", "SHOWMAX", "DSTV", "APPLE", "GOOGLE PLAY", "MICROSOFT", "AMAZON PRIME", "YOUTUBE", "DISCORD", "DROPBOX", "ADOBE", "CANVA", "CHATGPT", "OPENAI"],
+  entertainment: ["NU METRO", "STER KINEKOR", "COMPUTICKET", "TICKETMASTER", "TICKETPRO", "STEAM", "PLAYSTATION", "XBOX", "APPLE ARCADE", "ROBLOX"],
+  tech_gadgets: ["APPLE STORE", "ISTORE", "INCREDIBLE CONNECT", "HI-FI CORP", "WOOTWARE", "EVETECH", "SAMSUNG", "TAKEALOT TECH", "DION WIRED"],
+  phone_airtime: ["VODACOM", "MTN", "CELL C", "TELKOM", "RAIN", "AIRTIME", "RECHARGE", "PREPAID DATA", "ROUTER"],
+  giving_charity: ["GIFT", "DONATION", "CHARITY", "NSPCA", "GIFT VOUCHER"],
+  education: ["SCHOOL FEES", "TUITION", "VARSITY", "UNIVERSITY", "COLLEGE", "UDEMY", "COURSERA", "BOOKS", "STATIONERY", "CAMPUS"],
+  childcare: ["DAYCARE", "CRÈCHE", "CRECHE", "BABYSIT", "AFTERCARE", "SCHOOL ACTIVITIES", "MONTESSORI"],
+  pets: ["VET", "PETVET", "ANIMAL HOSPITAL", "PET FOOD", "PETSHOP", "PEDIGREE", "DOGMOTHER", "KENNEL", "GROOMING"],
+  savings: ["SAVINGS ACCOUNT", "EMERGENCY FUND", "32 DAY NOTICE", "MONEY MARKET", "FIXED DEPOSIT", "SAVINGS TRANSFER"],
+  investments: ["EASY EQUITIES", "SYGNIA", "ETFSA", "10X INVESTMENTS", "OLD MUTUAL INVEST", "TAX FREE SAVINGS", "UNIT TRUST", "ETF", "RETIREMENT ANNUITY", "RA PREMIUM", "STANLIB", "CORONATION", "ALLAN GRAY", "NINETY ONE"],
+  side_business: ["INVOICE", "BUSINESS EXPENSE", "FREELANCE", "SUPPLIER", "BUSINESS ACCOUNT", "WORKSHOP"],
+  travel_holidays: ["FLIGHT", "AIRBNB", "BOOKING.COM", "AGODA", "HOTELS.COM", "SAFARI", "KULULA", "FLYSAFAIR", "COMAIR", "SOUTH AFRICAN AIRWAYS", "SAA", "MANGO", "AIRPORT", "LUGGAGE", "PASSPORT"],
+  government_admin: ["TRAFFIC FINE", "LICENCE DISC", "NATIS", "HOME AFFAIRS", "SARS", "TAX PAYMENT", "ID RENEWAL", "MUNICIPALITY FINE"],
+};
+
+/** Rule order matters: more specific groups are checked before broad ones. */
+const RULE_ORDER: ExpenseCategory[] = [
+  "medical_aid", "insurance", "vehicle_finance", "debt_repayments", "investments", "savings",
+  "groceries", "eating_out", "coffee_drinks", "subscriptions", "entertainment", "tech_gadgets",
+  "phone_airtime", "health_beauty", "clothing_shopping", "household", "travel_holidays",
+  "education", "childcare", "pets", "giving_charity", "government_admin", "side_business",
+  "transport", "housing",
+];
+
+/**
+ * Match a transaction description onto a category.
+ * Returns null when nothing matched (caller treats it as `other` / unclassified).
+ */
+export function matchCategory(description: string): ExpenseCategory | null {
+  const d = (description || "").toUpperCase();
+  if (!d.trim()) return null;
+  for (const key of RULE_ORDER) {
+    const rules = MERCHANT_RULES[key];
+    if (!rules) continue;
+    for (const r of rules) if (d.includes(r.toUpperCase())) return key;
+  }
+  return null;
+}
