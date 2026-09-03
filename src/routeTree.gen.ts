@@ -14,6 +14,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedStatsRouteImport } from './routes/_authenticated/stats'
+import { Route as AuthenticatedStatementRouteImport } from './routes/_authenticated/statement'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedPlannerRouteImport } from './routes/_authenticated/planner'
 import { Route as AuthenticatedGoalsRouteImport } from './routes/_authenticated/goals'
@@ -45,6 +46,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedStatsRoute = AuthenticatedStatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedStatementRoute = AuthenticatedStatementRouteImport.update({
+  id: '/statement',
+  path: '/statement',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/goals': typeof AuthenticatedGoalsRouteWithChildren
   '/planner': typeof AuthenticatedPlannerRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/statement': typeof AuthenticatedStatementRoute
   '/stats': typeof AuthenticatedStatsRoute
   '/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
 }
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/goals': typeof AuthenticatedGoalsRouteWithChildren
   '/planner': typeof AuthenticatedPlannerRoute
   '/settings': typeof AuthenticatedSettingsRoute
+  '/statement': typeof AuthenticatedStatementRoute
   '/stats': typeof AuthenticatedStatsRoute
   '/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
 }
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/_authenticated/goals': typeof AuthenticatedGoalsRouteWithChildren
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/statement': typeof AuthenticatedStatementRoute
   '/_authenticated/stats': typeof AuthenticatedStatsRoute
   '/_authenticated/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
 }
@@ -146,6 +155,7 @@ export interface FileRouteTypes {
     | '/goals'
     | '/planner'
     | '/settings'
+    | '/statement'
     | '/stats'
     | '/goals/$goalId'
   fileRoutesByTo: FileRoutesByTo
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/goals'
     | '/planner'
     | '/settings'
+    | '/statement'
     | '/stats'
     | '/goals/$goalId'
   id:
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/_authenticated/goals'
     | '/_authenticated/planner'
     | '/_authenticated/settings'
+    | '/_authenticated/statement'
     | '/_authenticated/stats'
     | '/_authenticated/goals/$goalId'
   fileRoutesById: FileRoutesById
@@ -221,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/stats'
       fullPath: '/stats'
       preLoaderRoute: typeof AuthenticatedStatsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/statement': {
+      id: '/_authenticated/statement'
+      path: '/statement'
+      fullPath: '/statement'
+      preLoaderRoute: typeof AuthenticatedStatementRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -301,6 +320,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedGoalsRoute: typeof AuthenticatedGoalsRouteWithChildren
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedStatementRoute: typeof AuthenticatedStatementRoute
   AuthenticatedStatsRoute: typeof AuthenticatedStatsRoute
 }
 
@@ -312,6 +332,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedGoalsRoute: AuthenticatedGoalsRouteWithChildren,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedStatementRoute: AuthenticatedStatementRoute,
   AuthenticatedStatsRoute: AuthenticatedStatsRoute,
 }
 
