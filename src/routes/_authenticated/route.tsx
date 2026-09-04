@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } fro
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon, Calculator, GitCompare, Plus } from "lucide-react";
+import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon, Calculator, GitCompare, Plus, FileSearch } from "lucide-react";
 import logo from "@/assets/budge-logo.png";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -40,6 +40,14 @@ const NAV_GROUPS = [
       { to: "/compare", label: "Compare", icon: GitCompare },
     ],
   },
+] as const;
+
+const BOTTOM_NAV = [
+  { to: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { to: "/expenses", label: "Expenses", icon: Wallet },
+  { to: "/statement", label: "Statement", icon: FileSearch },
+  { to: "/goals", label: "Goals", icon: Target },
+  { to: "/stats", label: "Stats", icon: BarChart3 },
 ] as const;
 
 function AuthLayout() {
@@ -178,11 +186,29 @@ function AuthLayout() {
         </div>
       </nav>
 
-      <main className="aura min-w-0 flex-1">
+      <main className="aura min-w-0 flex-1 pb-16 md:pb-0">
         <div key={location.pathname} className="animate-fade">
           <Outlet />
         </div>
       </main>
+
+      {/* Mobile bottom nav */}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 border-t border-hairline bg-background/85 backdrop-blur-xl md:hidden">
+        {BOTTOM_NAV.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={() => setMobileOpen(false)}
+              className="flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium text-muted-foreground transition-colors data-[status=active]:text-accent"
+            >
+              <Icon className="size-[18px]" />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
     </div>
   );
 }
