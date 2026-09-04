@@ -29,6 +29,8 @@ const NAV_GROUPS = [
       { to: "/expenses", label: "Expenses", icon: Wallet },
       { to: "/goals", label: "Goals", icon: Target },
       { to: "/checker", label: "Checker", icon: Sparkles },
+      { to: "/statement", label: "Statement Analysis", icon: FileSearch },
+
     ],
   },
   {
