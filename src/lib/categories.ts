@@ -175,13 +175,29 @@ const RULE_ORDER: ExpenseCategory[] = [
  * Match a transaction description onto a category.
  * Returns null when nothing matched (caller treats it as `other` / unclassified).
  */
+const ruleCache = new Map<string, RegExp>();
+
+function ruleRegex(rule: string): RegExp {
+  const cached = ruleCache.get(rule);
+  if (cached) return cached;
+  const escaped = rule.toUpperCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  // Short tokens (ETF, BP, SAA…) must match as whole words so they don't hit
+  // substrings of unrelated merchants (e.g. "NETFLIX" contains "ETF").
+  const pattern = rule.replace(/[^A-Za-z0-9]/g, "").length <= 4
+    ? `(^|[^A-Z0-9])${escaped}($|[^A-Z0-9])`
+    : `(^|[^A-Z0-9])${escaped}`;
+  const re = new RegExp(pattern);
+  ruleCache.set(rule, re);
+  return re;
+}
+
 export function matchCategory(description: string): ExpenseCategory | null {
   const d = (description || "").toUpperCase();
   if (!d.trim()) return null;
   for (const key of RULE_ORDER) {
     const rules = MERCHANT_RULES[key];
     if (!rules) continue;
-    for (const r of rules) if (d.includes(r.toUpperCase())) return key;
+    for (const r of rules) if (ruleRegex(r).test(d)) return key;
   }
   return null;
 }
