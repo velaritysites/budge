@@ -31,6 +31,7 @@ import { DashboardSkeleton, EmptyState } from "@/components/ui/states";
 import { CATEGORY_KEYS, GROUPED_CATEGORIES, isPositiveCategory } from "@/lib/categories";
 import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 import { ForecastCard } from "@/components/forecast-card";
+import { getCurrency } from "@/lib/currencies";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -494,9 +495,20 @@ function Dashboard() {
                 <div key={e.id} className="ledger-row">
                   <CatAvatar category={e.category} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-medium">{e.name}</p>
+                    <p className="flex items-center gap-1.5 truncate text-[13px] font-medium">
+                      {e.name}
+                      {e.original_currency && e.original_currency !== currency && (
+                        <span
+                          title={`Originally ${formatCurrency(e.original_amount ?? 0, e.original_currency)}`}
+                          className="font-mono text-[10px] text-muted-foreground"
+                        >
+                          {getCurrency(e.original_currency).flag}
+                        </span>
+                      )}
+                    </p>
                     <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
                       {CATEGORY_LABELS[e.category]} · {e.is_fixed ? "Fixed" : "Variable"}
+                      {householdOn && (e.user_id === profile.id ? " · You" : " · Partner")}
                     </p>
                   </div>
                   <div className="text-right">
