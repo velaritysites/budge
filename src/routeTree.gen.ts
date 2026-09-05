@@ -13,6 +13,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedTaxRouteImport } from './routes/_authenticated/tax'
 import { Route as AuthenticatedStatsRouteImport } from './routes/_authenticated/stats'
 import { Route as AuthenticatedStatementRouteImport } from './routes/_authenticated/statement'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -22,6 +23,7 @@ import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCompareRouteImport } from './routes/_authenticated/compare'
 import { Route as AuthenticatedCheckerRouteImport } from './routes/_authenticated/checker'
+import { Route as ApiPublicRecalibrateScoresRouteImport } from './routes/api/public/recalibrate-scores'
 import { Route as AuthenticatedGoalsGoalIdRouteImport } from './routes/_authenticated/goals.$goalId'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -42,6 +44,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTaxRoute = AuthenticatedTaxRouteImport.update({
+  id: '/tax',
+  path: '/tax',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedStatsRoute = AuthenticatedStatsRouteImport.update({
   id: '/stats',
@@ -88,6 +95,12 @@ const AuthenticatedCheckerRoute = AuthenticatedCheckerRouteImport.update({
   path: '/checker',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicRecalibrateScoresRoute =
+  ApiPublicRecalibrateScoresRouteImport.update({
+    id: '/api/public/recalibrate-scores',
+    path: '/api/public/recalibrate-scores',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedGoalsGoalIdRoute =
   AuthenticatedGoalsGoalIdRouteImport.update({
     id: '/$goalId',
@@ -108,7 +121,9 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/statement': typeof AuthenticatedStatementRoute
   '/stats': typeof AuthenticatedStatsRoute
+  '/tax': typeof AuthenticatedTaxRoute
   '/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
+  '/api/public/recalibrate-scores': typeof ApiPublicRecalibrateScoresRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -123,7 +138,9 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/statement': typeof AuthenticatedStatementRoute
   '/stats': typeof AuthenticatedStatsRoute
+  '/tax': typeof AuthenticatedTaxRoute
   '/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
+  '/api/public/recalibrate-scores': typeof ApiPublicRecalibrateScoresRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -140,7 +157,9 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/statement': typeof AuthenticatedStatementRoute
   '/_authenticated/stats': typeof AuthenticatedStatsRoute
+  '/_authenticated/tax': typeof AuthenticatedTaxRoute
   '/_authenticated/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
+  '/api/public/recalibrate-scores': typeof ApiPublicRecalibrateScoresRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -157,7 +176,9 @@ export interface FileRouteTypes {
     | '/settings'
     | '/statement'
     | '/stats'
+    | '/tax'
     | '/goals/$goalId'
+    | '/api/public/recalibrate-scores'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -172,7 +193,9 @@ export interface FileRouteTypes {
     | '/settings'
     | '/statement'
     | '/stats'
+    | '/tax'
     | '/goals/$goalId'
+    | '/api/public/recalibrate-scores'
   id:
     | '__root__'
     | '/'
@@ -188,7 +211,9 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/statement'
     | '/_authenticated/stats'
+    | '/_authenticated/tax'
     | '/_authenticated/goals/$goalId'
+    | '/api/public/recalibrate-scores'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -196,6 +221,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   OnboardingRoute: typeof OnboardingRoute
+  ApiPublicRecalibrateScoresRoute: typeof ApiPublicRecalibrateScoresRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -227,6 +253,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/tax': {
+      id: '/_authenticated/tax'
+      path: '/tax'
+      fullPath: '/tax'
+      preLoaderRoute: typeof AuthenticatedTaxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/stats': {
       id: '/_authenticated/stats'
@@ -291,6 +324,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCheckerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/recalibrate-scores': {
+      id: '/api/public/recalibrate-scores'
+      path: '/api/public/recalibrate-scores'
+      fullPath: '/api/public/recalibrate-scores'
+      preLoaderRoute: typeof ApiPublicRecalibrateScoresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/goals/$goalId': {
       id: '/_authenticated/goals/$goalId'
       path: '/$goalId'
@@ -322,6 +362,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStatementRoute: typeof AuthenticatedStatementRoute
   AuthenticatedStatsRoute: typeof AuthenticatedStatsRoute
+  AuthenticatedTaxRoute: typeof AuthenticatedTaxRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -334,6 +375,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStatementRoute: AuthenticatedStatementRoute,
   AuthenticatedStatsRoute: AuthenticatedStatsRoute,
+  AuthenticatedTaxRoute: AuthenticatedTaxRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -344,6 +386,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   OnboardingRoute: OnboardingRoute,
+  ApiPublicRecalibrateScoresRoute: ApiPublicRecalibrateScoresRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

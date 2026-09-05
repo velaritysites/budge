@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } fro
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon, Calculator, GitCompare, Plus, FileSearch } from "lucide-react";
+import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon, Calculator, GitCompare, Plus, FileSearch, Landmark } from "lucide-react";
 import logo from "@/assets/budge-logo.png";
 import { useOpenAlerts } from "@/lib/alerts";
 import { NotificationBell } from "@/components/notification-bell";
@@ -41,6 +41,7 @@ const NAV_GROUPS = [
     items: [
       { to: "/planner", label: "Planner", icon: Calculator },
       { to: "/compare", label: "Compare", icon: GitCompare },
+      { to: "/tax", label: "Tax", icon: Landmark },
     ],
   },
 ] as const;

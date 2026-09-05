@@ -19,6 +19,7 @@ import { formatCurrency } from "@/lib/format";
 import { ArrowDownRight, ArrowUpRight, Gauge, Info, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { readScoreScreenshot } from "@/lib/score-ocr.functions";
+import { applyCorrections, confidenceLevel, recordCalibration, useCorrections, useMyContributions } from "@/lib/calibration";
 import type { Expense } from "@/lib/finance";
 
 export function BudgeScoreCard({
@@ -92,7 +93,13 @@ export function BudgeScoreCard({
   };
 
   const calibration = useMemo(() => calibrationFrom(bureau as any[]), [bureau]);
-  const score = useMemo(() => computeBudgeScore(inputs, calibration ?? undefined), [JSON.stringify(inputs), calibration]);
+  const { data: corrections } = useCorrections();
+  const { data: contributions = [] } = useMyContributions();
+  const rawScore = useMemo(() => computeBudgeScore(inputs, calibration ?? undefined), [JSON.stringify(inputs), calibration]);
+  const score = useMemo(() => {
+    const qualities = Object.fromEntries(rawScore.factors.map((f) => [f.key, f.quality]));
+    return { ...rawScore, score: applyCorrections(rawScore.score, qualities as any, corrections) };
+  }, [rawScore, corrections]);
 
   // Persist this month's score whenever it settles.
   const saved = useRef<number | null>(null);
@@ -161,6 +168,10 @@ export function BudgeScoreCard({
           {Math.min(999, score.score + score.confidence)}.
         </p>
 
+        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+          {confidenceLevel(corrections?.sample_size ?? 0).label}
+        </p>
+
         <button onClick={() => setOpen(true)} className="btn-ghost mt-4 self-start">
           <Info className="size-3.5" /> What's helping and hurting
         </button>
@@ -176,6 +187,8 @@ export function BudgeScoreCard({
           bureau={bureau}
           latestBureau={latestBureau}
           calibrationSamples={calibration?.samples ?? 0}
+          confidence={confidenceLevel(corrections?.sample_size ?? 0)}
+          hasContributed={contributions.length > 0}
         />
       )}
     </>
@@ -191,6 +204,8 @@ function ScoreDetail({
   bureau,
   latestBureau,
   calibrationSamples,
+  confidence,
+  hasContributed,
 }: any) {
   const qc = useQueryClient();
   const [bureauName, setBureauName] = useState<string>(BUREAUS[0]);
@@ -231,8 +246,16 @@ function ScoreDetail({
       factors: score.factors as any,
     });
     if (error) return toast.error(error.message);
+    await recordCalibration({
+      bureau: bureauName,
+      estimated_score: score.score,
+      real_score: n,
+      reported_on: new Date().toISOString().slice(0, 10),
+      factors: Object.fromEntries(score.factors.map((f: any) => [f.key, f.quality])),
+    });
     setValue("");
     qc.invalidateQueries({ queryKey: ["bureau_scores"] });
+    qc.invalidateQueries({ queryKey: ["score_calibration", "mine"] });
     toast.success("Saved — your estimate will calibrate against it.");
   }
 
@@ -341,6 +364,19 @@ function ScoreDetail({
                 ? `Calibrated against ${calibrationSamples} real score${calibrationSamples === 1 ? "" : "s"} — the range narrows as you add more.`
                 : "Add more real scores over time and the range narrows."}
             </p>
+          </div>
+        )}
+
+        {confidence && (
+          <div className="mt-4 rounded-xl border border-hairline p-4 text-[12px] leading-relaxed">
+            <p className="font-semibold">Estimate confidence: {confidence.label}</p>
+            <p className="mt-1 text-muted-foreground">{confidence.detail}</p>
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3">
+              <div className="h-full rounded-full bg-accent" style={{ width: `${Math.round(confidence.progress * 100)}%` }} />
+            </div>
+            {hasContributed && (
+              <p className="mt-3 text-accent">Thank you for improving Budge's accuracy — your real score helps sharpen everyone's estimate, with nothing personal shared.</p>
+            )}
           </div>
         )}
 

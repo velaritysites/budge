@@ -8,6 +8,10 @@ import { formatCurrency, formatPercent } from "@/lib/format";
 import { useMemo, useState } from "react";
 import { BenchmarksTab } from "@/components/benchmarks-tab";
 import { AnnualReview } from "@/components/annual-review";
+import { NetWorthTab } from "@/components/net-worth-tab";
+import { BriefingsList } from "@/components/briefing-card";
+import { useLockedMonths } from "@/lib/monthly-close";
+import { Lock } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/stats")({
   head: () => ({ meta: [{ title: "Stats & History — Budge" }] }),
@@ -28,9 +32,10 @@ type Snapshot = {
 function StatsPage() {
   const { data: profile } = useProfile();
   const [range, setRange] = useState<3 | 6 | 12>(6);
-  const [tab, setTab] = useState<"history" | "benchmarks" | "annual">("history");
+  const [tab, setTab] = useState<"history" | "networth" | "briefings" | "benchmarks" | "annual">("history");
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [drillCategory, setDrillCategory] = useState<ExpenseCategory | null>(null);
+  const { data: locked = {} } = useLockedMonths();
 
   const { data: snapshots = [] } = useQuery({
     queryKey: ["snapshots"],
@@ -98,6 +103,8 @@ function StatsPage() {
     return `${d >= 0 ? "+" : ""}${d.toFixed(0)}%`;
   }
 
+  const lockedMonths = locked;
+  void lockedMonths;
   const maxDisp = Math.max(1, ...ranged.map((s) => Math.abs(s.disposable_income)));
 
   return (
@@ -108,7 +115,7 @@ function StatsPage() {
 
       <div className="p-6 md:p-8 space-y-10 max-w-6xl mx-auto w-full">
         <div className="flex items-center gap-2">
-          {(["history", "benchmarks", "annual"] as const).map((t) => (
+          {(["history", "networth", "briefings", "benchmarks", "annual"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -116,13 +123,17 @@ function StatsPage() {
                 tab === t ? "border-accent/40 bg-accent/10 text-accent" : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              {t === "history" ? "History" : t === "benchmarks" ? "Benchmarks" : "Annual Review"}
+              {t === "history" ? "History" : t === "networth" ? "Net Worth" : t === "briefings" ? "Briefings" : t === "benchmarks" ? "Benchmarks" : "Annual Review"}
             </button>
           ))}
         </div>
 
         {tab === "annual" ? (
           <AnnualReview currency={profile.currency_code} />
+        ) : tab === "networth" ? (
+          <NetWorthTab currency={profile.currency_code} />
+        ) : tab === "briefings" ? (
+          <BriefingsList />
         ) : tab === "benchmarks" ? (
           <BenchmarksTab
             netIncome={Number(profile.net_income)}
@@ -138,7 +149,10 @@ function StatsPage() {
             {/* Snapshot picker */}
             <section className="animate-enter space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-3">
-                <h2 className="text-3xl md:text-4xl font-display font-extrabold tracking-tight">Monthly snapshot.</h2>
+                <h2 className="flex items-center gap-2 text-3xl md:text-4xl font-display font-extrabold tracking-tight">
+                  Monthly snapshot.
+                  {active && !!locked[active.month] && <Lock className="size-5 text-accent" aria-label="Closed and locked" />}
+                </h2>
                 <select
                   value={active?.month ?? ""}
                   onChange={(e) => setSelectedMonth(e.target.value)}
@@ -146,6 +160,7 @@ function StatsPage() {
                 >
                   {snapshots.map((s) => (
                     <option key={s.month} value={s.month}>
+                      {!!locked[s.month] ? "🔒 " : ""}
                       {new Date(s.month).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
                     </option>
                   ))}
