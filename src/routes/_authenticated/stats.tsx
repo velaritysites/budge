@@ -7,6 +7,7 @@ import { GROUPED_CATEGORIES, normalizeCategory, categoryLabel, categoryColor } f
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { useMemo, useState } from "react";
 import { BenchmarksTab } from "@/components/benchmarks-tab";
+import { AnnualReview } from "@/components/annual-review";
 
 export const Route = createFileRoute("/_authenticated/stats")({
   head: () => ({ meta: [{ title: "Stats & History — Budge" }] }),
@@ -27,7 +28,7 @@ type Snapshot = {
 function StatsPage() {
   const { data: profile } = useProfile();
   const [range, setRange] = useState<3 | 6 | 12>(6);
-  const [tab, setTab] = useState<"history" | "benchmarks">("history");
+  const [tab, setTab] = useState<"history" | "benchmarks" | "annual">("history");
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [drillCategory, setDrillCategory] = useState<ExpenseCategory | null>(null);
 
@@ -107,7 +108,7 @@ function StatsPage() {
 
       <div className="p-6 md:p-8 space-y-10 max-w-6xl mx-auto w-full">
         <div className="flex items-center gap-2">
-          {(["history", "benchmarks"] as const).map((t) => (
+          {(["history", "benchmarks", "annual"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -115,12 +116,14 @@ function StatsPage() {
                 tab === t ? "border-accent/40 bg-accent/10 text-accent" : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
-              {t === "history" ? "History" : "Benchmarks"}
+              {t === "history" ? "History" : t === "benchmarks" ? "Benchmarks" : "Annual Review"}
             </button>
           ))}
         </div>
 
-        {tab === "benchmarks" ? (
+        {tab === "annual" ? (
+          <AnnualReview currency={profile.currency_code} />
+        ) : tab === "benchmarks" ? (
           <BenchmarksTab
             netIncome={Number(profile.net_income)}
             categoryTotals={(snapshots[0]?.expenses_by_category ?? {}) as Record<string, number>}

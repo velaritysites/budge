@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Check, Search, Plus, Trash2, Bell, Mail, Smartphone, Globe } from "lucide-react";
 import { HouseholdSection } from "@/components/household-section";
 import { TaxSummary } from "@/components/tax-summary";
+import { FinancialIdentity } from "@/components/financial-identity";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — Budge" }] }),
