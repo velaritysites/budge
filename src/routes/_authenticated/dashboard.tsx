@@ -385,7 +385,7 @@ function Dashboard() {
         </div>
 
         {/* ---------- Predictive forecast ---------- */}
-        <div className="animate-enter [animation-delay:170ms] xl:col-span-12">
+        <div className="animate-enter flex flex-col gap-5 [animation-delay:170ms] xl:col-span-12">
           <BudgeScoreCard
             currency={currency}
             grossIncome={totals.grossIncome}
