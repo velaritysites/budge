@@ -8,7 +8,9 @@ import { registerPushToken } from "@/lib/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
-import { Check, Search, Plus, Trash2, Bell, Mail, Smartphone } from "lucide-react";
+import { Check, Search, Plus, Trash2, Bell, Mail, Smartphone, Globe } from "lucide-react";
+import { HouseholdSection } from "@/components/household-section";
+import { TaxSummary } from "@/components/tax-summary";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — Budge" }] }),
@@ -52,6 +54,7 @@ function SettingsPage() {
   const [pushN, setPushN] = useState(false);
   const [allocMode, setAllocMode] = useState<"weighted" | "sequential">("weighted");
   const [autoTiming, setAutoTiming] = useState<"monthly_1st" | "on_demand" | "estimate_only">("on_demand");
+  const [multiCurrency, setMultiCurrency] = useState(false);
 
   // Income stream form
   const [sName, setSName] = useState("");
