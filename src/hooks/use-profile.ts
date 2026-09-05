@@ -16,6 +16,10 @@ export type Profile = {
   push_token: string | null;
   auto_allocation_mode?: "weighted" | "sequential";
   auto_contribution_timing?: "monthly_1st" | "on_demand" | "estimate_only";
+  multi_currency_enabled?: boolean;
+  household_view?: boolean;
+  debt_strategy?: "avalanche" | "snowball" | null;
+  debt_extra_payment?: number;
 };
 
 export type IncomeStream = {
