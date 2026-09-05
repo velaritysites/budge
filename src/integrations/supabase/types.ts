@@ -472,48 +472,129 @@ export type Database = {
         }
         Relationships: []
       }
+      monthly_briefings: {
+        Row: {
+          created_at: string
+          id: string
+          month: string
+          observations: Json
+          recommendation: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          month: string
+          observations?: Json
+          recommendation?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          month?: string
+          observations?: Json
+          recommendation?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       monthly_snapshots: {
         Row: {
+          assets_total: number | null
+          close_notes: string | null
           created_at: string
           currency_code: string
           disposable_income: number
           expenses_by_category: Json
           gross_income: number
           id: string
+          liabilities_total: number | null
+          locked_at: string | null
           month: string
           net_income: number
+          net_worth: number | null
           savings_rate: number
           total_expenses: number
           updated_at: string
           user_id: string
         }
         Insert: {
+          assets_total?: number | null
+          close_notes?: string | null
           created_at?: string
           currency_code?: string
           disposable_income?: number
           expenses_by_category?: Json
           gross_income?: number
           id?: string
+          liabilities_total?: number | null
+          locked_at?: string | null
           month: string
           net_income?: number
+          net_worth?: number | null
           savings_rate?: number
           total_expenses?: number
           updated_at?: string
           user_id: string
         }
         Update: {
+          assets_total?: number | null
+          close_notes?: string | null
           created_at?: string
           currency_code?: string
           disposable_income?: number
           expenses_by_category?: Json
           gross_income?: number
           id?: string
+          liabilities_total?: number | null
+          locked_at?: string | null
           month?: string
           net_income?: number
+          net_worth?: number | null
           savings_rate?: number
           total_expenses?: number
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      net_worth_items: {
+        Row: {
+          category: string
+          created_at: string
+          depreciation_pct: number
+          id: string
+          kind: string
+          label: string
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          depreciation_pct?: number
+          id?: string
+          kind: string
+          label: string
+          updated_at?: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          depreciation_pct?: number
+          id?: string
+          kind?: string
+          label?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
         }
         Relationships: []
       }
@@ -606,10 +687,12 @@ export type Database = {
           net_income: number
           onboarded_at: string | null
           pay_frequency: string
+          provisional_taxpayer: boolean
           push_notifications: boolean
           push_token: string | null
           safety_buffer_pct: number
           updated_at: string
+          works_from_home: boolean
         }
         Insert: {
           auto_allocation_mode?: string
@@ -627,10 +710,12 @@ export type Database = {
           net_income?: number
           onboarded_at?: string | null
           pay_frequency?: string
+          provisional_taxpayer?: boolean
           push_notifications?: boolean
           push_token?: string | null
           safety_buffer_pct?: number
           updated_at?: string
+          works_from_home?: boolean
         }
         Update: {
           auto_allocation_mode?: string
@@ -648,10 +733,12 @@ export type Database = {
           net_income?: number
           onboarded_at?: string | null
           pay_frequency?: string
+          provisional_taxpayer?: boolean
           push_notifications?: boolean
           push_token?: string | null
           safety_buffer_pct?: number
           updated_at?: string
+          works_from_home?: boolean
         }
         Relationships: []
       }
@@ -700,6 +787,81 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weight?: number
+        }
+        Relationships: []
+      }
+      score_calibration: {
+        Row: {
+          bureau: string
+          created_at: string
+          dti: number
+          estimated_score: number
+          expense_consistency: number
+          gap: number
+          id: string
+          payment_consistency: number
+          real_score: number
+          reported_on: string
+          savings_rate: number
+          user_id: string
+          utilisation: number
+        }
+        Insert: {
+          bureau: string
+          created_at?: string
+          dti?: number
+          estimated_score: number
+          expense_consistency?: number
+          gap: number
+          id?: string
+          payment_consistency?: number
+          real_score: number
+          reported_on?: string
+          savings_rate?: number
+          user_id: string
+          utilisation?: number
+        }
+        Update: {
+          bureau?: string
+          created_at?: string
+          dti?: number
+          estimated_score?: number
+          expense_consistency?: number
+          gap?: number
+          id?: string
+          payment_consistency?: number
+          real_score?: number
+          reported_on?: string
+          savings_rate?: number
+          user_id?: string
+          utilisation?: number
+        }
+        Relationships: []
+      }
+      score_corrections: {
+        Row: {
+          corrections: Json
+          id: number
+          mean_abs_gap: number
+          mean_gap: number
+          sample_size: number
+          updated_at: string
+        }
+        Insert: {
+          corrections?: Json
+          id?: number
+          mean_abs_gap?: number
+          mean_gap?: number
+          sample_size?: number
+          updated_at?: string
+        }
+        Update: {
+          corrections?: Json
+          id?: number
+          mean_abs_gap?: number
+          mean_gap?: number
+          sample_size?: number
+          updated_at?: string
         }
         Relationships: []
       }
