@@ -30,6 +30,8 @@ import { toast } from "sonner";
 import { DashboardSkeleton, EmptyState } from "@/components/ui/states";
 import { CATEGORY_KEYS, GROUPED_CATEGORIES, isPositiveCategory } from "@/lib/categories";
 import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
+import { ForecastCard } from "@/components/forecast-card";
+import { getCurrency } from "@/lib/currencies";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -71,9 +73,39 @@ function useSnapshots() {
 
 function Dashboard() {
   const { data: profile } = useProfile();
-  const { data: expenses = [] } = useExpenses();
+  const householdOn = !!profile?.household_view;
+  const { data: expenses = [] } = useExpenses(householdOn);
   const { data: snaps = [] } = useSnapshots();
   const qc = useQueryClient();
+
+  // In Household view, add the partner's income to your own.
+  const { data: partnerIncome } = useQuery({
+    queryKey: ["household_income", householdOn],
+    enabled: householdOn,
+    queryFn: async () => {
+      const zero = { net: 0, gross: 0 };
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return zero;
+      const { data: members } = await supabase.from("household_members").select("household_id, user_id");
+      const mine = (members ?? []).find((m: any) => m.user_id === u.user!.id);
+      if (!mine) return zero;
+      const partnerIds = (members ?? [])
+        .filter((m: any) => m.household_id === mine.household_id && m.user_id !== u.user!.id)
+        .map((m: any) => m.user_id);
+      if (partnerIds.length === 0) return zero;
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, net_income, gross_income")
+        .in("id", partnerIds);
+      return (data ?? []).reduce(
+        (acc: { net: number; gross: number }, p: any) => ({
+          net: acc.net + Number(p.net_income ?? 0),
+          gross: acc.gross + Number(p.gross_income ?? 0),
+        }),
+        zero,
+      );
+    },
+  });
 
   const [qName, setQName] = useState("");
   const [qAmount, setQAmount] = useState("");
@@ -82,8 +114,8 @@ function Dashboard() {
   const [saving, setSaving] = useState(false);
 
   const totals = computeTotals(
-    Number(profile?.net_income ?? 0),
-    Number(profile?.gross_income ?? 0),
+    Number(profile?.net_income ?? 0) + (householdOn ? partnerIncome?.net ?? 0 : 0),
+    Number(profile?.gross_income ?? 0) + (householdOn ? partnerIncome?.gross ?? 0 : 0),
     expenses,
   );
   const animatedDisposable = useCountUp(totals.disposable, 900);
@@ -347,6 +379,13 @@ function Dashboard() {
           />
         </div>
 
+        {/* ---------- Predictive forecast ---------- */}
+        <div className="animate-enter [animation-delay:170ms] xl:col-span-12">
+          <ForecastCard />
+        </div>
+
+
+
         {/* ---------- Distribution ---------- */}
         <section className="animate-enter panel p-7 [animation-delay:200ms] xl:col-span-7">
           <div className="mb-5 flex items-center justify-between">
@@ -466,9 +505,20 @@ function Dashboard() {
                 <div key={e.id} className="ledger-row">
                   <CatAvatar category={e.category} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-medium">{e.name}</p>
+                    <p className="flex items-center gap-1.5 truncate text-[13px] font-medium">
+                      {e.name}
+                      {e.original_currency && e.original_currency !== currency && (
+                        <span
+                          title={`Originally ${formatCurrency(e.original_amount ?? 0, e.original_currency)}`}
+                          className="font-mono text-[10px] text-muted-foreground"
+                        >
+                          {getCurrency(e.original_currency).flag}
+                        </span>
+                      )}
+                    </p>
                     <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
                       {CATEGORY_LABELS[e.category]} · {e.is_fixed ? "Fixed" : "Variable"}
+                      {householdOn && (e.user_id === profile.id ? " · You" : " · Partner")}
                     </p>
                   </div>
                   <div className="text-right">

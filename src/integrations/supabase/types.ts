@@ -53,6 +53,72 @@ export type Database = {
         }
         Relationships: []
       }
+      benchmark_samples: {
+        Row: {
+          category_pcts: Json
+          created_at: string
+          id: string
+          income_bracket: string
+          month: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_pcts?: Json
+          created_at?: string
+          id?: string
+          income_bracket: string
+          month: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_pcts?: Json
+          created_at?: string
+          id?: string
+          income_bracket?: string
+          month?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      debts: {
+        Row: {
+          account_type: string
+          balance: number
+          created_at: string
+          id: string
+          interest_rate: number
+          min_payment: number
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_type?: string
+          balance?: number
+          created_at?: string
+          id?: string
+          interest_rate?: number
+          min_payment?: number
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_type?: string
+          balance?: number
+          created_at?: string
+          id?: string
+          interest_rate?: number
+          min_payment?: number
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
@@ -60,12 +126,15 @@ export type Database = {
           created_at: string
           deleted_at: string | null
           due_day: number | null
+          exchange_rate: number | null
           frequency: string
           id: string
           is_fixed: boolean
           name: string
           notify_enabled: boolean
           notify_lead_days: number
+          original_amount: number | null
+          original_currency: string | null
           updated_at: string
           user_id: string
         }
@@ -75,12 +144,15 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           due_day?: number | null
+          exchange_rate?: number | null
           frequency?: string
           id?: string
           is_fixed?: boolean
           name: string
           notify_enabled?: boolean
           notify_lead_days?: number
+          original_amount?: number | null
+          original_currency?: string | null
           updated_at?: string
           user_id: string
         }
@@ -90,12 +162,15 @@ export type Database = {
           created_at?: string
           deleted_at?: string | null
           due_day?: number | null
+          exchange_rate?: number | null
           frequency?: string
           id?: string
           is_fixed?: boolean
           name?: string
           notify_enabled?: boolean
           notify_lead_days?: number
+          original_amount?: number | null
+          original_currency?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -144,6 +219,94 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      household_invites: {
+        Row: {
+          created_at: string
+          email: string
+          household_id: string
+          id: string
+          invited_by: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          household_id: string
+          id?: string
+          invited_by: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          household_id?: string
+          id?: string
+          invited_by?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "household_invites_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      household_members: {
+        Row: {
+          created_at: string
+          household_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          household_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          household_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "household_members_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      households: {
+        Row: {
+          created_at: string
+          id: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       income_streams: {
         Row: {
@@ -265,10 +428,14 @@ export type Database = {
           auto_contribution_timing: string
           created_at: string
           currency_code: string
+          debt_extra_payment: number
+          debt_strategy: string | null
           display_name: string | null
           email_notifications: boolean
           gross_income: number
+          household_view: boolean
           id: string
+          multi_currency_enabled: boolean
           net_income: number
           onboarded_at: string | null
           pay_frequency: string
@@ -282,10 +449,14 @@ export type Database = {
           auto_contribution_timing?: string
           created_at?: string
           currency_code?: string
+          debt_extra_payment?: number
+          debt_strategy?: string | null
           display_name?: string | null
           email_notifications?: boolean
           gross_income?: number
+          household_view?: boolean
           id: string
+          multi_currency_enabled?: boolean
           net_income?: number
           onboarded_at?: string | null
           pay_frequency?: string
@@ -299,10 +470,14 @@ export type Database = {
           auto_contribution_timing?: string
           created_at?: string
           currency_code?: string
+          debt_extra_payment?: number
+          debt_strategy?: string | null
           display_name?: string | null
           email_notifications?: boolean
           gross_income?: number
+          household_view?: boolean
           id?: string
+          multi_currency_enabled?: boolean
           net_income?: number
           onboarded_at?: string | null
           pay_frequency?: string
@@ -361,6 +536,69 @@ export type Database = {
         }
         Relationships: []
       }
+      spending_alerts: {
+        Row: {
+          amount: number
+          average: number
+          category: string
+          created_at: string
+          dismissed_at: string | null
+          id: string
+          pct_above: number
+          period: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          average?: number
+          category: string
+          created_at?: string
+          dismissed_at?: string | null
+          id?: string
+          pct_above?: number
+          period: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          average?: number
+          category?: string
+          created_at?: string
+          dismissed_at?: string | null
+          id?: string
+          pct_above?: number
+          period?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      spending_benchmarks: {
+        Row: {
+          avg_pct: number
+          category: string
+          id: string
+          income_bracket: string
+          sample_size: number
+          updated_at: string
+        }
+        Insert: {
+          avg_pct?: number
+          category: string
+          id?: string
+          income_bracket: string
+          sample_size?: number
+          updated_at?: string
+        }
+        Update: {
+          avg_pct?: number
+          category?: string
+          id?: string
+          income_bracket?: string
+          sample_size?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       statement_analyses: {
         Row: {
           bank: string
@@ -368,6 +606,7 @@ export type Database = {
           created_at: string
           id: string
           statement_month: string | null
+          subscription_items: Json
           total_income: number
           total_spent: number
           user_id: string
@@ -378,6 +617,7 @@ export type Database = {
           created_at?: string
           id?: string
           statement_month?: string | null
+          subscription_items?: Json
           total_income?: number
           total_spent?: number
           user_id: string
@@ -388,8 +628,36 @@ export type Database = {
           created_at?: string
           id?: string
           statement_month?: string | null
+          subscription_items?: Json
           total_income?: number
           total_spent?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscription_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          marked: boolean
+          service_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          marked?: boolean
+          service_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          marked?: boolean
+          service_name?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -399,7 +667,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      my_household_id: { Args: never; Returns: string }
+      refresh_spending_benchmarks: { Args: never; Returns: undefined }
+      shares_household_with: { Args: { _other: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

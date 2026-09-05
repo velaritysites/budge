@@ -21,6 +21,9 @@ import {
   type Txn,
 } from "@/lib/statement-parse";
 import { toast } from "sonner";
+import { computeAnomalies, persistAnomalies } from "@/lib/alerts";
+import { AnomalyAlerts } from "@/components/anomaly-alerts";
+import { SubscriptionAudit } from "@/components/subscription-audit";
 import {
   UploadCloud, FileText, Loader2, ShieldCheck, ChevronDown, ChevronRight,
   History, Lightbulb, AlertTriangle, Check, X, Sparkles,
@@ -198,16 +201,38 @@ function StatementPage() {
         totals[t.category] = (totals[t.category] ?? 0) + t.amount;
       }
     }
+    const period = statementMonth(parsed) || null;
+    const subscriptionItems = parsed
+      .filter((t) => t.type === "expense" && t.category === "subscriptions")
+      .map((t) => ({ name: t.description, amount: t.amount, date: t.date }));
+
     await supabase.from("statement_analyses").insert({
       user_id: u.user.id,
       bank,
-      statement_month: statementMonth(parsed) || null,
+      statement_month: period,
       total_income: income,
       total_spent: spent,
       category_totals: totals,
+      subscription_items: subscriptionItems,
     });
+
+    // Anomaly alerts vs the previous 3 analyses
+    const { data: prior } = await supabase
+      .from("statement_analyses")
+      .select("category_totals, statement_month")
+      .order("created_at", { ascending: false })
+      .limit(4);
+    const history = (prior ?? [])
+      .filter((r: any) => r.statement_month !== period)
+      .slice(0, 3)
+      .map((r: any) => (r.category_totals ?? {}) as Record<string, number>);
+    const anomalies = computeAnomalies(totals, history);
+    await persistAnomalies(period ?? new Date().toISOString().slice(0, 7), anomalies);
+
     qc.invalidateQueries({ queryKey: ["statement_analyses"] });
+    qc.invalidateQueries({ queryKey: ["spending_alerts"] });
   }
+
 
   function reclassify(txn: Txn, category: ExpenseCategory) {
     saveOverride(txn.description, category);
@@ -374,6 +399,14 @@ function StatementPage() {
         {/* ------------------------- results ------------------------- */}
         {result && result.allCards.length + result.income.length > 0 && (
           <>
+            <AnomalyAlerts
+              currency={currency}
+              onSeeWhatChanged={(cat) => {
+                setExpanded((p) => ({ ...p, [cat]: true }));
+                document.getElementById(`cat-${cat}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+            />
+
             {/* Summary */}
             <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <StatCard label="Total income in" value={formatCurrency(result.totalIncome, currency, { decimals: 0 })} caption={`${result.income.length} credits`} tone="accent" />
@@ -410,13 +443,15 @@ function StatementPage() {
               <span className="label-xs">Where it went</span>
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 {result.spendCards.map((c) => (
-                  <CategoryCard
-                    key={c.key} cat={c.key} total={c.total} items={c.items} currency={currency}
-                    share={(c.total / (result.totalSpent || 1)) * 100}
-                    budget={budgets[c.key]}
-                    open={!!expanded[c.key]}
-                    onToggle={() => setExpanded((p) => ({ ...p, [c.key]: !p[c.key] }))}
-                  />
+                  <div key={c.key} id={`cat-${c.key}`}>
+                    <CategoryCard
+                      cat={c.key} total={c.total} items={c.items} currency={currency}
+                      share={(c.total / (result.totalSpent || 1)) * 100}
+                      budget={budgets[c.key]}
+                      open={!!expanded[c.key]}
+                      onToggle={() => setExpanded((p) => ({ ...p, [c.key]: !p[c.key] }))}
+                    />
+                  </div>
                 ))}
               </div>
 
@@ -489,6 +524,10 @@ function StatementPage() {
                 </div>
               </section>
             )}
+
+            {/* Subscription audit */}
+            <SubscriptionAudit currency={currency} />
+
 
             {/* Sync */}
             <section className="panel p-6">

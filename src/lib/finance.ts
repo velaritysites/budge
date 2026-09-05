@@ -26,6 +26,12 @@ export type Expense = {
   due_day?: number | null;
   notify_enabled?: boolean;
   notify_lead_days?: number;
+  /** Owner of the row — used to label expenses in Household view. */
+  user_id?: string;
+  /** Multi-currency: the amount as originally entered, before conversion. */
+  original_amount?: number | null;
+  original_currency?: string | null;
+  exchange_rate?: number | null;
 };
 
 /** Convert any expense to a monthly-equivalent amount. One-offs treated as 0/month for recurring math. */

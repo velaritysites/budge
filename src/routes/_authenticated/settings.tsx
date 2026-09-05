@@ -8,7 +8,9 @@ import { registerPushToken } from "@/lib/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
-import { Check, Search, Plus, Trash2, Bell, Mail, Smartphone } from "lucide-react";
+import { Check, Search, Plus, Trash2, Bell, Mail, Smartphone, Globe } from "lucide-react";
+import { HouseholdSection } from "@/components/household-section";
+import { TaxSummary } from "@/components/tax-summary";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — Budge" }] }),
@@ -52,6 +54,7 @@ function SettingsPage() {
   const [pushN, setPushN] = useState(false);
   const [allocMode, setAllocMode] = useState<"weighted" | "sequential">("weighted");
   const [autoTiming, setAutoTiming] = useState<"monthly_1st" | "on_demand" | "estimate_only">("on_demand");
+  const [multiCurrency, setMultiCurrency] = useState(false);
 
   // Income stream form
   const [sName, setSName] = useState("");
@@ -71,6 +74,7 @@ function SettingsPage() {
       setPushN(profile.push_notifications);
       setAllocMode(((profile as any).auto_allocation_mode as any) ?? "weighted");
       setAutoTiming(((profile as any).auto_contribution_timing as any) ?? "on_demand");
+      setMultiCurrency(!!profile.multi_currency_enabled);
     }
   }, [profile]);
 
@@ -102,6 +106,7 @@ function SettingsPage() {
       push_notifications: pushN,
       auto_allocation_mode: allocMode,
       auto_contribution_timing: autoTiming,
+      multi_currency_enabled: multiCurrency,
     } as any);
     if (pushN && !profile.push_token) {
       const token = await registerPushToken();
@@ -305,6 +310,27 @@ function SettingsPage() {
           </Field>
         </Section>
 
+        <Section title="Currency">
+          <ToggleRow
+            icon={<Globe className="size-4" />}
+            label="Multi-currency mode"
+            desc="Adds an optional currency and exchange rate to every expense form."
+            checked={multiCurrency}
+            onChange={setMultiCurrency}
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Foreign expenses are converted to your home currency ({currency}) using the rate you enter, and both the
+            original and converted amounts are kept. Rates are entered manually — Budge doesn't fetch live rates.
+          </p>
+        </Section>
+
+        <Section title="Household">
+          <HouseholdSection />
+        </Section>
+
+        <Section title="Tax summary">
+          <TaxSummary />
+        </Section>
 
 
         <Section title="Safety buffer">

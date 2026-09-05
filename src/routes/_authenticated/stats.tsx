@@ -6,9 +6,10 @@ import { type ExpenseCategory } from "@/lib/finance";
 import { GROUPED_CATEGORIES, normalizeCategory, categoryLabel, categoryColor } from "@/lib/categories";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { useMemo, useState } from "react";
+import { BenchmarksTab } from "@/components/benchmarks-tab";
 
 export const Route = createFileRoute("/_authenticated/stats")({
-  head: () => ({ meta: [{ title: "Stats & History — CanIAfford" }] }),
+  head: () => ({ meta: [{ title: "Stats & History — Budge" }] }),
   component: StatsPage,
 });
 
@@ -26,6 +27,7 @@ type Snapshot = {
 function StatsPage() {
   const { data: profile } = useProfile();
   const [range, setRange] = useState<3 | 6 | 12>(6);
+  const [tab, setTab] = useState<"history" | "benchmarks">("history");
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [drillCategory, setDrillCategory] = useState<ExpenseCategory | null>(null);
 
@@ -104,7 +106,26 @@ function StatsPage() {
       </header>
 
       <div className="p-6 md:p-8 space-y-10 max-w-6xl mx-auto w-full">
-        {snapshots.length === 0 ? (
+        <div className="flex items-center gap-2">
+          {(["history", "benchmarks"] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`rounded-full border px-4 py-1.5 text-[11px] font-mono uppercase tracking-widest transition ${
+                tab === t ? "border-accent/40 bg-accent/10 text-accent" : "border-border text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t === "history" ? "History" : "Benchmarks"}
+            </button>
+          ))}
+        </div>
+
+        {tab === "benchmarks" ? (
+          <BenchmarksTab
+            netIncome={Number(profile.net_income)}
+            categoryTotals={(snapshots[0]?.expenses_by_category ?? {}) as Record<string, number>}
+          />
+        ) : snapshots.length === 0 ? (
           <div className="text-center py-16">
             <h1 className="text-3xl font-display font-extrabold tracking-tight mb-2">No history yet.</h1>
             <p className="text-sm text-muted-foreground">Add income and expenses to start building your monthly snapshots.</p>

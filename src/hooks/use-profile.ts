@@ -16,6 +16,10 @@ export type Profile = {
   push_token: string | null;
   auto_allocation_mode?: "weighted" | "sequential";
   auto_contribution_timing?: "monthly_1st" | "on_demand" | "estimate_only";
+  multi_currency_enabled?: boolean;
+  household_view?: boolean;
+  debt_strategy?: "avalanche" | "snowball" | null;
+  debt_extra_payment?: number;
 };
 
 export type IncomeStream = {
@@ -65,18 +69,23 @@ export function useIncomeStreams() {
   });
 }
 
-export function useExpenses() {
+export function useExpenses(includeHousehold = false) {
   return useQuery({
-    queryKey: ["expenses"],
+    queryKey: ["expenses", includeHousehold ? "household" : "mine"],
     queryFn: async (): Promise<Expense[]> => {
+      const { data: u } = await supabase.auth.getUser();
       const { data, error } = await supabase
         .from("expenses")
-        .select("id, name, category, amount, frequency, is_fixed, due_day, notify_enabled, notify_lead_days")
+        .select(
+          "id, user_id, name, category, amount, frequency, is_fixed, due_day, notify_enabled, notify_lead_days, original_amount, original_currency, exchange_rate",
+        )
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []).map((r: any) => ({
+      const rows = includeHousehold ? (data ?? []) : (data ?? []).filter((r: any) => r.user_id === u.user?.id);
+      return rows.map((r: any) => ({
         id: r.id as string,
+        user_id: r.user_id as string,
         name: r.name as string,
         category: r.category as ExpenseCategory,
         amount: Number(r.amount),
@@ -85,6 +94,9 @@ export function useExpenses() {
         due_day: r.due_day ?? null,
         notify_enabled: !!r.notify_enabled,
         notify_lead_days: r.notify_lead_days ?? 3,
+        original_amount: r.original_amount === null || r.original_amount === undefined ? null : Number(r.original_amount),
+        original_currency: r.original_currency ?? null,
+        exchange_rate: r.exchange_rate === null || r.exchange_rate === undefined ? null : Number(r.exchange_rate),
       }));
     },
   });
