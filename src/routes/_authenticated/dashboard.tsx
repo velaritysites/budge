@@ -83,17 +83,27 @@ function Dashboard() {
     queryKey: ["household_income", householdOn],
     enabled: householdOn,
     queryFn: async () => {
+      const zero = { net: 0, gross: 0 };
       const { data: u } = await supabase.auth.getUser();
-      const { data } = await supabase.from("profiles").select("id, net_income, gross_income");
-      return (data ?? [])
-        .filter((p: any) => p.id !== u.user?.id)
-        .reduce(
-          (acc: { net: number; gross: number }, p: any) => ({
-            net: acc.net + Number(p.net_income ?? 0),
-            gross: acc.gross + Number(p.gross_income ?? 0),
-          }),
-          { net: 0, gross: 0 },
-        );
+      if (!u.user) return zero;
+      const { data: members } = await supabase.from("household_members").select("household_id, user_id");
+      const mine = (members ?? []).find((m: any) => m.user_id === u.user!.id);
+      if (!mine) return zero;
+      const partnerIds = (members ?? [])
+        .filter((m: any) => m.household_id === mine.household_id && m.user_id !== u.user!.id)
+        .map((m: any) => m.user_id);
+      if (partnerIds.length === 0) return zero;
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, net_income, gross_income")
+        .in("id", partnerIds);
+      return (data ?? []).reduce(
+        (acc: { net: number; gross: number }, p: any) => ({
+          net: acc.net + Number(p.net_income ?? 0),
+          gross: acc.gross + Number(p.gross_income ?? 0),
+        }),
+        zero,
+      );
     },
   });
 
