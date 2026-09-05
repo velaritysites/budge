@@ -216,7 +216,7 @@ export async function saveMonthlyScore(score: number, factors: Factor[]) {
       user_id: u.user.id,
       month: currentMonthKey(),
       score,
-      factors: factors as unknown as Record<string, unknown>,
+      factors: factors as any,
     },
     { onConflict: "user_id,month" },
   );
