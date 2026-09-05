@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Plus, Trash2, RotateCcw, X, Pencil, Bell, BellOff, Check } from "lucide-react";
 import { CATEGORY_KEYS } from "@/lib/categories";
 import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
+import { CURRENCIES, getCurrency } from "@/lib/currencies";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
   head: () => ({ meta: [{ title: "Expenses — Budge" }] }),
@@ -239,6 +240,26 @@ function ExpensesPage() {
                 )}
               </div>
             </div>
+            {multiCurrency && (
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <select value={expCurrency} onChange={(e) => setExpCurrency(e.target.value)} className="field">
+                  {CURRENCIES.map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.flag} {c.code} — {c.name}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  value={rate}
+                  onChange={(e) => setRate(e.target.value)}
+                  type="number"
+                  step="0.0001"
+                  placeholder={`Exchange rate to ${currency} (e.g. 18.5)`}
+                  className="field"
+                  disabled={expCurrency === currency}
+                />
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => setIsFixed(!isFixed)}
                 className={`flex-1 py-2 rounded-lg border text-xs font-medium transition ${isFixed ? "bg-foreground text-background border-foreground" : "bg-background border-border text-muted-foreground"}`}>
@@ -279,7 +300,17 @@ function ExpensesPage() {
               </div>
               {editingId !== e.id && (
                 <>
-                  <span className="font-mono text-sm">{formatCurrency(e.amount, currency)}</span>
+                  <span className="flex items-center gap-1.5 font-mono text-sm">
+                    {e.original_currency && e.original_currency !== currency && (
+                      <span
+                        title={`Originally ${formatCurrency(e.original_amount ?? 0, e.original_currency)} at ${e.exchange_rate}`}
+                        className="cursor-help text-[13px]"
+                      >
+                        {getCurrency(e.original_currency).flag}
+                      </span>
+                    )}
+                    {formatCurrency(e.amount, currency)}
+                  </span>
                   <div className="opacity-0 group-hover:opacity-100 transition flex items-center gap-1">
                     <input type="number" min="1" max="31" defaultValue={e.due_day ?? ""}
                       placeholder="Day"
