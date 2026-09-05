@@ -525,6 +525,10 @@ function StatementPage() {
               </section>
             )}
 
+            {/* Subscription audit */}
+            <SubscriptionAudit currency={currency} />
+
+
             {/* Sync */}
             <section className="panel p-6">
               <button onClick={() => setSyncOpen(!syncOpen)} className="flex w-full items-center gap-2 text-left">
