@@ -77,8 +77,8 @@ export function useNotificationEngine({
         }
 
         // Subscription price increases between the two most recent statements.
-        const subsNow = ((latest?.subscription_items ?? []) as any[]) ?? [];
-        const subsPrev = (((statements ?? [])[1]?.subscription_items ?? []) as any[]) ?? [];
+        const subsNow = (latest?.subscription_items ?? []) as any[];
+        const subsPrev = ((statements ?? [])[1]?.subscription_items ?? []) as any[];
         const subscriptionIncreases: NotifyContext["subscriptionIncreases"] = [];
         for (const s of subsNow) {
           const match = subsPrev.find(
