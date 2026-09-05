@@ -21,6 +21,9 @@ import {
   type Txn,
 } from "@/lib/statement-parse";
 import { toast } from "sonner";
+import { computeAnomalies, persistAnomalies } from "@/lib/alerts";
+import { AnomalyAlerts } from "@/components/anomaly-alerts";
+import { SubscriptionAudit } from "@/components/subscription-audit";
 import {
   UploadCloud, FileText, Loader2, ShieldCheck, ChevronDown, ChevronRight,
   History, Lightbulb, AlertTriangle, Check, X, Sparkles,
