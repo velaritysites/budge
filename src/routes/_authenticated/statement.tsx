@@ -198,16 +198,38 @@ function StatementPage() {
         totals[t.category] = (totals[t.category] ?? 0) + t.amount;
       }
     }
+    const period = statementMonth(parsed) || null;
+    const subscriptionItems = parsed
+      .filter((t) => t.type === "expense" && t.category === "subscriptions")
+      .map((t) => ({ name: t.description, amount: t.amount, date: t.date }));
+
     await supabase.from("statement_analyses").insert({
       user_id: u.user.id,
       bank,
-      statement_month: statementMonth(parsed) || null,
+      statement_month: period,
       total_income: income,
       total_spent: spent,
       category_totals: totals,
+      subscription_items: subscriptionItems,
     });
+
+    // Anomaly alerts vs the previous 3 analyses
+    const { data: prior } = await supabase
+      .from("statement_analyses")
+      .select("category_totals, statement_month")
+      .order("created_at", { ascending: false })
+      .limit(4);
+    const history = (prior ?? [])
+      .filter((r: any) => r.statement_month !== period)
+      .slice(0, 3)
+      .map((r: any) => (r.category_totals ?? {}) as Record<string, number>);
+    const anomalies = computeAnomalies(totals, history);
+    await persistAnomalies(period ?? new Date().toISOString().slice(0, 7), anomalies);
+
     qc.invalidateQueries({ queryKey: ["statement_analyses"] });
+    qc.invalidateQueries({ queryKey: ["spending_alerts"] });
   }
+
 
   function reclassify(txn: Txn, category: ExpenseCategory) {
     saveOverride(txn.description, category);
