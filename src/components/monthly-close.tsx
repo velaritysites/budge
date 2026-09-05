@@ -5,7 +5,6 @@ import { formatCurrency } from "@/lib/format";
 import { categoryLabel, normalizeCategory } from "@/lib/categories";
 import { closeMonth, monthLabel, previousMonthKey, useCloseableMonth } from "@/lib/monthly-close";
 import { buildBriefing, saveBriefing, type Briefing } from "@/lib/briefing";
-import { useBenchmarks } from "@/lib/benchmarks";
 import { CheckCircle2, ChevronLeft, ChevronRight, FileDown, Lock, X } from "lucide-react";
 import { toast } from "sonner";
 import html2canvas from "html2canvas";
@@ -295,8 +294,6 @@ export function ClosedSummary({ month, currency, briefing }: { month: string; cu
   const { data: snap } = useCloseableMonth(month);
   const sheet = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
-  const { data: benchmarks } = useBenchmarks();
-  void benchmarks;
 
   if (!snap) return null;
 
