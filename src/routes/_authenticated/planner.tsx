@@ -9,6 +9,7 @@ import { formatCurrency } from "@/lib/format";
 import { Plus, Trash2, Calculator, Save, FileText, Copy, Layers, X, Pencil, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Send, Clock, Download, Image as ImageIcon, Check, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 import { PlanExportSheet, exportPlanImage, exportPlanPdf, type ExportPlan } from "@/lib/export-plan";
+import { DebtPayoff } from "@/components/debt-payoff";
 import { CATEGORY_KEYS } from "@/lib/categories";
 import { CategoryOptions } from "@/components/category-select";
 
@@ -743,6 +744,13 @@ function PlannerPage() {
           </div>
         </div>
       </div>
+
+      {/* ---------- Debt payoff ---------- */}
+      <div className="mt-8">
+        <DebtPayoff />
+      </div>
+
+
 
       {/* Hidden export sheet — rendered off-screen while an export is in flight */}
       {exportTarget && (
