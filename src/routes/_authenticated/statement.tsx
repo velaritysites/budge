@@ -399,6 +399,14 @@ function StatementPage() {
         {/* ------------------------- results ------------------------- */}
         {result && result.allCards.length + result.income.length > 0 && (
           <>
+            <AnomalyAlerts
+              currency={currency}
+              onSeeWhatChanged={(cat) => {
+                setExpanded((p) => ({ ...p, [cat]: true }));
+                document.getElementById(`cat-${cat}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+              }}
+            />
+
             {/* Summary */}
             <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <StatCard label="Total income in" value={formatCurrency(result.totalIncome, currency, { decimals: 0 })} caption={`${result.income.length} credits`} tone="accent" />
@@ -435,13 +443,15 @@ function StatementPage() {
               <span className="label-xs">Where it went</span>
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                 {result.spendCards.map((c) => (
-                  <CategoryCard
-                    key={c.key} cat={c.key} total={c.total} items={c.items} currency={currency}
-                    share={(c.total / (result.totalSpent || 1)) * 100}
-                    budget={budgets[c.key]}
-                    open={!!expanded[c.key]}
-                    onToggle={() => setExpanded((p) => ({ ...p, [c.key]: !p[c.key] }))}
-                  />
+                  <div key={c.key} id={`cat-${c.key}`}>
+                    <CategoryCard
+                      cat={c.key} total={c.total} items={c.items} currency={currency}
+                      share={(c.total / (result.totalSpent || 1)) * 100}
+                      budget={budgets[c.key]}
+                      open={!!expanded[c.key]}
+                      onToggle={() => setExpanded((p) => ({ ...p, [c.key]: !p[c.key] }))}
+                    />
+                  </div>
                 ))}
               </div>
 
