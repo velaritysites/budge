@@ -13,6 +13,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedTaxRouteImport } from './routes/_authenticated/tax'
 import { Route as AuthenticatedStatsRouteImport } from './routes/_authenticated/stats'
 import { Route as AuthenticatedStatementRouteImport } from './routes/_authenticated/statement'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
@@ -42,6 +43,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTaxRoute = AuthenticatedTaxRouteImport.update({
+  id: '/tax',
+  path: '/tax',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedStatsRoute = AuthenticatedStatsRouteImport.update({
   id: '/stats',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/statement': typeof AuthenticatedStatementRoute
   '/stats': typeof AuthenticatedStatsRoute
+  '/tax': typeof AuthenticatedTaxRoute
   '/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
 }
 export interface FileRoutesByTo {
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/statement': typeof AuthenticatedStatementRoute
   '/stats': typeof AuthenticatedStatsRoute
+  '/tax': typeof AuthenticatedTaxRoute
   '/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
 }
 export interface FileRoutesById {
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/statement': typeof AuthenticatedStatementRoute
   '/_authenticated/stats': typeof AuthenticatedStatsRoute
+  '/_authenticated/tax': typeof AuthenticatedTaxRoute
   '/_authenticated/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
 }
 export interface FileRouteTypes {
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/statement'
     | '/stats'
+    | '/tax'
     | '/goals/$goalId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/statement'
     | '/stats'
+    | '/tax'
     | '/goals/$goalId'
   id:
     | '__root__'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/statement'
     | '/_authenticated/stats'
+    | '/_authenticated/tax'
     | '/_authenticated/goals/$goalId'
   fileRoutesById: FileRoutesById
 }
@@ -227,6 +239,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/tax': {
+      id: '/_authenticated/tax'
+      path: '/tax'
+      fullPath: '/tax'
+      preLoaderRoute: typeof AuthenticatedTaxRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/stats': {
       id: '/_authenticated/stats'
@@ -322,6 +341,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStatementRoute: typeof AuthenticatedStatementRoute
   AuthenticatedStatsRoute: typeof AuthenticatedStatsRoute
+  AuthenticatedTaxRoute: typeof AuthenticatedTaxRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -334,6 +354,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStatementRoute: AuthenticatedStatementRoute,
   AuthenticatedStatsRoute: AuthenticatedStatsRoute,
+  AuthenticatedTaxRoute: AuthenticatedTaxRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
