@@ -106,6 +106,7 @@ function SettingsPage() {
       push_notifications: pushN,
       auto_allocation_mode: allocMode,
       auto_contribution_timing: autoTiming,
+      multi_currency_enabled: multiCurrency,
     } as any);
     if (pushN && !profile.push_token) {
       const token = await registerPushToken();
