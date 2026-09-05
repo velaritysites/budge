@@ -4,6 +4,7 @@ import { useProfile } from "@/hooks/use-profile";
 import { useEffect, useState } from "react";
 import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon, Calculator, GitCompare, Plus, FileSearch } from "lucide-react";
 import logo from "@/assets/budge-logo.png";
+import { useOpenAlerts } from "@/lib/alerts";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -56,6 +57,8 @@ function AuthLayout() {
   const { data: profile, isLoading } = useProfile();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const { data: openAlerts = [] } = useOpenAlerts();
+  const alertCount = openAlerts.length;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -142,6 +145,11 @@ function AuthLayout() {
                     <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-r-full bg-accent transition-all duration-300 group-data-[status=active]:h-5" />
                     <Icon className="size-[17px] opacity-40 transition-opacity group-hover:opacity-70 group-data-[status=active]:text-accent group-data-[status=active]:opacity-100" />
                     {item.label}
+                    {item.to === "/statement" && alertCount > 0 && (
+                      <span className="ml-auto flex size-[18px] items-center justify-center rounded-full bg-caution/20 font-mono text-[10px] font-bold text-caution">
+                        {alertCount}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
