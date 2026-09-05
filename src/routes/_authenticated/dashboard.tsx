@@ -31,6 +31,8 @@ import { DashboardSkeleton, EmptyState } from "@/components/ui/states";
 import { CATEGORY_KEYS, GROUPED_CATEGORIES, isPositiveCategory } from "@/lib/categories";
 import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 import { ForecastCard } from "@/components/forecast-card";
+import { BudgeScoreCard } from "@/components/budge-score-card";
+import { useNotificationEngine } from "@/lib/use-notification-engine";
 import { getCurrency } from "@/lib/currencies";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -119,6 +121,7 @@ function Dashboard() {
     expenses,
   );
   const animatedDisposable = useCountUp(totals.disposable, 900);
+  useNotificationEngine({ totals, expenses, snaps, currency: profile?.currency_code ?? "ZAR" });
 
   function prefill(name: string, amount: string, category: ExpenseCategory) {
     setQName(name);
@@ -381,6 +384,15 @@ function Dashboard() {
 
         {/* ---------- Predictive forecast ---------- */}
         <div className="animate-enter [animation-delay:170ms] xl:col-span-12">
+          <BudgeScoreCard
+            currency={currency}
+            grossIncome={totals.grossIncome}
+            netIncome={totals.netIncome}
+            savingsRate={totals.savingsRate}
+            disposable={totals.disposable}
+            expenses={expenses}
+          />
+
           <ForecastCard />
         </div>
 

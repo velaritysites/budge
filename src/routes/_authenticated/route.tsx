@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon, Calculator, GitCompare, Plus, FileSearch } from "lucide-react";
 import logo from "@/assets/budge-logo.png";
 import { useOpenAlerts } from "@/lib/alerts";
+import { NotificationBell } from "@/components/notification-bell";
+import { AssistantLauncher, AssistantTabButton } from "@/components/assistant";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -96,9 +98,12 @@ function AuthLayout() {
           <img src={logo} alt="Budge" className="size-7 rounded-md" />
           <span className="font-display text-sm font-bold tracking-tight">Budge</span>
         </Link>
+        <div className="flex items-center gap-1">
+          <NotificationBell />
         <button onClick={() => setMobileOpen(!mobileOpen)} className="btn-ghost !p-2">
           {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
         </button>
+        </div>
       </header>
 
       {/* Sidebar */}
@@ -184,6 +189,7 @@ function AuthLayout() {
                 {profile?.currency_code}
               </span>
             </div>
+            <NotificationBell className="hidden md:block" />
             <button onClick={toggleTheme} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-surface-3 hover:text-foreground" title="Toggle theme">
               {theme === "dark" ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
             </button>
@@ -194,6 +200,8 @@ function AuthLayout() {
         </div>
       </nav>
 
+      <AssistantLauncher />
+
       <main className="aura min-w-0 flex-1 pb-16 md:pb-0">
         <div key={location.pathname} className="animate-fade">
           <Outlet />
@@ -201,7 +209,7 @@ function AuthLayout() {
       </main>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-5 border-t border-hairline bg-background/85 backdrop-blur-xl md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 grid grid-cols-6 border-t border-hairline bg-background/85 backdrop-blur-xl md:hidden">
         {BOTTOM_NAV.map((item) => {
           const Icon = item.icon;
           return (
@@ -216,6 +224,7 @@ function AuthLayout() {
             </Link>
           );
         })}
+        <AssistantTabButton />
       </nav>
     </div>
   );

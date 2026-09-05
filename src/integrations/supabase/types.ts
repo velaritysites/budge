@@ -53,6 +53,65 @@ export type Database = {
         }
         Relationships: []
       }
+      assistant_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      assistant_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assistant_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "assistant_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       benchmark_samples: {
         Row: {
           category_pcts: Json
@@ -78,6 +137,75 @@ export type Database = {
           id?: string
           income_bracket?: string
           month?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      budge_scores: {
+        Row: {
+          created_at: string
+          factors: Json
+          id: string
+          month: string
+          score: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          factors?: Json
+          id?: string
+          month: string
+          score: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          factors?: Json
+          id?: string
+          month?: string
+          score?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bureau_scores: {
+        Row: {
+          bureau: string
+          created_at: string
+          estimated_score: number | null
+          factors: Json
+          gap: number | null
+          id: string
+          reported_on: string
+          score: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bureau: string
+          created_at?: string
+          estimated_score?: number | null
+          factors?: Json
+          gap?: number | null
+          id?: string
+          reported_on?: string
+          score: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bureau?: string
+          created_at?: string
+          estimated_score?: number | null
+          factors?: Json
+          gap?: number | null
+          id?: string
+          reported_on?: string
+          score?: number
           updated_at?: string
           user_id?: string
         }
@@ -384,6 +512,45 @@ export type Database = {
           net_income?: number
           savings_rate?: number
           total_expenses?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          dedupe_key: string
+          id: string
+          kind: string
+          link: string | null
+          read_at: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          dedupe_key: string
+          id?: string
+          kind: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          dedupe_key?: string
+          id?: string
+          kind?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
           updated_at?: string
           user_id?: string
         }
