@@ -529,6 +529,11 @@ function StatementPage() {
             {/* Subscription audit */}
             <SubscriptionAudit currency={currency} />
 
+            {/* Bookkeeping reconciliation */}
+            <ReconcilePanel txns={txns} currency={currency} />
+
+
+
 
             {/* Sync */}
             <section className="panel p-6">
