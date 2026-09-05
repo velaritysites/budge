@@ -74,6 +74,7 @@ function SettingsPage() {
       setPushN(profile.push_notifications);
       setAllocMode(((profile as any).auto_allocation_mode as any) ?? "weighted");
       setAutoTiming(((profile as any).auto_contribution_timing as any) ?? "on_demand");
+      setMultiCurrency(!!profile.multi_currency_enabled);
     }
   }, [profile]);
 
