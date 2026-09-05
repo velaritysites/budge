@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCurrency } from "@/lib/format";
 import { categoryColor, categoryLabel, normalizeCategory } from "@/lib/categories";
-import { Share2, Trophy, TrendingDown, TrendingUp } from "lucide-react";
+import { FileDown, Share2, Trophy, TrendingDown, TrendingUp } from "lucide-react";
+import { estimatePaye } from "@/lib/tax";
 import { toast } from "sonner";
 
 type Snap = {
@@ -13,6 +14,8 @@ type Snap = {
   disposable_income: number;
   savings_rate: number;
   expenses_by_category: Record<string, number> | null;
+  net_worth: number | null;
+  liabilities_total: number | null;
 };
 
 function monthName(m: string) {
@@ -30,7 +33,7 @@ export function AnnualReview({ currency }: { currency: string }) {
     queryFn: async (): Promise<Snap[]> => {
       const { data, error } = await supabase
         .from("monthly_snapshots")
-        .select("month, net_income, total_expenses, disposable_income, savings_rate, expenses_by_category")
+        .select("month, net_income, total_expenses, disposable_income, savings_rate, expenses_by_category, net_worth, liabilities_total")
         .order("month", { ascending: true })
         .limit(60);
       if (error) throw error;
@@ -41,6 +44,8 @@ export function AnnualReview({ currency }: { currency: string }) {
         disposable_income: Number(r.disposable_income),
         savings_rate: Number(r.savings_rate),
         expenses_by_category: r.expenses_by_category ?? {},
+        net_worth: r.net_worth === null || r.net_worth === undefined ? null : Number(r.net_worth),
+        liabilities_total: r.liabilities_total === null || r.liabilities_total === undefined ? null : Number(r.liabilities_total),
       }));
     },
   });
@@ -102,6 +107,15 @@ export function AnnualReview({ currency }: { currency: string }) {
       worst,
       scoreStart: yearScores[0]?.score ?? null,
       scoreEnd: yearScores[yearScores.length - 1]?.score ?? null,
+      trend: inYear.map((s) => ({ month: s.month, rate: s.savings_rate })),
+      netWorthStart: inYear.find((s) => s.net_worth !== null)?.net_worth ?? null,
+      netWorthEnd: [...inYear].reverse().find((s) => s.net_worth !== null)?.net_worth ?? null,
+      liabilitiesStart: inYear.find((s) => s.liabilities_total !== null)?.liabilities_total ?? null,
+      liabilitiesEnd: [...inYear].reverse().find((s) => s.liabilities_total !== null)?.liabilities_total ?? null,
+      saved: inYear.reduce((s, x) => s + Math.max(0, x.disposable_income), 0),
+      invested: totals["investments"] ?? 0,
+      prevTotals,
+      prevIncome: prev.reduce((s, x) => s + x.net_income, 0),
     };
   }, [all, scores, year]);
 
