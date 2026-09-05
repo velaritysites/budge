@@ -305,6 +305,27 @@ function SettingsPage() {
           </Field>
         </Section>
 
+        <Section title="Currency">
+          <ToggleRow
+            icon={<Globe className="size-4" />}
+            label="Multi-currency mode"
+            desc="Adds an optional currency and exchange rate to every expense form."
+            checked={multiCurrency}
+            onChange={setMultiCurrency}
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Foreign expenses are converted to your home currency ({currency}) using the rate you enter, and both the
+            original and converted amounts are kept. Rates are entered manually — Budge doesn't fetch live rates.
+          </p>
+        </Section>
+
+        <Section title="Household">
+          <HouseholdSection />
+        </Section>
+
+        <Section title="Tax summary">
+          <TaxSummary />
+        </Section>
 
 
         <Section title="Safety buffer">
