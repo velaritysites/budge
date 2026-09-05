@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { sendAssistantMessage } from "@/lib/assistant.functions";
 import { MessageCircle, X, Send, History, Plus } from "lucide-react";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -181,13 +182,13 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
               {messages.map((m, i) => (
                 <div
                   key={i}
-                  className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
+                  className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed ${
                     m.role === "user"
-                      ? "self-end bg-accent/15 text-foreground"
-                      : "self-start border border-hairline bg-surface-2"
+                      ? "self-end whitespace-pre-wrap bg-accent/15 text-foreground"
+                      : "self-start border border-hairline bg-surface-2 [&_a]:text-accent [&_li]:ml-4 [&_li]:list-disc [&_p+p]:mt-2 [&_strong]:font-semibold [&_ul]:mt-1"
                   }`}
                 >
-                  {m.content}
+                  {m.role === "user" ? m.content : <ReactMarkdown>{m.content}</ReactMarkdown>}
                 </div>
               ))}
               {busy && (
