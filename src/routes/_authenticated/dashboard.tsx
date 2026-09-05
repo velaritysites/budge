@@ -71,9 +71,29 @@ function useSnapshots() {
 
 function Dashboard() {
   const { data: profile } = useProfile();
-  const { data: expenses = [] } = useExpenses();
+  const householdOn = !!profile?.household_view;
+  const { data: expenses = [] } = useExpenses(householdOn);
   const { data: snaps = [] } = useSnapshots();
   const qc = useQueryClient();
+
+  // In Household view, add the partner's income to your own.
+  const { data: partnerIncome } = useQuery({
+    queryKey: ["household_income", householdOn],
+    enabled: householdOn,
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      const { data } = await supabase.from("profiles").select("id, net_income, gross_income");
+      return (data ?? [])
+        .filter((p: any) => p.id !== u.user?.id)
+        .reduce(
+          (acc: { net: number; gross: number }, p: any) => ({
+            net: acc.net + Number(p.net_income ?? 0),
+            gross: acc.gross + Number(p.gross_income ?? 0),
+          }),
+          { net: 0, gross: 0 },
+        );
+    },
+  });
 
   const [qName, setQName] = useState("");
   const [qAmount, setQAmount] = useState("");
@@ -82,8 +102,8 @@ function Dashboard() {
   const [saving, setSaving] = useState(false);
 
   const totals = computeTotals(
-    Number(profile?.net_income ?? 0),
-    Number(profile?.gross_income ?? 0),
+    Number(profile?.net_income ?? 0) + (householdOn ? partnerIncome?.net ?? 0 : 0),
+    Number(profile?.gross_income ?? 0) + (householdOn ? partnerIncome?.gross ?? 0 : 0),
     expenses,
   );
   const animatedDisposable = useCountUp(totals.disposable, 900);
