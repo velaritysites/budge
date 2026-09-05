@@ -32,6 +32,8 @@ import { CATEGORY_KEYS, GROUPED_CATEGORIES, isPositiveCategory } from "@/lib/cat
 import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 import { ForecastCard } from "@/components/forecast-card";
 import { BudgeScoreCard } from "@/components/budge-score-card";
+import { MonthlyCloseCard } from "@/components/monthly-close";
+import { BriefingCard } from "@/components/briefing-card";
 import { useNotificationEngine } from "@/lib/use-notification-engine";
 import { getCurrency } from "@/lib/currencies";
 
@@ -394,6 +396,8 @@ function Dashboard() {
           />
 
           <ForecastCard />
+          <MonthlyCloseCard currency={profile.currency_code} />
+          <BriefingCard />
         </div>
 
 
