@@ -530,7 +530,7 @@ function StatementPage() {
             <SubscriptionAudit currency={currency} />
 
             {/* Bookkeeping reconciliation */}
-            <ReconcilePanel txns={txns} currency={currency} />
+            <ReconcilePanel txns={txns ?? []} currency={currency} />
 
 
 

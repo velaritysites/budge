@@ -35,7 +35,7 @@ function StatsPage() {
   const [tab, setTab] = useState<"history" | "networth" | "briefings" | "benchmarks" | "annual">("history");
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [drillCategory, setDrillCategory] = useState<ExpenseCategory | null>(null);
-  const { data: locked = new Set<string>() } = useLockedMonths();
+  const { data: locked = {} } = useLockedMonths();
 
   const { data: snapshots = [] } = useQuery({
     queryKey: ["snapshots"],
@@ -151,7 +151,7 @@ function StatsPage() {
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <h2 className="flex items-center gap-2 text-3xl md:text-4xl font-display font-extrabold tracking-tight">
                   Monthly snapshot.
-                  {active && locked.has(active.month) && <Lock className="size-5 text-accent" aria-label="Closed and locked" />}
+                  {active && !!locked[active.month] && <Lock className="size-5 text-accent" aria-label="Closed and locked" />}
                 </h2>
                 <select
                   value={active?.month ?? ""}
@@ -160,7 +160,7 @@ function StatsPage() {
                 >
                   {snapshots.map((s) => (
                     <option key={s.month} value={s.month}>
-                      {locked.has(s.month) ? "🔒 " : ""}
+                      {!!locked[s.month] ? "🔒 " : ""}
                       {new Date(s.month).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
                     </option>
                   ))}
