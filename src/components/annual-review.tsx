@@ -48,7 +48,7 @@ export function AnnualReview({ currency }: { currency: string }) {
   const { data: goals = [] } = useQuery({
     queryKey: ["goals", "annual"],
     queryFn: async () => {
-      const { data } = await supabase.from("goals").select("name, completed_at, target_amount, current_amount");
+      const { data } = await supabase.from("savings_goals").select("name, completed_at, target_amount, current_amount");
       return data ?? [];
     },
   });

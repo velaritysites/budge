@@ -19,7 +19,7 @@ async function buildContext(supabase: any, userId: string) {
     await Promise.all([
       supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
       supabase.from("expenses").select("name, category, amount, frequency, is_fixed").is("deleted_at", null),
-      supabase.from("goals").select("name, target_amount, current_amount, target_date, completed_at"),
+      supabase.from("savings_goals").select("name, target_amount, current_amount, target_date, completed_at"),
       supabase.from("debts").select("name, balance, interest_rate, min_payment, account_type"),
       supabase
         .from("monthly_snapshots")
