@@ -121,7 +121,10 @@ function StatsPage() {
         </div>
 
         {tab === "benchmarks" ? (
-          <BenchmarksTab />
+          <BenchmarksTab
+            netIncome={Number(profile.net_income)}
+            categoryTotals={(snapshots[0]?.expenses_by_category ?? {}) as Record<string, number>}
+          />
         ) : snapshots.length === 0 ? (
           <div className="text-center py-16">
             <h1 className="text-3xl font-display font-extrabold tracking-tight mb-2">No history yet.</h1>
