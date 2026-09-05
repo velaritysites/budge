@@ -46,6 +46,9 @@ function ExpensesPage() {
   const [showDeleted, setShowDeleted] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const multiCurrency = !!profile?.multi_currency_enabled;
+  const [expCurrency, setExpCurrency] = useState(profile?.currency_code ?? "USD");
+  const [rate, setRate] = useState("");
 
   async function loadDeleted() {
     const { data } = await supabase
@@ -86,17 +89,28 @@ function ExpensesPage() {
     const { data: u } = await supabase.auth.getUser();
     if (!u.user) return;
     const dueDayNum = dueDay ? Math.max(1, Math.min(31, parseInt(dueDay))) : null;
+    const entered = parseFloat(amount);
+    const home = profile?.currency_code ?? "USD";
+    const foreign = multiCurrency && expCurrency !== home;
+    const rateNum = parseFloat(rate || "0");
+    if (foreign && (!rateNum || rateNum <= 0)) return toast.error("Enter the exchange rate for this currency");
     const { error } = await supabase.from("expenses").insert({
-      user_id: u.user.id, name, amount: parseFloat(amount), category, frequency, is_fixed: isFixed,
+      user_id: u.user.id, name,
+      amount: foreign ? Math.round(entered * rateNum * 100) / 100 : entered,
+      category, frequency, is_fixed: isFixed,
       due_day: dueDayNum,
       notify_enabled: notify && !!dueDayNum,
       notify_lead_days: parseInt(lead || "3"),
+      original_amount: foreign ? entered : null,
+      original_currency: foreign ? expCurrency : null,
+      exchange_rate: foreign ? rateNum : null,
     });
     if (error) return toast.error(error.message);
-    setName(""); setAmount(""); setDueDay(""); setNotify(false);
+    setName(""); setAmount(""); setDueDay(""); setNotify(false); setRate("");
     await refresh();
     toast.success("Added");
   }
+
 
   async function deleteExpense(id: string) {
     const { error } = await supabase.from("expenses").update({ deleted_at: new Date().toISOString() }).eq("id", id);
