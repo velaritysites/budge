@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import { DashboardSkeleton, EmptyState } from "@/components/ui/states";
 import { CATEGORY_KEYS, GROUPED_CATEGORIES, isPositiveCategory } from "@/lib/categories";
 import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
+import { ForecastCard } from "@/components/forecast-card";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -366,6 +367,13 @@ function Dashboard() {
             tone={totals.burnRate > 80 ? "alert" : totals.burnRate > 60 ? "caution" : "default"}
           />
         </div>
+
+        {/* ---------- Predictive forecast ---------- */}
+        <div className="animate-enter [animation-delay:170ms] xl:col-span-12">
+          <ForecastCard />
+        </div>
+
+
 
         {/* ---------- Distribution ---------- */}
         <section className="animate-enter panel p-7 [animation-delay:200ms] xl:col-span-7">
