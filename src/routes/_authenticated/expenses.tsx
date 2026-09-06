@@ -13,7 +13,7 @@ import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/categ
 import { CURRENCIES, getCurrency } from "@/lib/currencies";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
-  head: () => ({ meta: [{ title: "Expenses — Loot" }] }),
+  head: () => ({ meta: [{ title: "Expenses — Loot" }, { name: "description", content: "Add, edit, restore and review every expense in Loot." }, { property: "og:title", content: "Expenses — Loot" }, { property: "og:description", content: "Add, edit, restore and review every expense in Loot." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: ExpensesPage,
 });
 

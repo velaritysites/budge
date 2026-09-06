@@ -14,7 +14,7 @@ import { TaxSummary } from "@/components/tax-summary";
 import { FinancialIdentity } from "@/components/financial-identity";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings — Loot" }] }),
+  head: () => ({ meta: [{ title: "Settings — Loot" }, { name: "description", content: "Manage your Loot profile, income streams, currency and preferences." }, { property: "og:title", content: "Settings — Loot" }, { property: "og:description", content: "Manage your Loot profile, income streams, currency and preferences." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: SettingsPage,
 });
 

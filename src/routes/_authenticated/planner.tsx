@@ -14,7 +14,7 @@ import { CATEGORY_KEYS } from "@/lib/categories";
 import { CategoryOptions } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/planner")({
-  head: () => ({ meta: [{ title: "Salary Planner — Loot" }] }),
+  head: () => ({ meta: [{ title: "Salary Planner — Loot" }, { name: "description", content: "Build and save phased salary plans with Loot." }, { property: "og:title", content: "Salary Planner — Loot" }, { property: "og:description", content: "Build and save phased salary plans with Loot." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: PlannerPage,
 });
 
