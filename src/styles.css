@@ -196,11 +196,13 @@
 /* Layered depth surfaces */
 @utility panel {
   position: relative;
+  background-color: var(--card);
   background-image: var(--panel-bg);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-panel);
   isolation: isolate;
+  transition: transform 240ms var(--ease-out-expo), box-shadow 240ms var(--ease-out-expo), border-color 240ms var(--ease-out-expo);
   &::before {
     content: "";
     position: absolute;
@@ -209,11 +211,14 @@
     background-image: var(--panel-sheen);
     pointer-events: none;
     z-index: -1;
+    opacity: 0.5;
   }
+}
 }
 @utility panel-raised {
   position: relative;
   background-image: var(--panel-bg);
+  background-color: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-raised);
@@ -242,23 +247,31 @@
 @utility hairline-b {
   border-bottom: 1px solid var(--hairline);
 }
-@utility field {
+@utility field{
   width: 100%;
   background: var(--input);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 0.625rem 0.75rem;
+  padding: 0.625rem 0.875rem;
   font-size: 0.875rem;
   color: var(--foreground);
-  transition: border-color 180ms var(--ease-out-expo), box-shadow 180ms var(--ease-out-expo), background 180ms;
-  &::placeholder { color: color-mix(in oklab, var(--muted-foreground) 80%, transparent); }
+  transition: all 200ms var(--ease-out-expo);
+  &::placeholder { color: var(--text-subtle); }
+  &:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), 0 0 20px -5px color-mix(in oklab, var(--accent) 30%, transparent);
+    background: color-mix(in oklab, var(--surface) 50%, var(--input));
+  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
   &:focus {
     outline: none;
     border-color: color-mix(in oklab, var(--accent) 55%, var(--border));
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 14%, transparent);
   }
 }
-@utility btn-accent {
+@utility btn-accent{
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -268,29 +281,39 @@
   color: var(--primary-foreground);
   font-weight: 700;
   font-size: 0.875rem;
-  padding: 0.625rem 1rem;
-  box-shadow: 0 10px 24px -16px var(--primary);
-  transition: transform 160ms var(--ease-spring), filter 160ms;
-  &:hover { filter: brightness(1.06); }
+  padding: 0.625rem 1.25rem;
+  box-shadow: 0 8px 20px -8px var(--primary);
+  transition: all 200ms var(--ease-spring);
+  border: 1px solid transparent;
+  &:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px -10px var(--primary);
+  }
+  &:active { transform: translateY(0) scale(0.98); }
+}
   &:active { transform: scale(0.985); }
   &:disabled { opacity: 0.5; }
 }
-@utility btn-ghost {
+@utility btn-ghost{
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  background: color-mix(in oklab, var(--surface-2) 70%, transparent);
+  background: color-mix(in oklab, var(--surface-2) 40%, transparent);
   color: var(--foreground);
   font-size: 0.875rem;
-  padding: 0.5rem 0.875rem;
-  transition: background 160ms, border-color 160ms;
+  padding: 0.625rem 1rem;
+  transition: all 200ms var(--ease-out-expo);
+  backdrop-filter: blur(8px);
   &:hover {
     background: var(--surface-3);
-    border-color: color-mix(in oklab, var(--accent) 25%, var(--border));
+    border-color: color-mix(in oklab, var(--accent) 40%, var(--border));
+    transform: translateY(-1px);
   }
+}
 }
 
 @utility btn-primary {
@@ -672,4 +695,19 @@
   font-size: 0.625rem;
   font-weight: 700;
   letter-spacing: 0.04em;
+}
+
+/* Centralized Select styling */
+select.field {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+select.field option {
+  background-color: var(--surface-2);
+  color: var(--foreground);
 }
