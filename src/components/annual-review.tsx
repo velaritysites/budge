@@ -384,7 +384,7 @@ export function AnnualReview({ currency }: { currency: string }) {
 
       {/* Privacy-safe shareable card — percentages and trends only */}
       <div className="overflow-hidden" style={{ height: 0 }}>
-        <div ref={shareRef} className="w-[720px] bg-[#0b0d12] p-10 text-white">
+        <div ref={shareRef} className="w-[720px] bg-background p-10 text-foreground">
           <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#7BD9A5]">Loot · {year} in review</p>
           <h2 className="mt-4 text-5xl font-extrabold tracking-tight">My year in money</h2>
           <div className="mt-8 grid grid-cols-2 gap-6">
