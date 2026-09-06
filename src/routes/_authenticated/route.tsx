@@ -59,6 +59,19 @@ function AuthLayout() {
   const location = useLocation();
   const { data: profile, isLoading } = useProfile();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopOpen, setDesktopOpen] = useState(() => {
+    if (typeof document !== "undefined") {
+      const cookie = document.cookie.split("; ").find((row) => row.startsWith("sidebar_state="));
+      return cookie ? cookie.split("=")[1] === "true" : true;
+    }
+    return true;
+  });
+
+  const toggleDesktop = () => {
+    const next = !desktopOpen;
+    setDesktopOpen(next);
+    document.cookie = `sidebar_state=${next}; path=/; max-age=${60 * 60 * 24 * 7}`;
+  };
   const { data: openAlerts = [] } = useOpenAlerts();
   const alertCount = openAlerts.length;
 
@@ -94,18 +107,23 @@ function AuthLayout() {
 
       {/* Sidebar */}
       <nav
-        className={`${mobileOpen ? "flex" : "hidden"} md:flex w-full md:w-[264px] shrink-0 flex-col gap-7 p-4 md:p-5
+        className={`${mobileOpen ? "flex" : "hidden"} md:flex w-full ${desktopOpen ? "md:w-[264px]" : "md:w-[80px]"} shrink-0 flex-col gap-7 p-4 ${desktopOpen ? "md:p-5" : "md:p-3"} transition-[width,padding] duration-300
           border-b md:border-b-0 md:border-r border-hairline
           md:sticky md:top-0 md:h-screen
           bg-background`}
+        <div className="hidden md:flex justify-end px-2">
+          <button onClick={toggleDesktop} className="btn-ghost !p-1.5 opacity-50 hover:opacity-100">
+            <Menu className="size-4" />
+          </button>
+        </div>
       >
-        <Link to="/dashboard" className="hidden md:flex px-2 pt-3" onClick={() => setMobileOpen(false)}><LootLogo iconClassName="size-11" /></Link>
+        <Link to="/dashboard" className="hidden md:flex px-2 pt-3" onClick={() => setMobileOpen(false)}><LootLogo iconClassName="size-11" collapsed={!desktopOpen} /></Link>
 
         <div className="flex flex-col gap-6">
           {NAV_GROUPS.map((group) => (
-            <div key={group.label} className="flex flex-col gap-1">
+            <div key={desktopOpen ? group.label : ""} className="flex flex-col gap-1">
               <span className="px-3 pb-1.5 text-[9px] font-mono uppercase tracking-[0.2em] text-muted-foreground/60">
-                {group.label}
+                {desktopOpen ? group.label : ""}
               </span>
               {group.items.map((item) => {
                 const Icon = item.icon;
@@ -133,7 +151,7 @@ function AuthLayout() {
         </div>
 
 
-        <div className="loot-promo">
+        <div className={`loot-promo ${!desktopOpen ? "hidden" : ""}`}>
           <ReceiptText className="size-5 text-primary" />
           <p className="mt-2 text-sm font-bold">Add an expense</p>
           <p className="mt-1 text-xs text-muted-foreground">Have an expense, you would like to add?</p>
@@ -158,7 +176,7 @@ function AuthLayout() {
               {initials}
             </div>
             <div className="flex min-w-0 flex-1 flex-col">
-              <span className="truncate text-xs font-semibold">{profile?.display_name ?? "You"}</span>
+              <span className="truncate text-xs font-semibold">{{desktopOpen && (profile?.display_name ?? "You")}}</span>
               <span className="truncate text-[10px] text-muted-foreground">Profile &amp; settings</span>
             </div>
           </Link>
