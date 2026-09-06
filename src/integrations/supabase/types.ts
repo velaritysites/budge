@@ -744,14 +744,20 @@ export type Database = {
       }
       savings_goals: {
         Row: {
+          category: string
           completed_at: string | null
           created_at: string
           current_amount: number
           id: string
+          is_completed: boolean
+          is_paused: boolean
           last_auto_period: string | null
           name: string
+          note: string | null
           priority: number
           progress_mode: string
+          resume_date: string | null
+          sort_order: number
           target_amount: number
           target_date: string | null
           updated_at: string
@@ -759,14 +765,20 @@ export type Database = {
           weight: number
         }
         Insert: {
+          category?: string
           completed_at?: string | null
           created_at?: string
           current_amount?: number
           id?: string
+          is_completed?: boolean
+          is_paused?: boolean
           last_auto_period?: string | null
           name: string
+          note?: string | null
           priority?: number
           progress_mode?: string
+          resume_date?: string | null
+          sort_order?: number
           target_amount: number
           target_date?: string | null
           updated_at?: string
@@ -774,14 +786,20 @@ export type Database = {
           weight?: number
         }
         Update: {
+          category?: string
           completed_at?: string | null
           created_at?: string
           current_amount?: number
           id?: string
+          is_completed?: boolean
+          is_paused?: boolean
           last_auto_period?: string | null
           name?: string
+          note?: string | null
           priority?: number
           progress_mode?: string
+          resume_date?: string | null
+          sort_order?: number
           target_amount?: number
           target_date?: string | null
           updated_at?: string

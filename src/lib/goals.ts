@@ -89,3 +89,135 @@ export function computeAutoAllocations(
 export function currentPeriodKey(d: Date = new Date()): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
 }
+
+/* ------------------------------------------------------------------ *
+ * Multi-goal savings planner
+ * ------------------------------------------------------------------ */
+
+export type GoalCategory =
+  | "vehicle" | "tech" | "travel" | "property" | "education"
+  | "emergency" | "clothing" | "health" | "gift" | "other";
+
+export const GOAL_CATEGORIES: { key: GoalCategory; label: string; icon: string }[] = [
+  { key: "vehicle", label: "Vehicle", icon: "Car" },
+  { key: "tech", label: "Tech & Electronics", icon: "Laptop" },
+  { key: "travel", label: "Travel & Holiday", icon: "Plane" },
+  { key: "property", label: "Property", icon: "Home" },
+  { key: "education", label: "Education", icon: "GraduationCap" },
+  { key: "emergency", label: "Emergency Fund", icon: "Shield" },
+  { key: "clothing", label: "Clothing & Fashion", icon: "Shirt" },
+  { key: "health", label: "Health & Wellness", icon: "HeartPulse" },
+  { key: "gift", label: "Gift or Event", icon: "Gift" },
+  { key: "other", label: "Other", icon: "Target" },
+];
+
+export const GOAL_CATEGORY_LABEL: Record<string, string> = Object.fromEntries(
+  GOAL_CATEGORIES.map((c) => [c.key, c.label]),
+);
+
+/** Whole months from today until the given month/date (minimum 1). */
+export function monthsUntil(target: string | null | undefined, from: Date = new Date()): number {
+  if (!target) return 12;
+  const d = new Date(target);
+  if (isNaN(d.getTime())) return 12;
+  const months =
+    (d.getFullYear() - from.getFullYear()) * 12 + (d.getMonth() - from.getMonth());
+  return Math.max(1, months);
+}
+
+export function remainingAmount(g: Pick<Goal, "target_amount" | "current_amount">): number {
+  return Math.max(0, g.target_amount - g.current_amount);
+}
+
+/** Monthly contribution needed to hit the target by the target date. */
+export function requiredMonthly(
+  g: Pick<Goal, "target_amount" | "current_amount" | "target_date">,
+  extraMonths = 0,
+  from: Date = new Date(),
+): number {
+  const months = monthsUntil(g.target_date, from) + extraMonths;
+  return remainingAmount(g) / Math.max(1, months);
+}
+
+export function formatMonthYear(date: string | null | undefined): string {
+  if (!date) return "No date";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "No date";
+  return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+}
+
+/** "YYYY-MM" -> last-day-safe first-of-month ISO date. */
+export function monthInputToDate(monthValue: string): string | null {
+  if (!monthValue) return null;
+  return `${monthValue}-01`;
+}
+
+export function dateToMonthInput(date: string | null): string {
+  return date ? date.slice(0, 7) : "";
+}
+
+export type PlannerGoal = Goal & {
+  category?: string;
+  note?: string | null;
+  sort_order?: number;
+  is_paused?: boolean;
+  resume_date?: string | null;
+  is_completed?: boolean;
+};
+
+export function isActiveGoal(g: PlannerGoal): boolean {
+  return !g.is_completed && !g.completed_at && remainingAmount(g) > 0;
+}
+
+/** Months from now until a paused goal resumes (0 when already active). */
+function resumeOffset(g: PlannerGoal, from: Date): number {
+  if (!g.is_paused) return 0;
+  if (!g.resume_date) return Infinity;
+  return Math.max(0, monthsUntil(g.resume_date, from) - 1);
+}
+
+export type TimelineMonth = {
+  label: string;
+  total: number;
+  completing: string[];
+};
+
+/**
+ * 24-month view of the total monthly goal commitment. A goal contributes until
+ * its target month, after which its share drops out of later bars.
+ */
+export function commitmentTimeline(
+  goals: PlannerGoal[],
+  months = 24,
+  extraMonthsByGoal: Record<string, number> = {},
+  from: Date = new Date(),
+): TimelineMonth[] {
+  const active = goals.filter(isActiveGoal);
+  const out: TimelineMonth[] = [];
+  for (let i = 0; i < months; i++) {
+    const d = new Date(from.getFullYear(), from.getMonth() + i, 1);
+    let total = 0;
+    const completing: string[] = [];
+    for (const g of active) {
+      const start = resumeOffset(g, from);
+      if (!isFinite(start)) continue;
+      const span = monthsUntil(g.target_date, from) + (extraMonthsByGoal[g.id] ?? 0);
+      const end = start + span;
+      if (i >= start && i < end) total += remainingAmount(g) / Math.max(1, span);
+      if (i === end - 1) completing.push(g.name);
+    }
+    out.push({
+      label: d.toLocaleDateString(undefined, { month: "short", year: "2-digit" }),
+      total,
+      completing,
+    });
+  }
+  return out;
+}
+
+/** Goals ordered by soonest deadline — Loot's suggested priority order. */
+export function suggestedOrder(goals: PlannerGoal[]): PlannerGoal[] {
+  return [...goals].sort(
+    (a, b) => monthsUntil(a.target_date) - monthsUntil(b.target_date),
+  );
+}
