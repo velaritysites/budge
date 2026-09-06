@@ -7,7 +7,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { FactorKey } from "./loot-score";
+import type { FactorKey } from "./budge-score";
 
 export type Corrections = Partial<Record<FactorKey, number>> & { intercept?: number };
 

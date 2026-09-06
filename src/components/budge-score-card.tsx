@@ -14,7 +14,7 @@ import {
   useBureauScores,
   useScoreHistory,
   type ScoreInputs,
-} from "@/lib/loot-score";
+} from "@/lib/budge-score";
 import { formatCurrency } from "@/lib/format";
 import { ArrowDownRight, ArrowUpRight, Gauge, Info, Upload, X } from "lucide-react";
 import { toast } from "sonner";
