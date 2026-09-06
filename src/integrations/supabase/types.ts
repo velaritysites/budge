@@ -265,6 +265,7 @@ export type Database = {
           original_currency: string | null
           updated_at: string
           user_id: string
+          work_related: boolean
         }
         Insert: {
           amount: number
@@ -283,6 +284,7 @@ export type Database = {
           original_currency?: string | null
           updated_at?: string
           user_id: string
+          work_related?: boolean
         }
         Update: {
           amount?: number
@@ -301,6 +303,7 @@ export type Database = {
           original_currency?: string | null
           updated_at?: string
           user_id?: string
+          work_related?: boolean
         }
         Relationships: []
       }
@@ -1004,6 +1007,105 @@ export type Database = {
           id?: string
           marked?: boolean
           service_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tax_profile: {
+        Row: {
+          age: number
+          created_at: string
+          employment_type: string
+          has_company_car: boolean
+          has_investment_income: boolean
+          has_ra: boolean
+          has_travel_allowance: boolean
+          home_office_area_m2: number
+          home_office_enabled: string
+          home_total_area_m2: number
+          id: string
+          is_provisional_taxpayer: string
+          ra_provider: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age?: number
+          created_at?: string
+          employment_type?: string
+          has_company_car?: boolean
+          has_investment_income?: boolean
+          has_ra?: boolean
+          has_travel_allowance?: boolean
+          home_office_area_m2?: number
+          home_office_enabled?: string
+          home_total_area_m2?: number
+          id?: string
+          is_provisional_taxpayer?: string
+          ra_provider?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age?: number
+          created_at?: string
+          employment_type?: string
+          has_company_car?: boolean
+          has_investment_income?: boolean
+          has_ra?: boolean
+          has_travel_allowance?: boolean
+          home_office_area_m2?: number
+          home_office_enabled?: string
+          home_total_area_m2?: number
+          id?: string
+          is_provisional_taxpayer?: string
+          ra_provider?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tax_year_data: {
+        Row: {
+          business_km: number
+          created_at: string
+          donations: number
+          home_office_deduction: number
+          id: string
+          medical_aid_contributions: number
+          professional_development: number
+          ra_contributions: number
+          tax_year: string
+          travel_deduction: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_km?: number
+          created_at?: string
+          donations?: number
+          home_office_deduction?: number
+          id?: string
+          medical_aid_contributions?: number
+          professional_development?: number
+          ra_contributions?: number
+          tax_year: string
+          travel_deduction?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_km?: number
+          created_at?: string
+          donations?: number
+          home_office_deduction?: number
+          id?: string
+          medical_aid_contributions?: number
+          professional_development?: number
+          ra_contributions?: number
+          tax_year?: string
+          travel_deduction?: number
           updated_at?: string
           user_id?: string
         }
