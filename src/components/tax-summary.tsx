@@ -97,7 +97,7 @@ export function TaxSummary() {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
       doc.text(
-        `${profile?.display_name ?? "Budge user"} · 1 March ${range.start.getFullYear()} – end February ${range.end.getFullYear()}`,
+        `${profile?.display_name ?? "Loot user"} · 1 March ${range.start.getFullYear()} – end February ${range.end.getFullYear()}`,
         48,
         y,
       );
@@ -145,7 +145,7 @@ export function TaxSummary() {
       );
       y += 12;
       doc.text("Consult a registered tax practitioner for your eFiling submission.", 48, y);
-      doc.save(`budge-tax-summary-${range.label.replace("/", "-")}.pdf`);
+      doc.save(`loot-tax-summary-${range.label.replace("/", "-")}.pdf`);
     } catch (e: any) {
       toast.error(e?.message ?? "Couldn't build the PDF");
     } finally {

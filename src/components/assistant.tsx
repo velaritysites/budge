@@ -21,7 +21,7 @@ export function AssistantLauncher() {
     <>
       <button
         onClick={() => setOpen(true)}
-        aria-label="Open Budge Assistant"
+        aria-label="Open Loot Assistant"
         className="fixed bottom-20 right-5 z-40 hidden size-14 place-items-center rounded-full bg-accent text-background shadow-[0_10px_30px_-8px_color-mix(in_oklab,var(--accent)_70%,transparent)] transition hover:scale-105 md:bottom-6 md:grid"
       >
         <MessageCircle className="size-6" strokeWidth={2.2} />
@@ -111,7 +111,7 @@ export function AssistantPanel({ onClose }: { onClose: () => void }) {
       >
         <header className="flex items-center justify-between border-b border-hairline px-4 py-3">
           <div>
-            <p className="text-[14px] font-semibold">Budge Assistant</p>
+            <p className="text-[14px] font-semibold">Loot Assistant</p>
             <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground">
               Knows your numbers
             </p>

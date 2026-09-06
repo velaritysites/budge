@@ -301,13 +301,13 @@ export function ClosedSummary({ month, currency, briefing }: { month: string; cu
     if (!sheet.current) return;
     setBusy(true);
     try {
-      const canvas = await html2canvas(sheet.current, { backgroundColor: "#0A0A1A", scale: 2 });
+      const canvas = await html2canvas(sheet.current, { backgroundColor: "#0F0A0A", scale: 2 });
       const img = canvas.toDataURL("image/png");
       const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
       const w = pdf.internal.pageSize.getWidth();
       const h = (canvas.height * w) / canvas.width;
       pdf.addImage(img, "PNG", 0, 0, w, Math.min(h, pdf.internal.pageSize.getHeight()));
-      pdf.save(`budge-${month.slice(0, 7)}-summary.pdf`);
+      pdf.save(`loot-${month.slice(0, 7)}-summary.pdf`);
     } catch {
       toast.error("Could not build the PDF");
     } finally {
@@ -351,12 +351,12 @@ function MonthlySummarySheet({
   rows: readonly (readonly [string, number])[];
   briefing: Briefing | null;
 }) {
-  const bg = "#0A0A1A";
-  const surface = "#141432";
-  const border = "rgba(200,205,255,0.14)";
-  const fg = "#ECEDFA";
-  const muted = "#9BA0C6";
-  const accent = "#6C63F5";
+  const bg = "#0F0A0A";
+  const surface = "#211B1B";
+  const border = "rgba(255,255,255,0.14)";
+  const fg = "#FFFFFF";
+  const muted = "#AAA3A3";
+  const accent = "#C1FE72";
 
   return (
     <div
@@ -365,14 +365,14 @@ function MonthlySummarySheet({
         background: bg,
         color: fg,
         padding: 32,
-        borderRadius: 18,
+        borderRadius: 8,
         border: `1px solid ${border}`,
         fontFamily: "Cabin, ui-sans-serif, system-ui, sans-serif",
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
         <div>
-          <div style={{ color: muted, fontSize: 10, letterSpacing: 2, textTransform: "uppercase" }}>Budge · monthly summary</div>
+          <div style={{ color: muted, fontSize: 10, letterSpacing: 2, textTransform: "uppercase" }}>Loot · monthly summary</div>
           <div style={{ fontSize: 28, fontWeight: 800 }}>{monthLabel(month)}</div>
         </div>
         <div style={{ color: accent, fontSize: 12 }}>Closed</div>

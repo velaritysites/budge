@@ -1,5 +1,5 @@
 /**
- * Monthly global recalibration of the Budge Score.
+ * Monthly global recalibration of the Loot Score.
  *
  * Reads the shared calibration dataset (estimate vs real bureau score plus the
  * five factor values at estimate time) and fits per-factor correction terms

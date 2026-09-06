@@ -16,7 +16,7 @@ import { Plus, Trash2, ChevronRight, Zap, Hand, Sparkles, TrendingDown } from "l
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/goals")({
-  head: () => ({ meta: [{ title: "Goals — Budge" }] }),
+  head: () => ({ meta: [{ title: "Goals — Loot" }, { name: "description", content: "Create savings goals and track every contribution." }, { property: "og:title", content: "Goals — Loot" }, { property: "og:description", content: "Create savings goals and track every contribution." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: GoalsPage,
 });
 

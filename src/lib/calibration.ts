@@ -1,5 +1,5 @@
 /**
- * Cross-user calibration for the Budge Score.
+ * Cross-user calibration for the Loot Score.
  *
  * Every uploaded bureau score is stored alongside the five factor values that
  * produced the estimate. A scheduled job crunches that dataset into global

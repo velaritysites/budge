@@ -30,7 +30,7 @@ export const LIABILITY_CATEGORIES = [
   { key: "other", label: "Other liability" },
 ] as const;
 
-/** Vehicles lose value — the standard estimate Budge applies is 15% a year. */
+/** Vehicles lose value — the standard estimate Loot applies is 15% a year. */
 export const VEHICLE_DEPRECIATION_PCT = 15;
 
 export function useNetWorthItems() {

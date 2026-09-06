@@ -229,7 +229,7 @@ function ItemForm({ kind, onDone }: { kind: NetWorthKind; onDone: () => void }) 
         </label>
         {category === "vehicle" && (
           <p className="text-[12px] text-muted-foreground">
-            Vehicles depreciate — Budge reduces this value by {VEHICLE_DEPRECIATION_PCT}% a year automatically.
+            Vehicles depreciate — Loot reduces this value by {VEHICLE_DEPRECIATION_PCT}% a year automatically.
           </p>
         )}
         <div className="flex justify-end gap-2">

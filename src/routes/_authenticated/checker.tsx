@@ -12,7 +12,7 @@ import { CATEGORY_KEYS } from "@/lib/categories";
 import { CategoryOptions } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/checker")({
-  head: () => ({ meta: [{ title: "Affordability Checker — Budge" }] }),
+  head: () => ({ meta: [{ title: "Affordability Checker — Loot" }, { name: "description", content: "Check a purchase against your real monthly position." }, { property: "og:title", content: "Affordability Checker — Loot" }, { property: "og:description", content: "Check a purchase against your real monthly position." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: CheckerPage,
 });
 

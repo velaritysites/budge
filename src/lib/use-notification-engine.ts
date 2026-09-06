@@ -56,7 +56,7 @@ export function useNotificationEngine({
         const debtMonthly = (debts ?? []).reduce((s: number, d: any) => s + Number(d.min_payment ?? 0), 0);
         const dtiPct = totals.grossIncome > 0 ? (debtMonthly / totals.grossIncome) * 100 : 0;
 
-        // Budgets: planned monthly amount per category vs what the newest statement shows spent.
+        // Lootts: planned monthly amount per category vs what the newest statement shows spent.
         const budgets: NotifyContext["budgets"] = {};
         const latest = (statements ?? [])[0];
         const latestTotals = (latest?.category_totals ?? {}) as Record<string, number>;

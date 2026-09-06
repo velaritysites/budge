@@ -33,9 +33,9 @@ import {
 export const Route = createFileRoute("/_authenticated/statement")({
   head: () => ({
     meta: [
-      { title: "Statement Analysis — Budge" },
+      { title: "Statement Analysis — Loot" },
       { name: "description", content: "Upload an FNB or Capitec bank statement and see exactly where your money went — categorised, charted and analysed entirely in your browser." },
-      { property: "og:title", content: "Statement Analysis — Budge" },
+      { property: "og:title", content: "Statement Analysis — Loot" },
       { property: "og:description", content: "See where your money went last month. Bank statement analysis that never leaves your browser." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -539,7 +539,7 @@ function StatementPage() {
             <section className="panel p-6">
               <button onClick={() => setSyncOpen(!syncOpen)} className="flex w-full items-center gap-2 text-left">
                 <ChevronRight className={`size-4 text-muted-foreground transition ${syncOpen ? "rotate-90" : ""}`} />
-                <span className="text-sm font-semibold">Sync with your Budge expenses</span>
+                <span className="text-sm font-semibold">Sync with your Loot expenses</span>
                 <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Optional</span>
               </button>
               {syncOpen && (
@@ -581,7 +581,7 @@ function StatementPage() {
           <div className="panel w-full max-w-md p-6">
             <h3 className="font-display text-base font-bold">Add these to your expenses?</h3>
             <p className="mt-1 text-[12px] text-muted-foreground">
-              Each becomes a monthly, variable expense in Budge.
+              Each becomes a monthly, variable expense in Loot.
             </p>
             <div className="mt-4 flex max-h-64 flex-col gap-1 overflow-y-auto">
               {selectedSync.map((c) => (

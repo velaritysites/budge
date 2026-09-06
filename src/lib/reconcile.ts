@@ -1,6 +1,6 @@
 /**
  * Bookkeeping reconciliation — compares statement transactions against the
- * expenses the user has logged in Budge for the same month.
+ * expenses the user has logged in Loot for the same month.
  */
 import type { Txn } from "./statement-parse";
 import { monthlyEquivalent, type Expense } from "./finance";
@@ -16,9 +16,9 @@ export type MatchedPair = {
 
 export type Reconciliation = {
   matched: MatchedPair[];
-  /** in the statement, not logged in Budge */
+  /** in the statement, not logged in Loot */
   unmatchedStatement: { key: string; txn: Txn; total: number; count: number }[];
-  /** logged in Budge, nothing like it in the statement */
+  /** logged in Loot, nothing like it in the statement */
   unmatchedLogged: { key: string; expense: Expense; monthly: number }[];
 };
 

@@ -1,5 +1,5 @@
 /**
- * Single source of truth for every spending / saving category in Budge.
+ * Single source of truth for every spending / saving category in Loot.
  * Nothing else in the app may hardcode a category key, label or colour.
  */
 
@@ -33,44 +33,44 @@ export type CategoryDef = {
 
 export const CATEGORY_DEFS = [
   // Essential
-  { key: "housing", label: "Housing", group: "Essential", icon: "Home", color: "#6B7FA3", positive: false },
-  { key: "transport", label: "Transport", group: "Essential", icon: "Car", color: "#7A8FA6", positive: false },
-  { key: "vehicle_finance", label: "Vehicle Finance", group: "Essential", icon: "CreditCard", color: "#8A9AB8", positive: false },
-  { key: "insurance", label: "Insurance", group: "Essential", icon: "Shield", color: "#9BA8C0", positive: false },
-  { key: "medical_aid", label: "Medical Aid", group: "Essential", icon: "Heart", color: "#A8B4C8", positive: false },
-  { key: "debt_repayments", label: "Debt Repayments", group: "Essential", icon: "Landmark", color: "#B85C5C", positive: false },
+  { key: "housing", label: "Housing", group: "Essential", icon: "Home", color: "var(--chart-1)", positive: false },
+  { key: "transport", label: "Transport", group: "Essential", icon: "Car", color: "var(--chart-2)", positive: false },
+  { key: "vehicle_finance", label: "Vehicle Finance", group: "Essential", icon: "CreditCard", color: "var(--chart-3)", positive: false },
+  { key: "insurance", label: "Insurance", group: "Essential", icon: "Shield", color: "var(--chart-4)", positive: false },
+  { key: "medical_aid", label: "Medical Aid", group: "Essential", icon: "Heart", color: "var(--chart-5)", positive: false },
+  { key: "debt_repayments", label: "Debt Repayments", group: "Essential", icon: "Landmark", color: "var(--color-alert)", positive: false },
 
   // Daily Living
-  { key: "groceries", label: "Groceries", group: "Daily Living", icon: "ShoppingCart", color: "#C4956A", positive: false },
-  { key: "eating_out", label: "Eating Out", group: "Daily Living", icon: "UtensilsCrossed", color: "#D4A574", positive: false },
-  { key: "coffee_drinks", label: "Coffee & Drinks", group: "Daily Living", icon: "Coffee", color: "#BF8D5E", positive: false },
-  { key: "household", label: "Household", group: "Daily Living", icon: "Package", color: "#C9A882", positive: false },
+  { key: "groceries", label: "Groceries", group: "Daily Living", icon: "ShoppingCart", color: "var(--chart-5)", positive: false },
+  { key: "eating_out", label: "Eating Out", group: "Daily Living", icon: "UtensilsCrossed", color: "var(--chart-4)", positive: false },
+  { key: "coffee_drinks", label: "Coffee & Drinks", group: "Daily Living", icon: "Coffee", color: "var(--chart-3)", positive: false },
+  { key: "household", label: "Household", group: "Daily Living", icon: "Package", color: "var(--chart-2)", positive: false },
 
   // Lifestyle
-  { key: "clothing_shopping", label: "Clothing & Shopping", group: "Lifestyle", icon: "ShoppingBag", color: "#9B7EC8", positive: false },
-  { key: "health_beauty", label: "Health & Beauty", group: "Lifestyle", icon: "Sparkles", color: "#B28FD8", positive: false },
-  { key: "subscriptions", label: "Subscriptions", group: "Lifestyle", icon: "Repeat", color: "#7E6BB5", positive: false },
-  { key: "entertainment", label: "Entertainment", group: "Lifestyle", icon: "Clapperboard", color: "#8B72C2", positive: false },
-  { key: "tech_gadgets", label: "Tech & Gadgets", group: "Lifestyle", icon: "Laptop", color: "#7560A8", positive: false },
-  { key: "phone_airtime", label: "Phone & Airtime", group: "Lifestyle", icon: "Phone", color: "#6B50A0", positive: false },
+  { key: "clothing_shopping", label: "Clothing & Shopping", group: "Lifestyle", icon: "ShoppingBag", color: "var(--chart-1)", positive: false },
+  { key: "health_beauty", label: "Health & Beauty", group: "Lifestyle", icon: "Sparkles", color: "var(--chart-2)", positive: false },
+  { key: "subscriptions", label: "Subscriptions", group: "Lifestyle", icon: "Repeat", color: "var(--chart-1)", positive: false },
+  { key: "entertainment", label: "Entertainment", group: "Lifestyle", icon: "Clapperboard", color: "var(--chart-3)", positive: false },
+  { key: "tech_gadgets", label: "Tech & Gadgets", group: "Lifestyle", icon: "Laptop", color: "var(--chart-2)", positive: false },
+  { key: "phone_airtime", label: "Phone & Airtime", group: "Lifestyle", icon: "Phone", color: "var(--chart-1)", positive: false },
 
   // Family & Social
-  { key: "giving_charity", label: "Giving & Charity", group: "Family & Social", icon: "Gift", color: "#D4829B", positive: false },
-  { key: "education", label: "Education", group: "Family & Social", icon: "GraduationCap", color: "#C87090", positive: false },
-  { key: "childcare", label: "Childcare", group: "Family & Social", icon: "Baby", color: "#E090A8", positive: false },
-  { key: "pets", label: "Pets", group: "Family & Social", icon: "PawPrint", color: "#C88070", positive: false },
+  { key: "giving_charity", label: "Giving & Charity", group: "Family & Social", icon: "Gift", color: "var(--chart-4)", positive: false },
+  { key: "education", label: "Education", group: "Family & Social", icon: "GraduationCap", color: "var(--chart-2)", positive: false },
+  { key: "childcare", label: "Childcare", group: "Family & Social", icon: "Baby", color: "var(--chart-5)", positive: false },
+  { key: "pets", label: "Pets", group: "Family & Social", icon: "PawPrint", color: "var(--chart-4)", positive: false },
 
   // Saving & Growing
-  { key: "savings", label: "Savings", group: "Saving & Growing", icon: "PiggyBank", color: "hsl(142 45% 62%)", positive: true },
-  { key: "investments", label: "Investments", group: "Saving & Growing", icon: "TrendingUp", color: "hsl(142 45% 52%)", positive: true },
-  { key: "side_business", label: "Side Business", group: "Saving & Growing", icon: "Briefcase", color: "hsl(142 35% 55%)", positive: true },
+  { key: "savings", label: "Savings", group: "Saving & Growing", icon: "PiggyBank", color: "var(--chart-2)", positive: true },
+  { key: "investments", label: "Investments", group: "Saving & Growing", icon: "TrendingUp", color: "var(--chart-2)", positive: true },
+  { key: "side_business", label: "Side Business", group: "Saving & Growing", icon: "Briefcase", color: "var(--chart-3)", positive: true },
 
   // Travel
-  { key: "travel_holidays", label: "Travel & Holidays", group: "Travel", icon: "Plane", color: "#6AAED4", positive: false },
+  { key: "travel_holidays", label: "Travel & Holidays", group: "Travel", icon: "Plane", color: "var(--chart-3)", positive: false },
 
   // Other
-  { key: "government_admin", label: "Government & Admin", group: "Other", icon: "FileText", color: "#8A8A8A", positive: false },
-  { key: "other", label: "Other", group: "Other", icon: "MoreHorizontal", color: "#6B6B6B", positive: false },
+  { key: "government_admin", label: "Government & Admin", group: "Other", icon: "FileText", color: "var(--color-text-muted)", positive: false },
+  { key: "other", label: "Other", group: "Other", icon: "MoreHorizontal", color: "var(--color-text-subtle)", positive: false },
 ] as const satisfies readonly CategoryDef[];
 
 export type ExpenseCategory = (typeof CATEGORY_DEFS)[number]["key"];

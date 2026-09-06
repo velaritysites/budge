@@ -131,11 +131,11 @@ export function AnnualReview({ currency }: { currency: string }) {
     setSharing(true);
     try {
       const html2canvas = (await import("html2canvas")).default;
-      const canvas = await html2canvas(shareRef.current, { backgroundColor: "#0b0d12", scale: 2 });
+      const canvas = await html2canvas(shareRef.current, { backgroundColor: "#0F0A0A", scale: 2 });
       const url = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = url;
-      a.download = `budge-${year}-review.png`;
+      a.download = `loot-${year}-review.png`;
       a.click();
       toast.success("Shareable image saved — amounts are hidden, only trends show.");
     } catch {
@@ -151,7 +151,7 @@ export function AnnualReview({ currency }: { currency: string }) {
     try {
       const html2canvas = (await import("html2canvas")).default;
       const { default: jsPDF } = await import("jspdf");
-      const canvas = await html2canvas(reportRef.current, { backgroundColor: "#0A0A1A", scale: 2 });
+      const canvas = await html2canvas(reportRef.current, { backgroundColor: "#0F0A0A", scale: 2 });
       const img = canvas.toDataURL("image/png");
       const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
       const w = pdf.internal.pageSize.getWidth();
@@ -163,7 +163,7 @@ export function AnnualReview({ currency }: { currency: string }) {
         y += pageH;
         if (y < h) pdf.addPage();
       }
-      pdf.save(`budge-annual-financial-review-${year}.pdf`);
+      pdf.save(`loot-annual-financial-review-${year}.pdf`);
     } catch {
       toast.error("Couldn't build the PDF");
     } finally {
@@ -174,7 +174,7 @@ export function AnnualReview({ currency }: { currency: string }) {
   if (!review) {
     return (
       <p className="text-[13px] text-muted-foreground">
-        Your annual review appears once Budge has stored monthly snapshots for a year. Keep logging — it builds itself.
+        Your annual review appears once Loot has stored monthly snapshots for a year. Keep logging — it builds itself.
       </p>
     );
   }
@@ -242,7 +242,7 @@ export function AnnualReview({ currency }: { currency: string }) {
       </div>
 
       <div ref={reportRef} className="flex flex-col gap-6 rounded-2xl bg-background p-1">
-      <h2 className="font-display text-2xl font-extrabold tracking-tight">Budge Annual Financial Review — {year}</h2>
+      <h2 className="font-display text-2xl font-extrabold tracking-tight">Loot Annual Financial Review — {year}</h2>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Big label="Total income" value={money(review.income)} />
@@ -311,7 +311,7 @@ export function AnnualReview({ currency }: { currency: string }) {
           </p>
         </div>
         <div className="panel p-5">
-          <span className="label-xs">Budge Score trajectory</span>
+          <span className="label-xs">Loot Score trajectory</span>
           <p className="mt-2 text-[13px]">
             {review.scoreStart && review.scoreEnd
               ? `${review.scoreStart} → ${review.scoreEnd} (${review.scoreEnd - review.scoreStart >= 0 ? "+" : ""}${review.scoreEnd - review.scoreStart} points)`
@@ -384,8 +384,8 @@ export function AnnualReview({ currency }: { currency: string }) {
 
       {/* Privacy-safe shareable card — percentages and trends only */}
       <div className="overflow-hidden" style={{ height: 0 }}>
-        <div ref={shareRef} className="w-[720px] bg-[#0b0d12] p-10 text-white">
-          <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#7BD9A5]">Budge · {year} in review</p>
+        <div ref={shareRef} className="w-[720px] bg-background p-10 text-foreground">
+          <p className="font-mono text-[11px] uppercase tracking-[0.24em] text-[#7BD9A5]">Loot · {year} in review</p>
           <h2 className="mt-4 text-5xl font-extrabold tracking-tight">My year in money</h2>
           <div className="mt-8 grid grid-cols-2 gap-6">
             <ShareStat label="Average savings rate" value={`${review.avgSavings.toFixed(0)}%`} />

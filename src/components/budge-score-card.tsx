@@ -8,7 +8,7 @@ import {
   BUREAUS,
   buildRecommendations,
   calibrationFrom,
-  computeBudgeScore,
+  computeLootScore,
   explainGap,
   saveMonthlyScore,
   useBureauScores,
@@ -22,7 +22,7 @@ import { readScoreScreenshot } from "@/lib/score-ocr.functions";
 import { applyCorrections, confidenceLevel, recordCalibration, useCorrections, useMyContributions } from "@/lib/calibration";
 import type { Expense } from "@/lib/finance";
 
-export function BudgeScoreCard({
+export function LootScoreCard({
   currency,
   grossIncome,
   netIncome,
@@ -95,7 +95,7 @@ export function BudgeScoreCard({
   const calibration = useMemo(() => calibrationFrom(bureau as any[]), [bureau]);
   const { data: corrections } = useCorrections();
   const { data: contributions = [] } = useMyContributions();
-  const rawScore = useMemo(() => computeBudgeScore(inputs, calibration ?? undefined), [JSON.stringify(inputs), calibration]);
+  const rawScore = useMemo(() => computeLootScore(inputs, calibration ?? undefined), [JSON.stringify(inputs), calibration]);
   const score = useMemo(() => {
     const qualities = Object.fromEntries(rawScore.factors.map((f) => [f.key, f.quality]));
     return { ...rawScore, score: applyCorrections(rawScore.score, qualities as any, corrections) };
@@ -130,10 +130,10 @@ export function BudgeScoreCard({
         <div className="flex items-start justify-between gap-3">
           <div>
             <span className="label-xs flex items-center gap-2">
-              <Gauge className="size-3.5 text-accent" /> Budge Score
+              <Gauge className="size-3.5 text-accent" /> Loot Score
             </span>
             <p className="mt-1 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground/80">
-              Budge Estimate — not a bureau score
+              Loot Estimate — not a bureau score
             </p>
           </div>
           {change !== null && (
@@ -269,7 +269,7 @@ function ScoreDetail({
       >
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="font-display text-xl font-bold tracking-tight">Your Budge Score, explained</h2>
+            <h2 className="font-display text-xl font-bold tracking-tight">Your Loot Score, explained</h2>
             <p className="mt-1 text-[12px] text-muted-foreground">
               An estimate from your own numbers. It updates every time a monthly snapshot is saved.
             </p>
@@ -375,7 +375,7 @@ function ScoreDetail({
               <div className="h-full rounded-full bg-accent" style={{ width: `${Math.round(confidence.progress * 100)}%` }} />
             </div>
             {hasContributed && (
-              <p className="mt-3 text-accent">Thank you for improving Budge's accuracy — your real score helps sharpen everyone's estimate, with nothing personal shared.</p>
+              <p className="mt-3 text-accent">Thank you for improving Loot's accuracy — your real score helps sharpen everyone's estimate, with nothing personal shared.</p>
             )}
           </div>
         )}
@@ -392,7 +392,7 @@ function ScoreDetail({
                       {new Date(h.month).toLocaleDateString(undefined, { month: "short", year: "numeric" })}
                     </span>
                     <span className="numeric">
-                      Budge {h.score}
+                      Loot {h.score}
                       {real ? ` · ${real.bureau} ${real.score}` : ""}
                     </span>
                   </div>
@@ -403,7 +403,7 @@ function ScoreDetail({
         )}
 
         <p className="mt-6 text-[11px] text-muted-foreground">
-          Amounts shown in {currency}. This is an estimate built from your Budge data, not a credit bureau report.
+          Amounts shown in {currency}. This is an estimate built from your Loot data, not a credit bureau report.
         </p>
       </div>
     </div>

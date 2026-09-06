@@ -62,7 +62,7 @@ export function BenchmarksTab({
   const notice = (
     <div className="flex items-start gap-2 rounded-xl border border-hairline bg-surface-2/50 p-4 text-[13px] leading-relaxed">
       <ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent" />
-      <span>Benchmarks are based on anonymised, aggregated data from Budge users. No personal data is shared.</span>
+      <span>Benchmarks are based on anonymised, aggregated data from Loot users. No personal data is shared.</span>
     </div>
   );
 

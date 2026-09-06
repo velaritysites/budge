@@ -13,9 +13,9 @@ import { PlanExportSheet, exportPlanImage, exportPlanPdf, type ExportPlan } from
 export const Route = createFileRoute("/_authenticated/compare")({
   head: () => ({
     meta: [
-      { title: "Compare Plans — Budge" },
+      { title: "Compare Plans — Loot" },
       { name: "description", content: "Put your saved salary plans side by side and see exactly what each lifestyle asks of your paycheck." },
-      { property: "og:title", content: "Compare Plans — Budge" },
+      { property: "og:title", content: "Compare Plans — Loot" },
       { property: "og:description", content: "Put your saved salary plans side by side and see exactly what each lifestyle asks of your paycheck." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

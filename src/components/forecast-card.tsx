@@ -64,7 +64,7 @@ export function ForecastCard() {
           <span className="label-xs">Monthly forecast</span>
         </div>
         <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
-          Use Budge for another month and we'll project how {monthName} is likely to end — income, spending
+          Use Loot for another month and we'll project how {monthName} is likely to end — income, spending
           by category and what's left over. Forecasting needs at least two months of history
           {history.length === 1 ? " (you have one so far)." : "."}
         </p>
