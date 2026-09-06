@@ -26,7 +26,7 @@ import { GlossaryProvider, GlossaryList, TaxTerm } from "@/components/tax-glossa
 import { AutoAssessmentCallout, GuideAccordion, buildGuideSteps } from "@/components/efiling-guide";
 import { pushNotifications } from "@/lib/notify";
 import {
-  AlertTriangle, BookOpen, Calendar, CheckCircle2, Info, Receipt, Settings2, Wallet,
+  BookOpen, Calendar, CheckCircle2, Info, Receipt, Settings2, Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -115,12 +115,10 @@ function TaxCentre() {
   const monthsSoFar = Math.max(1, Math.min(12, monthsElapsedInTaxYear()));
 
   /* ---------------- gate: questionnaire first ---------------- */
-  if (!profile) return null;
-  if (loadingTaxProfile) return null;
-
+  const ready = !!profile && !loadingTaxProfile;
   const needsSetup = !taxProfile || editing;
 
-  const monthlyGross = Number(profile.gross_income ?? 0);
+  const monthlyGross = Number(profile?.gross_income ?? 0);
   const annualIncome = monthlyGross * 12;
 
   const employment = taxProfile?.employment_type ?? "salaried";
@@ -252,6 +250,8 @@ function TaxCentre() {
   });
 
   const money = (n: number) => formatCurrency(n, currency, { decimals: 0 });
+
+  if (!ready) return null;
 
   return (
     <div className="page-enter flex min-h-screen flex-col">
@@ -542,5 +542,3 @@ function Progress({ value, max }: { value: number; max: number }) {
     </div>
   );
 }
-
-export { AlertTriangle };
