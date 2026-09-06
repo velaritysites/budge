@@ -3,12 +3,12 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
-import budgeLogo from "@/assets/budge-logo.png";
+import { LootLogo } from "@/components/LootLogo";
 
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Sign in — Budge" }] }),
+  head: () => ({ meta: [{ title: "Sign in — Loot" }, { name: "description", content: "Sign in to Loot and know your loot." }, { property: "og:title", content: "Sign in — Loot" }, { property: "og:description", content: "Sign in to Loot and know your loot." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: AuthPage,
 });
 
@@ -77,34 +77,27 @@ function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-stretch">
+    <div className="auth-shell min-h-screen flex items-stretch">
       {/* Left panel — brand */}
-      <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 bg-surface border-r border-border">
-        <Link to="/auth" className="flex items-center gap-3">
-          <img src={budgeLogo} alt="Budge logo" className="h-8 w-auto" />
-          <span className="font-mono text-sm tracking-tight font-bold uppercase">Budge</span>
-        </Link>
+      <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 bg-[var(--gradient-main)] text-primary-foreground">
+        <Link to="/auth"><LootLogo iconClassName="size-14" /></Link>
         <div className="space-y-6 max-w-md">
           <h1 className="text-5xl font-display font-extrabold tracking-tight leading-[0.95]">
-            A calm view of your money.
+            Know your loot.
           </h1>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Track what comes in, what goes out, and get a real answer before you buy.
-            No spreadsheets. No lecturing.
+            See what comes in, what goes out, and what is yours to spend — clearly and confidently.
           </p>
         </div>
         <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
-          PRIVATE / ENCRYPTED / YOURS
+          PRIVATE · ENCRYPTED · YOURS
         </p>
       </div>
 
       {/* Right panel — form */}
       <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm space-y-8 animate-enter">
-          <div className="lg:hidden flex items-center gap-3">
-            <img src={budgeLogo} alt="Budge logo" className="h-8 w-auto" />
-            <span className="font-mono text-sm tracking-tight font-bold uppercase">Budge</span>
-          </div>
+        <div className="panel-raised w-full max-w-md space-y-8 p-8 animate-enter">
+          <div className="lg:hidden"><LootLogo iconClassName="size-12" /></div>
 
           <div className="space-y-2">
             <h2 className="text-2xl font-bold tracking-tight">
@@ -118,9 +111,9 @@ function AuthPage() {
           <button
             onClick={handleGoogle}
             disabled={busy}
-            className="w-full flex items-center justify-center gap-3 border border-border rounded-lg py-3 text-sm font-medium hover:bg-surface transition-colors disabled:opacity-50"
+            className="btn-secondary w-full py-3 disabled:opacity-50"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#fff" d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" className="fill-current"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
             Continue with Google
           </button>
 
@@ -138,7 +131,7 @@ function AuthPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full panel px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
+                className="field"
               />
             </div>
             <div className="space-y-2">
@@ -149,7 +142,7 @@ function AuthPage() {
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full panel px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
+                className="field"
               />
             </div>
             <button

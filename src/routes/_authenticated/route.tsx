@@ -2,11 +2,11 @@ import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } fro
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Sun, Moon, Calculator, GitCompare, Plus, FileSearch, Landmark } from "lucide-react";
-import logo from "@/assets/budge-logo.png";
+import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Calculator, GitCompare, Plus, FileSearch, Landmark, ReceiptText } from "lucide-react";
 import { useOpenAlerts } from "@/lib/alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { AssistantLauncher, AssistantTabButton } from "@/components/assistant";
+import { LootLogo } from "@/components/LootLogo";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -59,16 +59,8 @@ function AuthLayout() {
   const location = useLocation();
   const { data: profile, isLoading } = useProfile();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const { data: openAlerts = [] } = useOpenAlerts();
   const alertCount = openAlerts.length;
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const stored = (localStorage.getItem("theme") as "dark" | "light") || "dark";
-      setTheme(stored);
-    }
-  }, []);
 
   useEffect(() => {
     if (!isLoading && profile && !profile.onboarded_at && location.pathname !== "/onboarding") {
@@ -81,24 +73,16 @@ function AuthLayout() {
     navigate({ to: "/auth", replace: true });
   }
 
-  function toggleTheme() {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    localStorage.setItem("theme", next);
-    document.documentElement.classList.toggle("dark", next === "dark");
-    document.documentElement.classList.toggle("light", next === "light");
-  }
-
   const initials = (profile?.display_name || "U").slice(0, 2).toUpperCase();
+  const pageTitle = location.pathname === "/dashboard" ? null : NAV_GROUPS.flatMap((g) => g.items).find((item) => item.to === location.pathname)?.label ?? (location.pathname === "/settings" ? "Settings" : "Loot");
+  const firstName = (profile?.display_name ?? "there").trim().split(" ")[0] || "there";
+  const greeting = new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening";
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
       {/* Mobile bar */}
       <header className="md:hidden sticky top-0 z-30 flex items-center justify-between px-4 h-14 border-b border-hairline bg-background/80 backdrop-blur-xl">
-        <Link to="/dashboard" className="flex items-center gap-2.5">
-          <img src={logo} alt="Budge" className="size-7 rounded-md" />
-          <span className="font-display text-sm font-bold tracking-tight">Budge</span>
-        </Link>
+        <Link to="/dashboard"><LootLogo iconClassName="size-8" /></Link>
         <div className="flex items-center gap-1">
           <NotificationBell />
         <button onClick={() => setMobileOpen(!mobileOpen)} className="btn-ghost !p-2">
@@ -112,21 +96,9 @@ function AuthLayout() {
         className={`${mobileOpen ? "flex" : "hidden"} md:flex w-full md:w-[264px] shrink-0 flex-col gap-7 p-4 md:p-5
           border-b md:border-b-0 md:border-r border-hairline
           md:sticky md:top-0 md:h-screen
-          bg-[linear-gradient(180deg,color-mix(in_oklab,var(--surface-2)_70%,var(--background)),color-mix(in_oklab,var(--surface)_45%,var(--background)))]
-          backdrop-blur-xl`}
+          bg-background`}
       >
-        <Link to="/dashboard" className="hidden md:flex items-center gap-3 px-2 pt-2" onClick={() => setMobileOpen(false)}>
-          <span className="relative">
-            <img src={logo} alt="Budge" className="size-9 rounded-xl" />
-            <span className="absolute -inset-1.5 rounded-2xl bg-accent/25 blur-lg -z-10" />
-          </span>
-          <span className="flex flex-col leading-none">
-            <span className="font-display text-[15px] font-bold tracking-tight">Budge</span>
-            <span className="mt-1 text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
-              Calm money
-            </span>
-          </span>
-        </Link>
+        <Link to="/dashboard" className="hidden md:flex px-2 pt-3" onClick={() => setMobileOpen(false)}><LootLogo iconClassName="size-11" /></Link>
 
         <div className="flex flex-col gap-6">
           {NAV_GROUPS.map((group) => (
@@ -142,11 +114,7 @@ function AuthLayout() {
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
                     activeOptions={{ exact: false }}
-                    className="group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-2.5 text-[13px] font-medium text-muted-foreground
-                      transition-all duration-200 hover:translate-x-[2px] hover:text-foreground hover:bg-surface-2/70
-                      data-[status=active]:text-foreground
-                      data-[status=active]:bg-[linear-gradient(90deg,color-mix(in_oklab,var(--accent)_22%,transparent),transparent)]
-                      data-[status=active]:shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--accent)_26%,transparent)]"
+                    className="group relative flex items-center gap-3 overflow-hidden rounded-r-lg px-4 py-2.5 text-[13px] font-medium text-muted-foreground transition-all duration-150 hover:bg-foreground/[0.04] hover:text-foreground data-[status=active]:bg-primary/[0.08] data-[status=active]:font-semibold data-[status=active]:text-foreground"
                   >
                     <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-r-full bg-accent transition-all duration-300 group-data-[status=active]:h-5" />
                     <Icon className="size-[17px] opacity-40 transition-opacity group-hover:opacity-70 group-data-[status=active]:text-accent group-data-[status=active]:opacity-100" />
@@ -164,10 +132,14 @@ function AuthLayout() {
         </div>
 
 
-        <Link to="/expenses" onClick={() => setMobileOpen(false)} className="btn-cta">
-          <Plus className="size-4" strokeWidth={3} />
-          New expense
-        </Link>
+        <div className="loot-promo">
+          <ReceiptText className="size-5 text-primary" />
+          <p className="mt-2 text-sm font-bold">Add an expense</p>
+          <p className="mt-1 text-xs text-muted-foreground">Have an expense, you would like to add?</p>
+          <Link to="/expenses" search={{ add: "1" } as never} onClick={() => setMobileOpen(false)} className="btn-primary mt-3 w-full !py-2 text-xs">
+            <Plus className="size-3.5" /> New expense
+          </Link>
+        </div>
 
 
         <div className="mt-auto">
@@ -180,31 +152,36 @@ function AuthLayout() {
             Settings
           </Link>
 
-          <div className="panel flex items-center gap-3 p-3">
-            <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent/12 font-mono text-[10px] font-bold text-accent">
+          <Link to="/settings" className="flex items-center gap-3 rounded-xl px-2 py-3 hover:bg-foreground/[0.04]">
+            <div className="grid size-10 shrink-0 place-items-center rounded-full border border-secondary bg-secondary/20 text-xs font-bold text-secondary">
               {initials}
             </div>
             <div className="flex min-w-0 flex-1 flex-col">
               <span className="truncate text-xs font-semibold">{profile?.display_name ?? "You"}</span>
-              <span className="truncate font-mono text-[10px] tracking-wider text-muted-foreground">
-                {profile?.currency_code}
-              </span>
+              <span className="truncate text-[10px] text-muted-foreground">Profile &amp; settings</span>
             </div>
-            <NotificationBell className="hidden md:block" />
-            <button onClick={toggleTheme} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-surface-3 hover:text-foreground" title="Toggle theme">
-              {theme === "dark" ? <Sun className="size-3.5" /> : <Moon className="size-3.5" />}
-            </button>
-            <button onClick={signOut} className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-surface-3 hover:text-alert" title="Sign out">
-              <LogOut className="size-3.5" />
-            </button>
-          </div>
+          </Link>
+          <button onClick={signOut} className="mt-3 flex w-full items-center gap-3 border-t border-border px-3 pt-4 text-xs text-muted-foreground hover:text-foreground">
+            <LogOut className="size-4" /> Log out
+          </button>
         </div>
       </nav>
 
       <AssistantLauncher />
 
-      <main className="aura min-w-0 flex-1 pb-16 md:pb-0">
-        <div key={location.pathname} className="animate-fade">
+      <main className="loot-main min-w-0 flex-1 pb-16 md:pb-0">
+        <header className="loot-topbar">
+          <div className="min-w-0">
+            <h1 className="truncate text-xl font-bold md:text-[28px]">{pageTitle ?? `${greeting}, ${firstName} 👋`}</h1>
+            {location.pathname === "/dashboard" && <p className="mt-0.5 text-sm text-foreground/65">Here’s what’s happening with your loot.</p>}
+          </div>
+          <div className="flex items-center gap-2 md:gap-3">
+            <NotificationBell />
+            <Link to="/checker" className="btn-secondary hidden sm:inline-flex"><Sparkles className="size-4" /> Run a check</Link>
+            <Link to="/expenses" search={{ add: "1" } as never} className="btn-primary"><Plus className="size-4" /> <span className="hidden sm:inline">Add expense</span></Link>
+          </div>
+        </header>
+        <div key={location.pathname} className="loot-content animate-fade">
           <Outlet />
         </div>
       </main>

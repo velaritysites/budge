@@ -5,9 +5,11 @@ import { CURRENCIES } from "@/lib/currencies";
 import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { ArrowRight, Search, Check } from "lucide-react";
 import { toast } from "sonner";
+import { LootLogo } from "@/components/LootLogo";
 
 export const Route = createFileRoute("/onboarding")({
   ssr: false,
+  head: () => ({ meta: [{ title: "Set up — Loot" }, { name: "description", content: "Set up your Loot profile." }, { property: "og:title", content: "Set up — Loot" }, { property: "og:description", content: "Set up your Loot profile." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/auth" });
@@ -65,11 +67,10 @@ function OnboardingPage() {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-10 animate-enter">
+    <div className="auth-shell min-h-screen flex items-center justify-center p-6">
+      <div className="panel-raised w-full max-w-lg space-y-10 p-6 md:p-9 animate-enter">
         <div className="flex items-center gap-3">
-          <img src="/favicon.png" alt="Budge" className="size-8 rounded-sm" />
-          <span className="font-mono text-xs font-bold uppercase tracking-tight">Budge</span>
+          <LootLogo iconClassName="size-10" />
           <span className="ml-auto text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
             Step {step + 1} / 3
           </span>
