@@ -116,7 +116,7 @@ export const GOAL_CATEGORY_LABEL: Record<string, string> = Object.fromEntries(
 );
 
 /** Whole months from today until the given month/date (minimum 1). */
-export function monthsUntil(target: string | null, from: Date = new Date()): number {
+export function monthsUntil(target: string | null | undefined, from: Date = new Date()): number {
   if (!target) return 12;
   const d = new Date(target);
   if (isNaN(d.getTime())) return 12;
@@ -139,7 +139,7 @@ export function requiredMonthly(
   return remainingAmount(g) / Math.max(1, months);
 }
 
-export function formatMonthYear(date: string | null): string {
+export function formatMonthYear(date: string | null | undefined): string {
   if (!date) return "No date";
   const d = new Date(date);
   if (isNaN(d.getTime())) return "No date";
