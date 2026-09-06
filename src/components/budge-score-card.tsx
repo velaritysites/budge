@@ -334,7 +334,7 @@ function ScoreDetail({
               onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
             />
           </label>
-          <select value={bureauName} className="field" onChange={(e) => setBureauName(e.target.value)} className="field !w-auto">
+          <select value={bureauName} onChange={(e) => setBureauName(e.target.value)} className="field !w-auto">
             {BUREAUS.map((b) => (
               <option key={b} value={b}>
                 {b}

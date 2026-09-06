@@ -155,7 +155,7 @@ export function DebtPayoff() {
       {/* add form */}
       <div className="mt-3 grid grid-cols-1 gap-2 rounded-xl border border-hairline p-3 md:grid-cols-2">
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Debt name" className="field" />
-        <select value={type} className="field" onChange={(e) => setType(e.target.value as DebtAccountType)} className="field">
+        <select value={type} onChange={(e) => setType(e.target.value as DebtAccountType)} className="field">
           {(Object.keys(DEBT_TYPE_LABELS) as DebtAccountType[]).map((k) => (
             <option key={k} value={k}>{DEBT_TYPE_LABELS[k]}</option>
           ))}

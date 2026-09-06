@@ -246,8 +246,7 @@ function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <input value={sName} onChange={(e) => setSName(e.target.value)} placeholder="Stream name (e.g. Freelance)"
                 className="field" />
-              <select value={sFreq} className="field" onChange={(e) => setSFreq(e.target.value as IncomeStream["frequency"])}
-                className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">
+              <select value={sFreq} onChange={(e) => setSFreq(e.target.value as IncomeStream["frequency"])} className="field">
                 <option value="monthly">Monthly</option>
                 <option value="biweekly">Bi-weekly</option>
                 <option value="weekly">Weekly</option>
