@@ -213,12 +213,10 @@ function ExpensesPage() {
                 className="field" />
               <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" step="0.01" placeholder="Amount"
                 className="field" />
-              <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
-                className="field">
+              <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)} className="field">
                 <CategoryOptions />
               </select>
-              <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
-                className="field">
+              <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)} className="field">
                 {FREQUENCIES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
               </select>
               <input value={dueDay} onChange={(e) => setDueDay(e.target.value)} type="number" min="1" max="31" placeholder="Due day of month (optional)"
@@ -230,8 +228,7 @@ function ExpensesPage() {
                   {notify ? "Remind me" : "No reminder"}
                 </button>
                 {notify && (
-                  <select value={lead} onChange={(e) => setLead(e.target.value)}
-                    className="bg-background border border-border rounded-lg px-2 py-2.5 text-xs focus:outline-none">
+                  <select value={lead} onChange={(e) => setLead(e.target.value)} className="field !w-auto !px-2 !py-2.5 !text-xs">
                     <option value="0">Day of</option>
                     <option value="1">1 day ahead</option>
                     <option value="3">3 days ahead</option>

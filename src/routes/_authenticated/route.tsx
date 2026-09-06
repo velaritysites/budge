@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect, Link, useNavigate, useLocation } fro
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Calculator, GitCompare, Plus, FileSearch, Landmark, ReceiptText } from "lucide-react";
+import { LayoutDashboard, Sparkles, BarChart3, Target, Settings, Wallet, LogOut, Menu, X, Calculator, GitCompare, Plus, FileSearch, Landmark, ReceiptText, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useOpenAlerts } from "@/lib/alerts";
 import { NotificationBell } from "@/components/notification-bell";
 import { AssistantLauncher, AssistantTabButton } from "@/components/assistant";
@@ -59,6 +59,19 @@ function AuthLayout() {
   const location = useLocation();
   const { data: profile, isLoading } = useProfile();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopOpen, setDesktopOpen] = useState(() => {
+    if (typeof document !== "undefined") {
+      const cookie = document.cookie.split("; ").find((row) => row.startsWith("sidebar_state="));
+      return cookie ? cookie.split("=")[1] === "true" : true;
+    }
+    return true;
+  });
+
+  const toggleDesktop = () => {
+    const next = !desktopOpen;
+    setDesktopOpen(next);
+    document.cookie = `sidebar_state=${next}; path=/; max-age=${60 * 60 * 24 * 7}`;
+  };
   const { data: openAlerts = [] } = useOpenAlerts();
   const alertCount = openAlerts.length;
 
@@ -94,19 +107,21 @@ function AuthLayout() {
 
       {/* Sidebar */}
       <nav
-        className={`${mobileOpen ? "flex" : "hidden"} md:flex w-full md:w-[264px] shrink-0 flex-col gap-7 p-4 md:p-5
+        className={`${mobileOpen ? "flex" : "hidden"} loot-sidebar md:flex w-full ${desktopOpen ? "md:w-[264px]" : "md:w-[86px]"} shrink-0 flex-col gap-7 p-4 ${desktopOpen ? "md:p-5" : "md:p-3"}
           border-b md:border-b-0 md:border-r border-hairline
           md:sticky md:top-0 md:h-screen
-          bg-background`}
-      >
-        <Link to="/dashboard" className="hidden md:flex px-2 pt-3" onClick={() => setMobileOpen(false)}><LootLogo iconClassName="size-11" /></Link>
+          bg-background`}>
+        <div className="hidden md:flex justify-end px-2">
+          <button onClick={toggleDesktop} className="sidebar-toggle" aria-label={desktopOpen ? "Collapse sidebar" : "Expand sidebar"} title={desktopOpen ? "Collapse sidebar" : "Expand sidebar"}>
+            {desktopOpen ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
+          </button>
+        </div>
+        <Link to="/dashboard" className="hidden md:flex px-2 pt-3" onClick={() => setMobileOpen(false)}><LootLogo iconClassName="size-11" collapsed={!desktopOpen} /></Link>
 
         <div className="flex flex-col gap-6">
           {NAV_GROUPS.map((group) => (
             <div key={group.label} className="flex flex-col gap-1">
-              <span className="px-3 pb-1.5 text-[9px] font-mono uppercase tracking-[0.2em] text-muted-foreground/60">
-                {group.label}
-              </span>
+              {desktopOpen && <span className="px-3 pb-1.5 text-[9px] font-mono uppercase text-muted-foreground/60">{group.label}</span>}
               {group.items.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -115,11 +130,11 @@ function AuthLayout() {
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
                     activeOptions={{ exact: false }}
-                    className="group relative flex items-center gap-3 overflow-hidden rounded-r-lg px-4 py-2.5 text-[13px] font-medium text-muted-foreground transition-all duration-150 hover:bg-foreground/[0.04] hover:text-foreground data-[status=active]:bg-primary/[0.08] data-[status=active]:font-semibold data-[status=active]:text-foreground"
+                    title={!desktopOpen ? item.label : undefined}
+                    className={`group relative flex items-center gap-3 overflow-hidden rounded-lg py-2.5 text-[13px] font-medium text-muted-foreground transition-all duration-200 hover:bg-foreground/[0.06] hover:text-foreground data-[status=active]:bg-primary data-[status=active]:font-semibold data-[status=active]:text-primary-foreground ${desktopOpen ? "px-4" : "justify-center px-0"}`}
                   >
-                    <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-r-full bg-accent transition-all duration-300 group-data-[status=active]:h-5" />
-                    <Icon className="size-[17px] opacity-40 transition-opacity group-hover:opacity-70 group-data-[status=active]:text-accent group-data-[status=active]:opacity-100" />
-                    {item.label}
+                    <Icon className="size-[17px] opacity-60 transition-opacity group-hover:opacity-100 group-data-[status=active]:opacity-100" />
+                    {desktopOpen && item.label}
                     {item.to === "/statement" && alertCount > 0 && (
                       <span className="ml-auto flex size-[18px] items-center justify-center rounded-full bg-caution/20 font-mono text-[10px] font-bold text-caution">
                         {alertCount}
@@ -133,7 +148,7 @@ function AuthLayout() {
         </div>
 
 
-        <div className="loot-promo">
+        <div className={`loot-promo ${!desktopOpen ? "md:hidden" : ""}`}>
           <ReceiptText className="size-5 text-primary" />
           <p className="mt-2 text-sm font-bold">Add an expense</p>
           <p className="mt-1 text-xs text-muted-foreground">Have an expense, you would like to add?</p>
@@ -147,23 +162,24 @@ function AuthLayout() {
           <Link
             to="/settings"
             onClick={() => setMobileOpen(false)}
-            className="mb-3 flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground data-[status=active]:bg-surface-2 data-[status=active]:text-foreground"
+            title={!desktopOpen ? "Settings" : undefined}
+            className={`mb-3 flex items-center gap-3 rounded-lg py-2 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground data-[status=active]:bg-surface-2 data-[status=active]:text-foreground ${desktopOpen ? "px-3" : "justify-center px-0"}`}
           >
             <Settings className="size-[15px] opacity-70" />
-            Settings
+            {desktopOpen && "Settings"}
           </Link>
 
-          <Link to="/settings" className="flex items-center gap-3 rounded-xl px-2 py-3 hover:bg-foreground/[0.04]">
+          <Link to="/settings" title={!desktopOpen ? "Profile & settings" : undefined} className={`flex items-center gap-3 rounded-xl py-3 hover:bg-foreground/[0.04] ${desktopOpen ? "px-2" : "justify-center px-0"}`}>
             <div className="grid size-10 shrink-0 place-items-center rounded-full border border-secondary bg-secondary/20 text-xs font-bold text-secondary">
               {initials}
             </div>
-            <div className="flex min-w-0 flex-1 flex-col">
+            {desktopOpen && <div className="flex min-w-0 flex-1 flex-col">
               <span className="truncate text-xs font-semibold">{profile?.display_name ?? "You"}</span>
               <span className="truncate text-[10px] text-muted-foreground">Profile &amp; settings</span>
-            </div>
+            </div>}
           </Link>
-          <button onClick={signOut} className="mt-3 flex w-full items-center gap-3 border-t border-border px-3 pt-4 text-xs text-muted-foreground hover:text-foreground">
-            <LogOut className="size-4" /> Log out
+          <button onClick={signOut} title="Log out" className={`mt-3 flex w-full items-center gap-3 border-t border-border pt-4 text-xs text-muted-foreground hover:text-foreground ${desktopOpen ? "px-3" : "justify-center px-0"}`}>
+            <LogOut className="size-4" /> {desktopOpen && "Log out"}
           </button>
         </div>
       </nav>

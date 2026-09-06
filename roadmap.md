@@ -1,7 +1,8 @@
 # Loot redesign roadmap
-- [ ] Audit every route, shared shell, chart, export, and brand string
-- [ ] Add Loot logo, favicon, tokens, Cabin typography, and global interactions
-- [ ] Rebuild navigation, top bar, dashboard, auth, and onboarding
-- [ ] Apply Loot surfaces and controls across every remaining page
-- [ ] Rebrand all image/PDF exports
-- [ ] Verify names, fonts, colours, charts, mobile/desktop layout, and interactions
+- [x] Audit every route, shared shell, chart, export, and brand string
+- [x] Add Loot logo, favicon, tokens, Cabin typography, and global interactions
+- [ ] Rebuild the app shell with a persistent collapsible navigation rail
+- [ ] Recompose dashboard from the supplied Loot bento reference
+- [ ] Replace native dropdowns with readable Loot-specific menus
+- [ ] Apply expressive Loot hierarchy and surfaces across every remaining page
+- [ ] Verify desktop/mobile layout, menu accessibility, and interactions
