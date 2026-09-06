@@ -40,9 +40,9 @@ import { getCurrency } from "@/lib/currencies";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Budge" },
+      { title: "Dashboard — Loot" },
       { name: "description", content: "Your live monthly position: income, expenses, disposable cash and savings rate at a glance." },
-      { property: "og:title", content: "Dashboard — Budge" },
+      { property: "og:title", content: "Dashboard — Loot" },
       { property: "og:description", content: "Your live monthly position: income, expenses, disposable cash and savings rate at a glance." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -170,8 +170,6 @@ function Dashboard() {
   const savingTotal = saveCats.reduce((s, c) => s + totals.byCategory[c], 0);
   const now = new Date();
   const monthLabel = now.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-  const greeting = now.getHours() < 12 ? "Good morning" : now.getHours() < 18 ? "Good afternoon" : "Good evening";
-  const firstName = (profile.display_name ?? "").trim().split(" ")[0] || "there";
 
   // Month-on-month deltas (previous stored snapshot vs live position)
   const prev = snaps.find((s) => s.month !== monthKey(now));
@@ -194,39 +192,14 @@ function Dashboard() {
 
   return (
     <div className="page-enter flex min-h-screen flex-col">
-      {/* Account bar */}
-      <header className="sticky top-0 z-20 flex h-[4.5rem] items-center justify-between gap-4 border-b border-hairline bg-background/60 px-5 backdrop-blur-2xl md:px-8">
-        <div className="min-w-0">
-          <p className="truncate text-[15px] font-semibold tracking-tight">
-            {greeting}, {firstName}
-          </p>
-          <p className="mt-0.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-            <span className="size-1.5 rounded-full bg-accent live-dot" />
-            Live position · {monthLabel}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 md:gap-3">
-          <div className="hidden items-center gap-6 border-r border-hairline pr-5 sm:flex">
-            <MiniMetric label="Savings rate" value={formatPercent(totals.savingsRate)} accent />
-            <MiniMetric label="Burn" value={formatPercent(totals.burnRate, 0)} />
-          </div>
-          <Link to="/checker" className="btn-ghost hidden md:inline-flex">
-            <Shield className="size-3.5" /> Run a check
-          </Link>
-          <Link to="/expenses" className="btn-accent">
-            <Plus className="size-3.5" /> <span className="hidden sm:inline">Add expense</span>
-          </Link>
-        </div>
-      </header>
-
-      <div className="grid grid-cols-1 gap-5 p-5 md:p-8 xl:grid-cols-12">
+      <div className="grid grid-cols-1 gap-5 p-4 md:p-8 xl:grid-cols-12">
         {/* ---------- Primary account card ---------- */}
         <section className="animate-enter bank-card card-engrave p-7 md:p-9 xl:col-span-8">
           <div className="relative z-[1] flex items-start justify-between gap-6">
             <div>
               <span className="label-xs">Available to spend</span>
               <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
-                Budge current account · {currency}
+                 Loot account · {currency}
               </p>
             </div>
             <div className="flex flex-col items-end gap-3">
@@ -373,7 +346,7 @@ function Dashboard() {
         </div>
 
         {/* ---------- Account tiles ---------- */}
-        <div className="animate-enter grid grid-cols-1 gap-5 [animation-delay:140ms] md:grid-cols-3 xl:col-span-12">
+         <div className="animate-enter grid grid-cols-1 gap-5 [animation-delay:140ms] md:grid-cols-3 xl:col-span-12">
           <Stat label="Net income" caption="Take-home, all streams" value={formatCurrency(totals.netIncome, currency)} delta={deltaIncome} />
           <Stat label="Total expenses" caption="Monthly equivalent" value={formatCurrency(totals.totalExpenses, currency)} delta={deltaExpenses} invert />
           <Stat
@@ -417,7 +390,7 @@ function Dashboard() {
               className="border-0 px-0 py-4"
               icon={<Sparkles className="size-6" />}
               title="Nothing tracked yet"
-              description="Add a few recurring costs and Budge starts showing your real monthly position, health and savings rate."
+              description="Add a few recurring costs and Loot starts showing your real monthly position, health and savings rate."
               steps={[
                 "Set your take-home income in Settings",
                 "Add your fixed costs — rent, transport, insurance",

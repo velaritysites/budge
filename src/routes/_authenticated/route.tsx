@@ -74,7 +74,8 @@ function AuthLayout() {
   }
 
   const initials = (profile?.display_name || "U").slice(0, 2).toUpperCase();
-  const pageTitle = location.pathname === "/dashboard" ? null : NAV_GROUPS.flatMap((g) => g.items).find((item) => item.to === location.pathname)?.label ?? (location.pathname === "/settings" ? "Settings" : "Loot");
+  const navItems = NAV_GROUPS.flatMap((group) => [...group.items]);
+  const pageTitle = location.pathname === "/dashboard" ? null : navItems.find((item) => item.to === location.pathname)?.label ?? (location.pathname === "/settings" ? "Settings" : "Loot");
   const firstName = (profile?.display_name ?? "there").trim().split(" ")[0] || "there";
   const greeting = new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening";
 
