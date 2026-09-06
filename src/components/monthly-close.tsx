@@ -301,7 +301,7 @@ export function ClosedSummary({ month, currency, briefing }: { month: string; cu
     if (!sheet.current) return;
     setBusy(true);
     try {
-      const canvas = await html2canvas(sheet.current, { backgroundColor: "#0A0A1A", scale: 2 });
+      const canvas = await html2canvas(sheet.current, { backgroundColor: "#0F0A0A", scale: 2 });
       const img = canvas.toDataURL("image/png");
       const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
       const w = pdf.internal.pageSize.getWidth();
@@ -351,12 +351,12 @@ function MonthlySummarySheet({
   rows: readonly (readonly [string, number])[];
   briefing: Briefing | null;
 }) {
-  const bg = "#0A0A1A";
-  const surface = "#141432";
-  const border = "rgba(200,205,255,0.14)";
-  const fg = "#ECEDFA";
-  const muted = "#9BA0C6";
-  const accent = "#6C63F5";
+  const bg = "#0F0A0A";
+  const surface = "#211B1B";
+  const border = "rgba(255,255,255,0.14)";
+  const fg = "#FFFFFF";
+  const muted = "#AAA3A3";
+  const accent = "#C1FE72";
 
   return (
     <div
@@ -365,7 +365,7 @@ function MonthlySummarySheet({
         background: bg,
         color: fg,
         padding: 32,
-        borderRadius: 18,
+        borderRadius: 8,
         border: `1px solid ${border}`,
         fontFamily: "Cabin, ui-sans-serif, system-ui, sans-serif",
       }}

@@ -20,7 +20,7 @@ export type ExportPlan = {
 
 /**
  * Renders a printable/exportable snapshot of a plan.
- * Styling mirrors the app's Nocturne dark theme so downloaded assets
+ * Styling mirrors the app's Loot dark theme so downloaded assets
  * feel like a first-class export of Loot, not a generic report.
  */
 export function PlanExportSheet({
@@ -42,12 +42,12 @@ export function PlanExportSheet({
 
   // Explicit hex values (not tokens) so html2canvas renders identical colours
   // regardless of the user's active theme at export time.
-  const bg = "#0A0A1A";
-  const surface = "#141432";
-  const border = "rgba(200,205,255,0.14)";
-  const fg = "#ECEDFA";
-  const muted = "#9BA0C6";
-  const accent = "#6C63F5";
+  const bg = "#0F0A0A";
+  const surface = "#211B1B";
+  const border = "rgba(255,255,255,0.14)";
+  const fg = "#FFFFFF";
+  const muted = "#AAA3A3";
+  const accent = "#C1FE72";
 
   return (
     <div
@@ -64,21 +64,21 @@ export function PlanExportSheet({
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", borderBottom: `1px solid ${border}`, paddingBottom: 20, marginBottom: 24 }}>
         <div>
-          <div style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: muted, fontFamily: "JetBrains Mono, ui-monospace, monospace" }}>
+          <div style={{ fontSize: 10, textTransform: "uppercase", color: muted }}>
             Loot · Salary Planner
           </div>
-          <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.03em", fontStyle: "italic", marginTop: 6, lineHeight: 1 }}>
+          <div style={{ fontSize: 40, fontWeight: 700, marginTop: 6, lineHeight: 1 }}>
             {plan.name}
           </div>
-          <div style={{ fontSize: 11, color: muted, marginTop: 8, fontFamily: "JetBrains Mono, ui-monospace, monospace" }}>
+          <div style={{ fontSize: 11, color: muted, marginTop: 8 }}>
             {plan.phases.length} phase{plan.phases.length !== 1 ? "s" : ""} · Generated {generated.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
           </div>
         </div>
         <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: muted, fontFamily: "JetBrains Mono, ui-monospace, monospace" }}>
+          <div style={{ fontSize: 10, textTransform: "uppercase", color: muted }}>
             Required gross / mo
           </div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: accent, fontFamily: "JetBrains Mono, ui-monospace, monospace", letterSpacing: "-0.02em" }}>
+          <div style={{ fontSize: 32, fontWeight: 700, color: accent }}>
             {formatCurrency(requiredGross, currency)}
           </div>
           <div style={{ fontSize: 11, color: muted, marginTop: 2, fontFamily: "JetBrains Mono, ui-monospace, monospace" }}>
@@ -174,7 +174,7 @@ export function PlanExportSheet({
 
 async function snapshot(node: HTMLElement): Promise<HTMLCanvasElement> {
   return html2canvas(node, {
-    backgroundColor: "#0A0A1A",
+      backgroundColor: "#0F0A0A",
     scale: 2,
     useCORS: true,
     logging: false,
@@ -209,7 +209,7 @@ export async function exportPlanPdf(node: HTMLElement, planName: string) {
   const imgH = (canvas.height * imgW) / canvas.width;
 
   // Fill background so unused page area matches the sheet.
-  pdf.setFillColor(10, 13, 18);
+  pdf.setFillColor(15, 10, 10);
   pdf.rect(0, 0, pageW, pageH, "F");
 
   if (imgH <= pageH - margin * 2) {
@@ -226,12 +226,12 @@ export async function exportPlanPdf(node: HTMLElement, planName: string) {
       slice.width = canvas.width;
       slice.height = sliceH;
       const ctx = slice.getContext("2d")!;
-      ctx.fillStyle = "#0A0A1A";
+      ctx.fillStyle = "#0F0A0A";
       ctx.fillRect(0, 0, slice.width, slice.height);
       ctx.drawImage(canvas, 0, y, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
       if (!first) {
         pdf.addPage();
-        pdf.setFillColor(10, 13, 18);
+        pdf.setFillColor(15, 10, 10);
         pdf.rect(0, 0, pageW, pageH, "F");
       }
       const sliceImgH = (sliceH / pxPerPt);

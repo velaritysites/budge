@@ -131,7 +131,7 @@ export function AnnualReview({ currency }: { currency: string }) {
     setSharing(true);
     try {
       const html2canvas = (await import("html2canvas")).default;
-      const canvas = await html2canvas(shareRef.current, { backgroundColor: "#0b0d12", scale: 2 });
+      const canvas = await html2canvas(shareRef.current, { backgroundColor: "#0F0A0A", scale: 2 });
       const url = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = url;
@@ -151,7 +151,7 @@ export function AnnualReview({ currency }: { currency: string }) {
     try {
       const html2canvas = (await import("html2canvas")).default;
       const { default: jsPDF } = await import("jspdf");
-      const canvas = await html2canvas(reportRef.current, { backgroundColor: "#0A0A1A", scale: 2 });
+      const canvas = await html2canvas(reportRef.current, { backgroundColor: "#0F0A0A", scale: 2 });
       const img = canvas.toDataURL("image/png");
       const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
       const w = pdf.internal.pageSize.getWidth();
