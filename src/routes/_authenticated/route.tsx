@@ -110,7 +110,7 @@ function AuthLayout() {
         className={`${mobileOpen ? "flex" : "hidden"} md:flex w-full ${desktopOpen ? "md:w-[264px]" : "md:w-[80px]"} shrink-0 flex-col gap-7 p-4 ${desktopOpen ? "md:p-5" : "md:p-3"} transition-[width,padding] duration-300
           border-b md:border-b-0 md:border-r border-hairline
           md:sticky md:top-0 md:h-screen
-          bg-background`}
+          bg-background`}>
         <div className="hidden md:flex justify-end px-2">
           <button onClick={toggleDesktop} className="btn-ghost !p-1.5 opacity-50 hover:opacity-100">
             <Menu className="size-4" />
