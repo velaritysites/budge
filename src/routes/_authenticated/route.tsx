@@ -111,7 +111,6 @@ function AuthLayout() {
           border-b md:border-b-0 md:border-r border-hairline
           md:sticky md:top-0 md:h-screen
           bg-background`}>
-      >
         <div className="hidden md:flex justify-end px-2">
           <button onClick={toggleDesktop} className="sidebar-toggle" aria-label={desktopOpen ? "Collapse sidebar" : "Expand sidebar"} title={desktopOpen ? "Collapse sidebar" : "Expand sidebar"}>
             {desktopOpen ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
