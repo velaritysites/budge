@@ -195,3 +195,120 @@ export function trackDeductions(params: {
   }
   return { lines, total: lines.reduce((s, l) => s + l.claimable, 0) };
 }
+
+/* ------------------------------------------------------------------ *
+ * Tax Centre — rebates, step-by-step estimate, deadlines
+ * ------------------------------------------------------------------ */
+
+export const TAX_CENTRE_DISCLAIMER =
+  "All tax figures are estimates based on SARS published tables for the current tax year and are for planning purposes only. Consult a registered tax practitioner for your official eFiling submission.";
+
+export const SECONDARY_REBATE = 9_444;
+export const TERTIARY_REBATE = 3_145;
+/** SARS prescribed rate per business kilometre (simplified method). */
+export const SARS_KM_RATE = 4.84;
+/** Section 18A donations are deductible up to 10% of taxable income. */
+export const DONATION_LIMIT_PCT = 10;
+
+export function rebateForAge(age: number): { total: number; label: string } {
+  if (age >= 75) return { total: PRIMARY_REBATE + SECONDARY_REBATE + TERTIARY_REBATE, label: "Primary + secondary + tertiary rebate (75+)" };
+  if (age >= 65) return { total: PRIMARY_REBATE + SECONDARY_REBATE, label: "Primary + secondary rebate (65–74)" };
+  return { total: PRIMARY_REBATE, label: "Primary rebate (under 65)" };
+}
+
+export function medicalCreditAnnual(members: number): number {
+  const m = Math.max(0, members);
+  return 12 * (Math.min(m, 2) * MEDICAL_CREDIT_FIRST_TWO + Math.max(0, m - 2) * MEDICAL_CREDIT_ADDITIONAL);
+}
+
+export function marginalRate(taxableIncome: number): number {
+  const b = BRACKETS.find((x) => taxableIncome <= x.upTo) ?? BRACKETS[BRACKETS.length - 1]!;
+  return b.rate * 100;
+}
+
+export type TaxSteps = {
+  grossAnnual: number;
+  raContributions: number;
+  raCap: number;
+  raDeduction: number;
+  taxableIncome: number;
+  grossTax: number;
+  rebate: number;
+  rebateLabel: string;
+  medicalCredit: number;
+  annualTax: number;
+  monthlyTax: number;
+  effectiveRate: number;
+  marginalRate: number;
+};
+
+/** The full SARS calculation, step by step, so the user can follow the maths. */
+export function estimateTaxSteps(params: {
+  grossAnnual: number;
+  raContributions?: number;
+  medicalMembers?: number;
+  age?: number;
+}): TaxSteps {
+  const grossAnnual = Math.max(0, params.grossAnnual);
+  const raContributions = Math.max(0, params.raContributions ?? 0);
+  // The 27.5% cap is measured against income before the RA deduction.
+  const raCap = raDeductionCap(grossAnnual);
+  const raDeduction = Math.min(raContributions, raCap);
+  const taxableIncome = Math.max(0, grossAnnual - raDeduction);
+  const grossTax = annualTaxBeforeRebate(taxableIncome);
+  const { total: rebate, label: rebateLabel } = rebateForAge(params.age ?? 30);
+  const medicalCredit = medicalCreditAnnual(params.medicalMembers ?? 0);
+  const annualTax = Math.max(0, grossTax - rebate - medicalCredit);
+  return {
+    grossAnnual,
+    raContributions,
+    raCap,
+    raDeduction,
+    taxableIncome,
+    grossTax,
+    rebate,
+    rebateLabel,
+    medicalCredit,
+    annualTax,
+    monthlyTax: annualTax / 12,
+    effectiveRate: grossAnnual > 0 ? (annualTax / grossAnnual) * 100 : 0,
+    marginalRate: marginalRate(taxableIncome),
+  };
+}
+
+/** Months elapsed in the current SA tax year, including the current month. */
+export function monthsElapsedInTaxYear(now = new Date()): number {
+  const ty = taxYear(now);
+  return (now.getFullYear() - ty.startYear) * 12 + (now.getMonth() - 2) + 1;
+}
+
+export type Deadline = {
+  key: string;
+  name: string;
+  action: string;
+  date: Date;
+  daysAway: number;
+  past: boolean;
+};
+
+/** SARS deadlines that apply to this taxpayer, in date order. */
+export function taxDeadlines(opts: { provisional: boolean }, now = new Date()): Deadline[] {
+  const ty = taxYear(now);
+  const y = ty.startYear;
+  const raw: { key: string; name: string; action: string; date: Date; only?: "prov" | "nonprov" }[] = [
+    { key: "year_start", name: "New tax year begins", action: "A fresh deduction tracker starts. Keep logging medical aid, retirement and home office costs.", date: new Date(y, 2, 1) },
+    { key: "efiling_open", name: "eFiling season opens", action: "Check your IRP5 has been submitted by your employer, then log in to eFiling.", date: new Date(y, 6, 7) },
+    { key: "prov_1", name: "Provisional tax — first period (IRP6)", action: "Pay roughly half your estimated annual tax on non-PAYE income.", date: new Date(y, 7, 31), only: "prov" },
+    { key: "efiling_close", name: "eFiling deadline — non-provisional", action: "Submit your ITR12 return for the past tax year.", date: new Date(y, 9, 20), only: "nonprov" },
+    { key: "efiling_close_prov", name: "eFiling deadline — provisional taxpayers", action: "Submit your ITR12 return for the past tax year.", date: new Date(y + 1, 0, 19), only: "prov" },
+    { key: "prov_2", name: "Provisional tax — second period (IRP6)", action: "Top up the balance of your estimated annual tax before the year closes.", date: new Date(y + 1, 1, ty.end.getDate()), only: "prov" },
+    { key: "year_end", name: "Tax year ends", action: "Last day to make retirement annuity contributions that count for this tax year.", date: ty.end },
+  ];
+  return raw
+    .filter((d) => !d.only || (d.only === "prov" ? opts.provisional : !opts.provisional))
+    .map((d) => {
+      const daysAway = Math.ceil((d.date.getTime() - now.getTime()) / 86_400_000);
+      return { key: d.key, name: d.name, action: d.action, date: d.date, daysAway, past: daysAway < 0 };
+    })
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+}
