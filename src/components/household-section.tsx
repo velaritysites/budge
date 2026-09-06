@@ -145,7 +145,7 @@ export function HouseholdSection() {
             </button>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            They'll get an email to create their own Budge account. Until you both switch to Household view, neither of
+            They'll get an email to create their own Loot account. Until you both switch to Household view, neither of
             you can see the other's individual breakdown.
           </p>
         </>

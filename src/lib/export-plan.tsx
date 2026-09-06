@@ -21,7 +21,7 @@ export type ExportPlan = {
 /**
  * Renders a printable/exportable snapshot of a plan.
  * Styling mirrors the app's Nocturne dark theme so downloaded assets
- * feel like a first-class export of Budge, not a generic report.
+ * feel like a first-class export of Loot, not a generic report.
  */
 export function PlanExportSheet({
   plan,
@@ -65,7 +65,7 @@ export function PlanExportSheet({
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", borderBottom: `1px solid ${border}`, paddingBottom: 20, marginBottom: 24 }}>
         <div>
           <div style={{ fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: muted, fontFamily: "JetBrains Mono, ui-monospace, monospace" }}>
-            Budge · Salary Planner
+            Loot · Salary Planner
           </div>
           <div style={{ fontSize: 40, fontWeight: 900, letterSpacing: "-0.03em", fontStyle: "italic", marginTop: 6, lineHeight: 1 }}>
             {plan.name}
@@ -165,7 +165,7 @@ export function PlanExportSheet({
       )}
 
       <div style={{ marginTop: 28, paddingTop: 16, borderTop: `1px solid ${border}`, display: "flex", justifyContent: "space-between", fontSize: 10, color: muted, fontFamily: "JetBrains Mono, ui-monospace, monospace", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-        <span>Budge · Salary Planner</span>
+        <span>Loot · Salary Planner</span>
         <span>Rough estimate — real payroll varies by locale & benefits</span>
       </div>
     </div>
@@ -192,7 +192,7 @@ export async function exportPlanImage(node: HTMLElement, planName: string) {
   const url = canvas.toDataURL("image/png");
   const a = document.createElement("a");
   a.href = url;
-  a.download = `budge-${safeName(planName)}.png`;
+  a.download = `loot-${safeName(planName)}.png`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -241,5 +241,5 @@ export async function exportPlanPdf(node: HTMLElement, planName: string) {
     }
   }
 
-  pdf.save(`budge-${safeName(planName)}.pdf`);
+  pdf.save(`loot-${safeName(planName)}.pdf`);
 }

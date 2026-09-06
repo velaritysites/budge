@@ -83,16 +83,16 @@ export function buildBriefing(input: BriefingInput): Briefing {
     obs.push(`You kept ${input.savingsRate.toFixed(0)}% of your income — ${m(input.disposable)} left after everything went out.`);
   }
 
-  // 3. Budge Score movement
+  // 3. Loot Score movement
   if (input.scoreNow !== null && input.scorePrev !== null && input.scoreNow !== input.scorePrev) {
     const d = input.scoreNow - input.scorePrev;
     obs.push(
-      `Your Budge Score moved ${d > 0 ? "up" : "down"} ${Math.abs(d)} points to ${input.scoreNow}${
+      `Your Loot Score moved ${d > 0 ? "up" : "down"} ${Math.abs(d)} points to ${input.scoreNow}${
         input.topScoreDriver ? `, mostly driven by ${input.topScoreDriver.toLowerCase()}` : ""
       }.`,
     );
   } else if (input.scoreNow !== null) {
-    obs.push(`Your Budge Score is unchanged at ${input.scoreNow}.`);
+    obs.push(`Your Loot Score is unchanged at ${input.scoreNow}.`);
   }
 
   // 4. Debt-to-income threshold crossings

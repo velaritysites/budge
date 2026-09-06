@@ -43,7 +43,7 @@ export const invitePartner = createServerFn({ method: "POST" })
     const { error: sendErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, {
       redirectTo: data.redirectTo,
     });
-    // An existing Budge account can't be re-invited — that's fine, they just sign in.
+    // An existing Loot account can't be re-invited — that's fine, they just sign in.
     const alreadyRegistered = sendErr?.message?.toLowerCase().includes("already");
     if (sendErr && !alreadyRegistered) throw new Error(sendErr.message);
 

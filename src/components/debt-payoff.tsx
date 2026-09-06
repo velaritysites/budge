@@ -127,7 +127,7 @@ export function DebtPayoff() {
         <span className="label-xs">Debt payoff</span>
       </div>
       <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-        Add each debt you're carrying and Budge compares two ways of clearing them.
+        Add each debt you're carrying and Loot compares two ways of clearing them.
       </p>
 
       {/* list */}

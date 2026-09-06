@@ -14,7 +14,7 @@ import { CATEGORY_KEYS } from "@/lib/categories";
 import { CategoryOptions } from "@/components/category-select";
 
 export const Route = createFileRoute("/_authenticated/planner")({
-  head: () => ({ meta: [{ title: "Salary Planner — Budge" }] }),
+  head: () => ({ meta: [{ title: "Salary Planner — Loot" }] }),
   component: PlannerPage,
 });
 
@@ -523,7 +523,7 @@ function PlannerPage() {
               <EmptyState
                 icon={<Calculator className="size-6" />}
                 title="Sketch your ideal month"
-                description="List the life you want to afford, set what you'd like left over, and Budge works backwards to the salary that supports it."
+                description="List the life you want to afford, set what you'd like left over, and Loot works backwards to the salary that supports it."
                 steps={[
                   "Add the expenses this phase should cover",
                   "Set your target leftover and tax rate",

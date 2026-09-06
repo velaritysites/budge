@@ -150,8 +150,8 @@ export function buildNotifications(ctx: NotifyContext, now = new Date()): NewNot
   if (ctx.scoreNow !== null && ctx.scorePrev !== null && ctx.scorePrev - ctx.scoreNow > 30) {
     out.push({
       kind: "score_drop",
-      title: "Your Budge Score dropped",
-      body: `Your Budge Score dropped ${Math.round(ctx.scorePrev - ctx.scoreNow)} points this month. Tap to see what changed.`,
+      title: "Your Loot Score dropped",
+      body: `Your Loot Score dropped ${Math.round(ctx.scorePrev - ctx.scoreNow)} points this month. Tap to see what changed.`,
       link: "/dashboard",
       dedupe: `score_drop:${p}`,
     });

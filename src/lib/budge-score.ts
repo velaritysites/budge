@@ -1,5 +1,5 @@
 /**
- * Budge Score — a 0–999 estimate of credit health built from data Budge
+ * Loot Score — a 0–999 estimate of credit health built from data Loot
  * already holds. It is NOT a bureau score; it is a transparent, weighted
  * model whose factors are always shown to the user.
  */
@@ -78,7 +78,7 @@ export function stabilityQuality(history: number[]): number {
   return clamp01(1 - cv / 0.35);
 }
 
-export type BudgeScore = {
+export type LootScore = {
   score: number;
   band: "green" | "amber" | "red";
   factors: Factor[];
@@ -88,7 +88,7 @@ export type BudgeScore = {
   utilisationPct: number;
 };
 
-export function computeBudgeScore(input: ScoreInputs, calibration?: Calibration): BudgeScore {
+export function computeLootScore(input: ScoreInputs, calibration?: Calibration): LootScore {
   const dtiPct = input.grossIncome > 0 ? (input.debtMonthly / input.grossIncome) * 100 : 0;
   const dtiQ =
     dtiPct < 20 ? 1 : dtiPct < 36 ? 0.72 : dtiPct < 50 ? 0.45 : Math.max(0.08, 0.45 - (dtiPct - 50) / 100);
@@ -171,13 +171,13 @@ export function computeBudgeScore(input: ScoreInputs, calibration?: Calibration)
   };
 }
 
-export const BAND_STYLES: Record<BudgeScore["band"], string> = {
+export const BAND_STYLES: Record<LootScore["band"], string> = {
   green: "text-accent",
   amber: "text-caution",
   red: "text-alert",
 };
 
-export const BAND_LABEL: Record<BudgeScore["band"], string> = {
+export const BAND_LABEL: Record<LootScore["band"], string> = {
   green: "Healthy",
   amber: "Fair",
   red: "Needs work",
@@ -198,12 +198,12 @@ export function calibrationFrom(rows: { score: number; estimated_score: number |
   return { offset, spread, samples: usable.length };
 }
 
-export function explainGap(gap: number, s: BudgeScore): string {
-  if (Math.abs(gap) <= 25) return "your bureau file closely matches the picture Budge has of your money";
+export function explainGap(gap: number, s: LootScore): string {
+  if (Math.abs(gap) <= 25) return "your bureau file closely matches the picture Loot has of your money";
   const weakest = [...s.factors].sort((a, b) => b.headroom - a.headroom)[0];
   return gap > 0
-    ? `credit history Budge can't see — length of accounts, older settled loans and enquiry history — which the bureau rewards`
-    : `${weakest.label.toLowerCase()} showing better inside Budge than on your bureau file, plus arrears or enquiries Budge has no sight of`;
+    ? `credit history Loot can't see — length of accounts, older settled loans and enquiry history — which the bureau rewards`
+    : `${weakest.label.toLowerCase()} showing better inside Loot than on your bureau file, plus arrears or enquiries Loot has no sight of`;
 }
 
 /* ---------------- persistence ---------------- */
@@ -277,7 +277,7 @@ export type Recommendation = {
 };
 
 export function buildRecommendations(
-  s: BudgeScore,
+  s: LootScore,
   ctx: { disposable: number; creditCardBalance: number; grossIncome: number; savingsBalance: number; topDebtName: string | null; currencyFormat: (n: number) => string },
 ): Recommendation[] {
   const out: Recommendation[] = [];

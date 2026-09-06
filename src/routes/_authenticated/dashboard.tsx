@@ -31,7 +31,7 @@ import { DashboardSkeleton, EmptyState } from "@/components/ui/states";
 import { CATEGORY_KEYS, GROUPED_CATEGORIES, isPositiveCategory } from "@/lib/categories";
 import { CategoryOptions, CategoryAvatar as CatAvatar } from "@/components/category-select";
 import { ForecastCard } from "@/components/forecast-card";
-import { BudgeScoreCard } from "@/components/budge-score-card";
+import { LootScoreCard } from "@/components/loot-score-card";
 import { MonthlyCloseCard } from "@/components/monthly-close";
 import { BriefingCard } from "@/components/briefing-card";
 import { useNotificationEngine } from "@/lib/use-notification-engine";
@@ -359,7 +359,7 @@ function Dashboard() {
 
         {/* ---------- Predictive forecast ---------- */}
         <div className="animate-enter flex flex-col gap-5 [animation-delay:170ms] xl:col-span-12">
-          <BudgeScoreCard
+          <LootScoreCard
             currency={currency}
             grossIncome={totals.grossIncome}
             netIncome={totals.netIncome}

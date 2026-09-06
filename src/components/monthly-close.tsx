@@ -307,7 +307,7 @@ export function ClosedSummary({ month, currency, briefing }: { month: string; cu
       const w = pdf.internal.pageSize.getWidth();
       const h = (canvas.height * w) / canvas.width;
       pdf.addImage(img, "PNG", 0, 0, w, Math.min(h, pdf.internal.pageSize.getHeight()));
-      pdf.save(`budge-${month.slice(0, 7)}-summary.pdf`);
+      pdf.save(`loot-${month.slice(0, 7)}-summary.pdf`);
     } catch {
       toast.error("Could not build the PDF");
     } finally {
@@ -372,7 +372,7 @@ function MonthlySummarySheet({
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
         <div>
-          <div style={{ color: muted, fontSize: 10, letterSpacing: 2, textTransform: "uppercase" }}>Budge · monthly summary</div>
+          <div style={{ color: muted, fontSize: 10, letterSpacing: 2, textTransform: "uppercase" }}>Loot · monthly summary</div>
           <div style={{ fontSize: 28, fontWeight: 800 }}>{monthLabel(month)}</div>
         </div>
         <div style={{ color: accent, fontSize: 12 }}>Closed</div>

@@ -9,7 +9,7 @@ import { ArrowLeft, Plus, Trash2, Pencil, Check, X, TrendingUp, TrendingDown } f
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/goals/$goalId")({
-  head: () => ({ meta: [{ title: "Goal — Budge" }] }),
+  head: () => ({ meta: [{ title: "Goal — Loot" }] }),
   component: GoalDetailPage,
 });
 

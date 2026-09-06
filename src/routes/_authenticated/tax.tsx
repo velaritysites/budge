@@ -20,9 +20,9 @@ export const Route = createFileRoute("/_authenticated/tax")({
   component: TaxPage,
   head: () => ({
     meta: [
-      { title: "Tax — Budge" },
+      { title: "Tax — Loot" },
       { name: "description", content: "Track your estimated PAYE, provisional tax dates and deductible spending through the South African tax year." },
-      { property: "og:title", content: "Tax — Budge" },
+      { property: "og:title", content: "Tax — Loot" },
       { property: "og:description", content: "Estimated PAYE, provisional tax dates and a running deduction tracker for the SA tax year." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

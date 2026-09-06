@@ -1,5 +1,5 @@
 /**
- * Cross-user calibration for the Budge Score.
+ * Cross-user calibration for the Loot Score.
  *
  * Every uploaded bureau score is stored alongside the five factor values that
  * produced the estimate. A scheduled job crunches that dataset into global
@@ -7,7 +7,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { FactorKey } from "./budge-score";
+import type { FactorKey } from "./loot-score";
 
 export type Corrections = Partial<Record<FactorKey, number>> & { intercept?: number };
 

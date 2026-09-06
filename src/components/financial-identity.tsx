@@ -42,7 +42,7 @@ export function FinancialIdentity() {
   if (!identity) {
     return (
       <p className="text-[12px] text-muted-foreground">
-        Your profile builds as months of data collect. Come back after your first full month in Budge.
+        Your profile builds as months of data collect. Come back after your first full month in Loot.
       </p>
     );
   }

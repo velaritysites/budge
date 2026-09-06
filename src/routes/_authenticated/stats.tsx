@@ -14,7 +14,7 @@ import { useLockedMonths } from "@/lib/monthly-close";
 import { Lock } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/stats")({
-  head: () => ({ meta: [{ title: "Stats & History — Budge" }] }),
+  head: () => ({ meta: [{ title: "Stats & History — Loot" }] }),
   component: StatsPage,
 });
 

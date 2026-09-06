@@ -14,7 +14,7 @@ import { TaxSummary } from "@/components/tax-summary";
 import { FinancialIdentity } from "@/components/financial-identity";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings — Budge" }] }),
+  head: () => ({ meta: [{ title: "Settings — Loot" }] }),
   component: SettingsPage,
 });
 
@@ -321,7 +321,7 @@ function SettingsPage() {
           />
           <p className="text-[11px] text-muted-foreground">
             Foreign expenses are converted to your home currency ({currency}) using the rate you enter, and both the
-            original and converted amounts are kept. Rates are entered manually — Budge doesn't fetch live rates.
+            original and converted amounts are kept. Rates are entered manually — Loot doesn't fetch live rates.
           </p>
         </Section>
 

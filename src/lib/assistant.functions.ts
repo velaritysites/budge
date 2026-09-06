@@ -4,13 +4,13 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const DAILY_LIMIT = 50;
 
-const SYSTEM_PROMPT = `You are Budge's financial companion — a South African personal finance assistant.
+const SYSTEM_PROMPT = `You are Loot's financial companion — a South African personal finance assistant.
 You are given the user's real numbers. Use them. Never give generic advice when you have actual data.
 Be direct and clear. Do not preach, do not hedge into uselessness.
 When something is a bad idea, say so and give the reason. When something is genuinely affordable, say so plainly.
 Do calculations in real time using the injected numbers and show your working briefly (one or two lines) using the user's actual figures.
 Amounts are in the user's home currency; South African users see R.
-When a recommendation maps to a Budge feature, end with a short handoff line such as
+When a recommendation maps to a Loot feature, end with a short handoff line such as
 "Want to model this in the Planner?" or "Run this through the Affordability Checker."
 Keep answers tight — a few short paragraphs at most. Use markdown sparingly.`;
 
@@ -89,7 +89,7 @@ export const sendAssistantMessage = createServerFn({ method: "POST" })
       return {
         limited: true as const,
         reply:
-          "You've hit today's limit of 50 assistant messages. It resets at midnight — everything else in Budge keeps working in the meantime.",
+          "You've hit today's limit of 50 assistant messages. It resets at midnight — everything else in Loot keeps working in the meantime.",
         conversationId: data.conversationId,
       };
     }

@@ -2,7 +2,7 @@
  * Financial identity — a data-driven characterisation of the user built from
  * the last 6 monthly snapshots. Not a personality test.
  */
-import { stabilityQuality } from "./budge-score";
+import { stabilityQuality } from "./loot-score";
 
 export type IdentitySnap = {
   month: string;
