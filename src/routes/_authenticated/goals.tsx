@@ -467,7 +467,7 @@ function GoalsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <label className="block space-y-1">
               <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Category</span>
-              <select value={category} onChange={(e) => setCategory(e.target.value)} className="field">
+              <select value={category} className="field" onChange={(e) => setCategory(e.target.value)} className="field">
                 {GOAL_CATEGORIES.map((c) => (
                   <option key={c.key} value={c.key}>{c.label}</option>
                 ))}

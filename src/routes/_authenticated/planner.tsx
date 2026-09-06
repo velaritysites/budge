@@ -502,11 +502,11 @@ function PlannerPage() {
                 className="field" />
               <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" step="0.01" placeholder="Amount"
                 className="field" />
-              <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
+              <select value={category} className="field" onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
                 className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none">
                 <CategoryOptions />
               </select>
-              <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
+              <select value={frequency} className="field" onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
                 className="bg-background border border-border rounded-lg px-3 py-2.5 text-sm focus:outline-none">
                 <option value="monthly">Monthly</option>
                 <option value="weekly">Weekly</option>
@@ -547,11 +547,11 @@ function PlannerPage() {
                     <input value={editDraft.amount} onChange={(e) => setEditDraft({ ...editDraft, amount: e.target.value })}
                       type="number" step="0.01" placeholder="Amount"
                       className="bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
-                    <select value={editDraft.category} onChange={(e) => setEditDraft({ ...editDraft, category: e.target.value as ExpenseCategory })}
+                    <select value={editDraft.category} className="field" onChange={(e) => setEditDraft({ ...editDraft, category: e.target.value as ExpenseCategory })}
                       className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">
                       <CategoryOptions />
                     </select>
-                    <select value={editDraft.frequency} onChange={(e) => setEditDraft({ ...editDraft, frequency: e.target.value as ExpenseFrequency })}
+                    <select value={editDraft.frequency} className="field" onChange={(e) => setEditDraft({ ...editDraft, frequency: e.target.value as ExpenseFrequency })}
                       className="bg-background border border-border rounded-lg px-3 py-2 text-sm focus:outline-none">
                       <option value="monthly">Monthly</option>
                       <option value="weekly">Weekly</option>

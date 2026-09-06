@@ -329,10 +329,10 @@ function Dashboard() {
             <input value={qName} onChange={(e) => setQName(e.target.value)} placeholder="Name" className="field" />
             <input value={qAmount} onChange={(e) => setQAmount(e.target.value)} type="number" step="0.01" placeholder="Amount" className="field numeric" />
             <div className="grid grid-cols-2 gap-2">
-              <select value={qCategory} onChange={(e) => setQCategory(e.target.value as ExpenseCategory)} className="field !py-2 !text-xs">
+              <select value={qCategory} className="field" onChange={(e) => setQCategory(e.target.value as ExpenseCategory)} className="field !py-2 !text-xs">
                 <CategoryOptions />
               </select>
-              <select value={qFrequency} onChange={(e) => setQFrequency(e.target.value as ExpenseFrequency)} className="field !py-2 !text-xs">
+              <select value={qFrequency} className="field" onChange={(e) => setQFrequency(e.target.value as ExpenseFrequency)} className="field !py-2 !text-xs">
                 <option value="monthly">Monthly</option>
                 <option value="weekly">Weekly</option>
                 <option value="yearly">Yearly</option>

@@ -186,14 +186,14 @@ function CheckerPage() {
             </p>
             <div className="space-y-2">
               <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Category</label>
-              <select value={addCategory} onChange={(e) => setAddCategory(e.target.value as ExpenseCategory)}
+              <select value={addCategory} className="field" onChange={(e) => setAddCategory(e.target.value as ExpenseCategory)}
                 className="field">
                 <CategoryOptions />
               </select>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Frequency</label>
-              <select value={addFrequency} onChange={(e) => setAddFrequency(e.target.value as ExpenseFrequency)}
+              <select value={addFrequency} className="field" onChange={(e) => setAddFrequency(e.target.value as ExpenseFrequency)}
                 className="field">
                 <option value="monthly">Monthly</option>
                 <option value="weekly">Weekly</option>

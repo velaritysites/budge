@@ -213,11 +213,11 @@ function ExpensesPage() {
                 className="field" />
               <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" step="0.01" placeholder="Amount"
                 className="field" />
-              <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
+              <select value={category} className="field" onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
                 className="field">
                 <CategoryOptions />
               </select>
-              <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
+              <select value={frequency} className="field" onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)}
                 className="field">
                 {FREQUENCIES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
               </select>
@@ -230,7 +230,7 @@ function ExpensesPage() {
                   {notify ? "Remind me" : "No reminder"}
                 </button>
                 {notify && (
-                  <select value={lead} onChange={(e) => setLead(e.target.value)}
+                  <select value={lead} className="field" onChange={(e) => setLead(e.target.value)}
                     className="bg-background border border-border rounded-lg px-2 py-2.5 text-xs focus:outline-none">
                     <option value="0">Day of</option>
                     <option value="1">1 day ahead</option>
@@ -242,7 +242,7 @@ function ExpensesPage() {
             </div>
             {multiCurrency && (
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <select value={expCurrency} onChange={(e) => setExpCurrency(e.target.value)} className="field">
+                <select value={expCurrency} className="field" onChange={(e) => setExpCurrency(e.target.value)} className="field">
                   {CURRENCIES.map((c) => (
                     <option key={c.code} value={c.code}>
                       {c.flag} {c.code} — {c.name}

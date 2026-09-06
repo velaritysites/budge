@@ -116,7 +116,6 @@ function AuthLayout() {
             <Menu className="size-4" />
           </button>
         </div>
-      >
         <Link to="/dashboard" className="hidden md:flex px-2 pt-3" onClick={() => setMobileOpen(false)}><LootLogo iconClassName="size-11" collapsed={!desktopOpen} /></Link>
 
         <div className="flex flex-col gap-6">
@@ -137,7 +136,7 @@ function AuthLayout() {
                   >
                     <span className="absolute left-0 top-1/2 h-0 w-[3px] -translate-y-1/2 rounded-r-full bg-accent transition-all duration-300 group-data-[status=active]:h-5" />
                     <Icon className="size-[17px] opacity-40 transition-opacity group-hover:opacity-70 group-data-[status=active]:text-accent group-data-[status=active]:opacity-100" />
-                    {item.label}
+                    {desktopOpen && item.label}
                     {item.to === "/statement" && alertCount > 0 && (
                       <span className="ml-auto flex size-[18px] items-center justify-center rounded-full bg-caution/20 font-mono text-[10px] font-bold text-caution">
                         {alertCount}
@@ -217,7 +216,7 @@ function AuthLayout() {
               className="flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium text-muted-foreground transition-colors data-[status=active]:text-accent"
             >
               <Icon className="size-[18px]" />
-              {item.label}
+              {desktopOpen && item.label}
             </Link>
           );
         })}
