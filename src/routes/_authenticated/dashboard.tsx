@@ -36,6 +36,7 @@ import { MonthlyCloseCard } from "@/components/monthly-close";
 import { BriefingCard } from "@/components/briefing-card";
 import { useNotificationEngine } from "@/lib/use-notification-engine";
 import { getCurrency } from "@/lib/currencies";
+import { LootSelect } from "@/components/ui/loot-select";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -193,96 +194,54 @@ function Dashboard() {
   return (
     <div className="page-enter flex min-h-screen flex-col">
       <div className="grid grid-cols-1 gap-5 p-4 md:p-8 xl:grid-cols-12">
-        {/* ---------- Primary account card ---------- */}
-        <section className="animate-enter bank-card card-engrave p-7 md:p-9 xl:col-span-8">
-          <div className="relative z-[1] flex items-start justify-between gap-6">
-            <div>
-              <span className="label-xs">Available to spend</span>
-              <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
-                 Loot account · {currency}
-              </p>
-            </div>
-            <div className="flex flex-col items-end gap-3">
-              <span className="chip-metal" aria-hidden />
-              <span className={`rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.14em] ${levelStyles[level]}`}>
-                {HEALTH_LABEL[level]}
-              </span>
-            </div>
+        {/* ---------- Loot overview ---------- */}
+        <section className="animate-enter xl:col-span-8">
+          <div className="mb-3 flex items-center justify-between px-1">
+            <h2 className="text-sm font-bold text-background">Overview</h2>
+            <span className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase ${levelStyles[level]}`}>{HEALTH_LABEL[level]}</span>
           </div>
-
-          <h1 className="numeric font-display relative z-[1] mt-6 text-[clamp(2.7rem,7vw,4.6rem)] font-extrabold leading-[0.9] tracking-[-0.055em]">
-            {formatCurrency(animatedDisposable, currency)}
-          </h1>
-
-          <div className="relative z-[1] mt-3 flex flex-wrap items-center gap-2">
-            <DeltaChip value={deltaDisposable} />
-            <span className="text-[11px] text-muted-foreground">vs last month</span>
+          <div className="grid gap-3 md:grid-cols-3">
+            <OverviewCard
+              label="Available loot"
+              description="What you have left after your expenses"
+              value={formatCurrency(animatedDisposable, currency)}
+              delta={deltaDisposable}
+              values={spark ?? [0, totals.disposable]}
+              accent="lime"
+              to="/stats"
+            />
+            <OverviewCard
+              label="Loot going out"
+              description="Your total monthly expenses"
+              value={formatCurrency(totals.totalExpenses, currency)}
+              delta={deltaExpenses}
+              values={[...snaps].reverse().map((s) => s.total_expenses).concat(totals.totalExpenses)}
+              accent="violet"
+              to="/expenses"
+            />
+            <OverviewCard
+              label="Loot coming in"
+              description="Your total net income"
+              value={formatCurrency(totals.netIncome, currency)}
+              delta={deltaIncome}
+              values={[...snaps].reverse().map((s) => s.net_income).concat(totals.netIncome)}
+              accent="blue"
+              to="/settings"
+            />
           </div>
-
-          {/* In / out ledger strip */}
-          <div className="relative z-[1] mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <FlowCell label="Money in" value={formatCurrency(totals.netIncome, currency)} dir="in" />
-            <FlowCell label="Money out" value={formatCurrency(totals.totalExpenses, currency)} dir="out" />
-            <div className="rounded-xl border border-[var(--hairline)] bg-[color-mix(in_oklab,var(--surface-3)_35%,transparent)] p-3">
-              <p className="label-xs">Burn rate</p>
-              <p className="numeric font-display mt-1.5 text-base font-bold">{formatPercent(totals.burnRate, 0)}</p>
-            </div>
-            <div className="rounded-xl border border-[var(--hairline)] bg-[color-mix(in_oklab,var(--surface-3)_35%,transparent)] p-3">
-              <p className="label-xs">Savings rate</p>
-              <p className="numeric font-display mt-1.5 text-base font-bold text-accent">{formatPercent(totals.savingsRate)}</p>
-            </div>
-          </div>
-
-          {/* Allocation rail */}
-          <div className="relative z-[1] mt-7 space-y-2">
-            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-              <span>Income allocated</span>
-              <span className="numeric">{formatPercent(Math.min(totals.burnRate, 100), 0)} spent</span>
-            </div>
-            <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--surface-3)_70%,transparent)]">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-accent/60 to-accent transition-[width] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                style={{ width: `${Math.min(Math.max(totals.burnRate, 0), 100)}%` }}
-              />
-            </div>
-            <p className="pt-1 text-[13px] leading-relaxed text-muted-foreground">
-              {totals.netIncome === 0
-                ? "Add your income and expenses to see your real position."
-                : totals.disposable < 0
-                ? "Your expenses currently exceed your income. Trim a category to get back to neutral."
-                : level === "comfortable"
-                ? "You've cleared your monthly outgoings with room to spare. Quietly excellent."
-                : level === "balanced"
-                ? "You're running a steady ship. Some room to save, some room to live."
-                : "Things are tight this month. Worth a look at your fixed costs."}
-            </p>
-          </div>
-
-          {spark && (
-            <div className="relative z-[1] mt-7 border-t border-[var(--hairline)] pt-5">
-              <div className="flex items-center justify-between">
-                <span className="label-xs">Left over · last {spark.length} months</span>
-                <Link to="/stats" className="font-mono text-[10px] uppercase tracking-[0.14em] text-accent">
-                  Stats →
-                </Link>
-              </div>
-              <Sparkline values={spark} className="mt-3" />
-            </div>
-          )}
         </section>
 
         {/* ---------- Side column ---------- */}
         <div className="animate-enter flex flex-col gap-5 [animation-delay:80ms] xl:col-span-4">
-          <Link to="/checker" className="panel-raised panel-hover group relative overflow-hidden p-6">
-            <div className="pointer-events-none absolute -bottom-16 -left-10 size-52 rounded-full bg-accent/12 blur-3xl transition-opacity duration-500 group-hover:opacity-160" />
+          <Link to="/checker" className="panel-raised panel-hover group relative overflow-hidden border-b-4 border-b-secondary p-5">
             <span className="label-xs">Affordability checker</span>
-            <p className="font-display mt-4 text-xl font-bold leading-tight tracking-tight">
+            <p className="font-display mt-3 text-xl font-bold leading-tight">
               Thinking about a purchase?
             </p>
             <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
               A clear yes, maybe, or hold — with the reasoning, not just a number.
             </p>
-            <span className="mt-5 inline-flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-accent">
+            <span className="mt-4 flex items-center justify-center gap-2 rounded-full bg-secondary px-4 py-2 text-xs font-bold text-background">
               Open checker
               <ArrowRight className="size-3 transition-transform duration-300 group-hover:translate-x-1" />
             </span>
@@ -329,32 +288,13 @@ function Dashboard() {
             <input value={qName} onChange={(e) => setQName(e.target.value)} placeholder="Name" className="field" />
             <input value={qAmount} onChange={(e) => setQAmount(e.target.value)} type="number" step="0.01" placeholder="Amount" className="field numeric" />
             <div className="grid grid-cols-2 gap-2">
-              <select value={qCategory} onChange={(e) => setQCategory(e.target.value as ExpenseCategory)} className="field !py-2 !text-xs">
-                <CategoryOptions />
-              </select>
-              <select value={qFrequency} onChange={(e) => setQFrequency(e.target.value as ExpenseFrequency)} className="field !py-2 !text-xs">
-                <option value="monthly">Monthly</option>
-                <option value="weekly">Weekly</option>
-                <option value="yearly">Yearly</option>
-                <option value="one_off">One-off</option>
-              </select>
+              <LootSelect value={qCategory} onValueChange={(v) => setQCategory(v as ExpenseCategory)} ariaLabel="Expense category" groups={GROUPED_CATEGORIES.map((g) => ({ label: g.group, options: g.items.map((i) => ({ value: i.key, label: i.label })) }))} />
+              <LootSelect value={qFrequency} onValueChange={(v) => setQFrequency(v as ExpenseFrequency)} ariaLabel="Expense frequency" options={[{ value: "monthly", label: "Monthly" }, { value: "weekly", label: "Weekly" }, { value: "yearly", label: "Yearly" }, { value: "one_off", label: "One-off" }]} />
             </div>
             <button type="submit" disabled={saving} className="btn-accent w-full">
               <Plus className="size-3.5" /> {saving ? "Saving…" : "Add expense"}
             </button>
           </form>
-        </div>
-
-        {/* ---------- Account tiles ---------- */}
-         <div className="animate-enter grid grid-cols-1 gap-5 [animation-delay:140ms] md:grid-cols-3 xl:col-span-12">
-          <Stat label="Net income" caption="Take-home, all streams" value={formatCurrency(totals.netIncome, currency)} delta={deltaIncome} />
-          <Stat label="Total expenses" caption="Monthly equivalent" value={formatCurrency(totals.totalExpenses, currency)} delta={deltaExpenses} invert />
-          <Stat
-            label="Monthly burn"
-            caption="Share of income committed"
-            value={formatPercent(totals.burnRate, 0)}
-            tone={totals.burnRate > 80 ? "alert" : totals.burnRate > 60 ? "caution" : "default"}
-          />
         </div>
 
         {/* ---------- Predictive forecast ---------- */}
@@ -525,6 +465,21 @@ function Dashboard() {
 }
 
 /* ---------------- helpers ---------------- */
+
+function OverviewCard({ label, description, value, delta, values, accent, to }: { label: string; description: string; value: string; delta: number | null; values: number[]; accent: "lime" | "violet" | "blue"; to: "/stats" | "/expenses" | "/settings" }) {
+  return (
+    <article className={`loot-overview-card loot-overview-${accent}`}>
+      <div className="relative z-[1]">
+        <p className="text-lg font-bold">{label}</p>
+        <p className="mt-1 min-h-8 text-xs leading-tight text-muted-foreground">{description}</p>
+        <p className="numeric mt-3 text-[clamp(1.55rem,3vw,2.25rem)] font-bold leading-none">{value}</p>
+        <div className="mt-2 flex items-center gap-2"><DeltaChip value={delta} /></div>
+      </div>
+      <Sparkline values={values.length > 1 ? values : [0, values[0] ?? 0]} className="relative z-[1] mt-auto h-16" />
+      <Link to={to} className="relative z-[1] ml-auto mt-2 rounded-full bg-foreground/10 px-3 py-1.5 text-[10px] font-bold transition hover:bg-primary hover:text-primary-foreground">View</Link>
+    </article>
+  );
+}
 
 function monthKey(d: Date) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
