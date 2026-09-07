@@ -214,7 +214,6 @@
     opacity: 0.5;
   }
 }
-}
 @utility panel-raised {
   position: relative;
   background-image: var(--panel-bg);
@@ -265,12 +264,6 @@
   }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
-  &:focus {
-    outline: none;
-    border-color: color-mix(in oklab, var(--accent) 55%, var(--border));
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 14%, transparent);
-  }
-}
 @utility btn-accent{
   display: inline-flex;
   align-items: center;
@@ -291,8 +284,6 @@
     box-shadow: 0 12px 28px -10px var(--primary);
   }
   &:active { transform: translateY(0) scale(0.98); }
-}
-  &:active { transform: scale(0.985); }
   &:disabled { opacity: 0.5; }
 }
 @utility btn-ghost{
@@ -313,7 +304,6 @@
     border-color: color-mix(in oklab, var(--accent) 40%, var(--border));
     transform: translateY(-1px);
   }
-}
 }
 
 @utility btn-primary {
