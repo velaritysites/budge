@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { readScoreScreenshot } from "@/lib/score-ocr.functions";
 import { applyCorrections, confidenceLevel, recordCalibration, useCorrections, useMyContributions } from "@/lib/calibration";
 import type { Expense } from "@/lib/finance";
+import { LootSelect } from "@/components/ui/loot-select";
 
 export function LootScoreCard({
   currency,
@@ -334,13 +335,7 @@ function ScoreDetail({
               onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
             />
           </label>
-          <select value={bureauName} onChange={(e) => setBureauName(e.target.value)} className="field !w-auto">
-            {BUREAUS.map((b) => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
-          </select>
+          <LootSelect value={bureauName} onValueChange={setBureauName} className="!w-auto min-w-36" ariaLabel="Credit bureau" options={BUREAUS.map((b) => ({ value: b, label: b }))} />
           <input
             value={value}
             onChange={(e) => setValue(e.target.value)}

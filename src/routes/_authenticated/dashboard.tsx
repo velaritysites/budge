@@ -195,7 +195,7 @@ function Dashboard() {
     <div className="page-enter flex min-h-screen flex-col">
       <div className="grid grid-cols-1 gap-5 p-4 md:p-8 xl:grid-cols-12">
         {/* ---------- Loot overview ---------- */}
-        <section className="animate-enter xl:col-span-8">
+        <section className="animate-enter flex flex-col gap-5 xl:col-span-8">
           <div className="mb-3 flex items-center justify-between px-1">
             <h2 className="text-sm font-bold text-background">Overview</h2>
             <span className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase ${levelStyles[level]}`}>{HEALTH_LABEL[level]}</span>
@@ -228,6 +228,20 @@ function Dashboard() {
               accent="blue"
               to="/settings"
             />
+          </div>
+
+          <div className="flex flex-col gap-5 [animation-delay:170ms]">
+            <LootScoreCard
+              currency={currency}
+              grossIncome={totals.grossIncome}
+              netIncome={totals.netIncome}
+              savingsRate={totals.savingsRate}
+              disposable={totals.disposable}
+              expenses={expenses}
+            />
+            <ForecastCard />
+            <MonthlyCloseCard currency={profile.currency_code} />
+            <BriefingCard />
           </div>
         </section>
 
@@ -296,24 +310,6 @@ function Dashboard() {
             </button>
           </form>
         </div>
-
-        {/* ---------- Predictive forecast ---------- */}
-        <div className="animate-enter flex flex-col gap-5 [animation-delay:170ms] xl:col-span-12">
-          <LootScoreCard
-            currency={currency}
-            grossIncome={totals.grossIncome}
-            netIncome={totals.netIncome}
-            savingsRate={totals.savingsRate}
-            disposable={totals.disposable}
-            expenses={expenses}
-          />
-
-          <ForecastCard />
-          <MonthlyCloseCard currency={profile.currency_code} />
-          <BriefingCard />
-        </div>
-
-
 
         {/* ---------- Distribution ---------- */}
         <section className="animate-enter panel p-7 [animation-delay:200ms] xl:col-span-7">

@@ -12,7 +12,7 @@ import {
   isPositiveCategory,
   type ExpenseCategory,
 } from "@/lib/categories";
-import { CategoryIcon, CategoryOptions, CategoryAvatar } from "@/components/category-select";
+import { CategoryIcon, CategoryLootSelect, CategoryAvatar } from "@/components/category-select";
 import {
   parseStatement,
   statementMonth,
@@ -490,14 +490,7 @@ function StatementPage() {
                       <span className="font-mono text-[10px] text-muted-foreground">{t.date}</span>
                       <span className="min-w-0 flex-1 truncate text-sm">{t.description}</span>
                       <span className="numeric font-mono text-sm">{formatCurrency(t.amount, currency)}</span>
-                      <select
-                        defaultValue=""
-                        onChange={(e) => e.target.value && reclassify(t, e.target.value as ExpenseCategory)}
-                        className="field !w-auto !py-1.5 text-xs"
-                      >
-                        <option value="" disabled>Assign category…</option>
-                        <CategoryOptions />
-                      </select>
+                      <CategoryLootSelect onValueChange={(value) => reclassify(t, value)} placeholder="Assign category…" ariaLabel={`Assign category for ${t.description}`} className="!w-auto min-w-44" />
                     </div>
                   ))}
                 </div>

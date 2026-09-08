@@ -11,7 +11,8 @@ import { toast } from "sonner";
 import { PlanExportSheet, exportPlanImage, exportPlanPdf, type ExportPlan } from "@/lib/export-plan";
 import { DebtPayoff } from "@/components/debt-payoff";
 import { CATEGORY_KEYS } from "@/lib/categories";
-import { CategoryOptions } from "@/components/category-select";
+import { CategoryLootSelect } from "@/components/category-select";
+import { LootSelect } from "@/components/ui/loot-select";
 
 export const Route = createFileRoute("/_authenticated/planner")({
   head: () => ({ meta: [{ title: "Salary Planner — Loot" }, { name: "description", content: "Build and save phased salary plans with Loot." }, { property: "og:title", content: "Salary Planner — Loot" }, { property: "og:description", content: "Build and save phased salary plans with Loot." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -502,14 +503,8 @@ function PlannerPage() {
                 className="field" />
               <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" step="0.01" placeholder="Amount"
                 className="field" />
-              <select value={category} onChange={(e) => setCategory(e.target.value as ExpenseCategory)} className="field">
-                <CategoryOptions />
-              </select>
-              <select value={frequency} onChange={(e) => setFrequency(e.target.value as ExpenseFrequency)} className="field">
-                <option value="monthly">Monthly</option>
-                <option value="weekly">Weekly</option>
-                <option value="yearly">Yearly</option>
-              </select>
+              <CategoryLootSelect value={category} onValueChange={setCategory} />
+              <LootSelect value={frequency} onValueChange={(v) => setFrequency(v as ExpenseFrequency)} ariaLabel="Frequency" options={[{ value: "monthly", label: "Monthly" }, { value: "weekly", label: "Weekly" }, { value: "yearly", label: "Yearly" }]} />
             </div>
             <button type="submit" className="w-full btn-accent py-2 text-sm font-bold flex items-center justify-center gap-2">
               <Plus className="size-3.5" /> Add
@@ -545,14 +540,8 @@ function PlannerPage() {
                     <input value={editDraft.amount} onChange={(e) => setEditDraft({ ...editDraft, amount: e.target.value })}
                       type="number" step="0.01" placeholder="Amount"
                       className="bg-background border border-border rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-accent" />
-                    <select value={editDraft.category} onChange={(e) => setEditDraft({ ...editDraft, category: e.target.value as ExpenseCategory })} className="field">
-                      <CategoryOptions />
-                    </select>
-                    <select value={editDraft.frequency} onChange={(e) => setEditDraft({ ...editDraft, frequency: e.target.value as ExpenseFrequency })} className="field">
-                      <option value="monthly">Monthly</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="yearly">Yearly</option>
-                    </select>
+                    <CategoryLootSelect value={editDraft.category} onValueChange={(v) => setEditDraft({ ...editDraft, category: v })} />
+                    <LootSelect value={editDraft.frequency} onValueChange={(v) => setEditDraft({ ...editDraft, frequency: v as ExpenseFrequency })} ariaLabel="Frequency" options={[{ value: "monthly", label: "Monthly" }, { value: "weekly", label: "Weekly" }, { value: "yearly", label: "Yearly" }]} />
                   </div>
                   <div className="flex items-center gap-2">
                     <button onClick={saveEdit}

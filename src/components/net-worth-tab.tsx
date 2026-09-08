@@ -17,6 +17,7 @@ import {
 import { currentMonthKey } from "@/lib/finance";
 import { Plus, Trash2, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { LootSelect } from "@/components/ui/loot-select";
 
 export function NetWorthTab({ currency }: { currency: string }) {
   const qc = useQueryClient();
@@ -197,17 +198,7 @@ function ItemForm({ kind, onDone }: { kind: NetWorthKind; onDone: () => void }) 
         </h3>
         <label className="block">
           <span className="label-xs">Type</span>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="mt-1 w-full rounded-xl border border-hairline bg-surface-2 px-4 py-3 text-sm"
-          >
-            {cats.map((c) => (
-              <option key={c.key} value={c.key}>
-                {c.label}
-              </option>
-            ))}
-          </select>
+          <LootSelect value={category} onValueChange={setCategory} className="mt-1" ariaLabel="Net worth item type" options={cats.map((c) => ({ value: c.key, label: c.label }))} />
         </label>
         <label className="block">
           <span className="label-xs">Label</span>

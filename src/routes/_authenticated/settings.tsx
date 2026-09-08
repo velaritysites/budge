@@ -12,6 +12,7 @@ import { Check, Search, Plus, Trash2, Bell, Mail, Smartphone, Globe } from "luci
 import { HouseholdSection } from "@/components/household-section";
 import { TaxSummary } from "@/components/tax-summary";
 import { FinancialIdentity } from "@/components/financial-identity";
+import { LootSelect } from "@/components/ui/loot-select";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — Loot" }, { name: "description", content: "Manage your Loot profile, income streams, currency and preferences." }, { property: "og:title", content: "Settings — Loot" }, { property: "og:description", content: "Manage your Loot profile, income streams, currency and preferences." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -246,12 +247,7 @@ function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               <input value={sName} onChange={(e) => setSName(e.target.value)} placeholder="Stream name (e.g. Freelance)"
                 className="field" />
-              <select value={sFreq} onChange={(e) => setSFreq(e.target.value as IncomeStream["frequency"])} className="field">
-                <option value="monthly">Monthly</option>
-                <option value="biweekly">Bi-weekly</option>
-                <option value="weekly">Weekly</option>
-                <option value="yearly">Yearly</option>
-              </select>
+              <LootSelect value={sFreq} onValueChange={(v) => setSFreq(v as IncomeStream["frequency"])} ariaLabel="Income frequency" options={[{ value: "monthly", label: "Monthly" }, { value: "biweekly", label: "Bi-weekly" }, { value: "weekly", label: "Weekly" }, { value: "yearly", label: "Yearly" }]} />
               <input value={sGross} onChange={(e) => setSGross(e.target.value)} type="number" step="0.01" placeholder="Gross"
                 className="field" />
               <input value={sNet} onChange={(e) => setSNet(e.target.value)} type="number" step="0.01" placeholder="Net"
