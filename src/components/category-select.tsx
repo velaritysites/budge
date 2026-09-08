@@ -13,6 +13,7 @@ import {
   normalizeCategory,
   type ExpenseCategory,
 } from "@/lib/categories";
+import { LootSelect } from "@/components/ui/loot-select";
 
 const ICONS: Record<string, LucideIcon> = {
   Home, Car, CreditCard, Shield, Heart, Landmark,
@@ -41,6 +42,28 @@ export function CategoryOptions() {
         </optgroup>
       ))}
     </>
+  );
+}
+
+export function CategoryLootSelect({ value, onValueChange, className, placeholder = "Choose category", ariaLabel = "Category" }: {
+  value?: string;
+  onValueChange: (value: ExpenseCategory) => void;
+  className?: string;
+  placeholder?: string;
+  ariaLabel?: string;
+}) {
+  return (
+    <LootSelect
+      value={value}
+      onValueChange={(next) => onValueChange(next as ExpenseCategory)}
+      placeholder={placeholder}
+      ariaLabel={ariaLabel}
+      className={className}
+      groups={GROUPED_CATEGORIES.map((group) => ({
+        label: group.group,
+        options: group.items.map((item) => ({ value: item.key, label: item.label })),
+      }))}
+    />
   );
 }
 

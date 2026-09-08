@@ -12,6 +12,7 @@ import { NetWorthTab } from "@/components/net-worth-tab";
 import { BriefingsList } from "@/components/briefing-card";
 import { useLockedMonths } from "@/lib/monthly-close";
 import { Lock } from "lucide-react";
+import { LootSelect } from "@/components/ui/loot-select";
 
 export const Route = createFileRoute("/_authenticated/stats")({
   head: () => ({ meta: [{ title: "Stats & History — Loot" }, { name: "description", content: "Explore your financial history, trends and annual review." }, { property: "og:title", content: "Stats & History — Loot" }, { property: "og:description", content: "Explore your financial history, trends and annual review." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -153,18 +154,7 @@ function StatsPage() {
                   Monthly snapshot.
                   {active && !!locked[active.month] && <Lock className="size-5 text-accent" aria-label="Closed and locked" />}
                 </h2>
-                <select
-                  value={active?.month ?? ""}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="panel px-3 py-2 text-sm font-mono"
-                >
-                  {snapshots.map((s) => (
-                    <option key={s.month} value={s.month}>
-                      {!!locked[s.month] ? "🔒 " : ""}
-                      {new Date(s.month).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
-                    </option>
-                  ))}
-                </select>
+                <LootSelect value={active?.month ?? ""} onValueChange={setSelectedMonth} ariaLabel="Snapshot month" className="!w-auto min-w-48" options={snapshots.map((s) => ({ value: s.month, label: `${locked[s.month] ? "Locked · " : ""}${new Date(s.month).toLocaleDateString(undefined, { month: "long", year: "numeric" })}` }))} />
               </div>
               {active && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

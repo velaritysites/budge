@@ -33,6 +33,7 @@ import {
   Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import { toast } from "sonner";
+import { LootSelect } from "@/components/ui/loot-select";
 
 export const Route = createFileRoute("/_authenticated/goals")({
   head: () => ({ meta: [{ title: "Goals — Loot" }, { name: "description", content: "Plan every savings goal, see your total monthly commitment and how it lightens over time." }, { property: "og:title", content: "Goals — Loot" }, { property: "og:description", content: "Plan every savings goal, see your total monthly commitment and how it lightens over time." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -467,11 +468,7 @@ function GoalsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <label className="block space-y-1">
               <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Category</span>
-              <select value={category} onChange={(e) => setCategory(e.target.value)} className="field">
-                {GOAL_CATEGORIES.map((c) => (
-                  <option key={c.key} value={c.key}>{c.label}</option>
-                ))}
-              </select>
+              <LootSelect value={category} onValueChange={setCategory} ariaLabel="Goal category" options={GOAL_CATEGORIES.map((c) => ({ value: c.key, label: c.label }))} />
             </label>
             <LabeledInput label="Note (optional)" value={note} setValue={setNote} type="text" placeholder="Why this matters" />
           </div>

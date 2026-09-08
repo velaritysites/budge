@@ -9,7 +9,8 @@ import { upsertCurrentMonthSnapshot } from "@/lib/snapshot";
 import { toast } from "sonner";
 import { CheckCircle2, AlertTriangle, XCircle, PlusCircle, X } from "lucide-react";
 import { CATEGORY_KEYS } from "@/lib/categories";
-import { CategoryOptions } from "@/components/category-select";
+import { CategoryLootSelect } from "@/components/category-select";
+import { LootSelect } from "@/components/ui/loot-select";
 
 export const Route = createFileRoute("/_authenticated/checker")({
   head: () => ({ meta: [{ title: "Affordability Checker — Loot" }, { name: "description", content: "Check a purchase against your real monthly position." }, { property: "og:title", content: "Affordability Checker — Loot" }, { property: "og:description", content: "Check a purchase against your real monthly position." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
@@ -186,17 +187,11 @@ function CheckerPage() {
             </p>
             <div className="space-y-2">
               <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Category</label>
-              <select value={addCategory} onChange={(e) => setAddCategory(e.target.value as ExpenseCategory)} className="field">
-                <CategoryOptions />
-              </select>
+              <CategoryLootSelect value={addCategory} onValueChange={setAddCategory} />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">Frequency</label>
-              <select value={addFrequency} onChange={(e) => setAddFrequency(e.target.value as ExpenseFrequency)} className="field">
-                <option value="monthly">Monthly</option>
-                <option value="weekly">Weekly</option>
-                <option value="yearly">Yearly</option>
-              </select>
+              <LootSelect value={addFrequency} onValueChange={(v) => setAddFrequency(v as ExpenseFrequency)} ariaLabel="Frequency" options={[{ value: "monthly", label: "Monthly" }, { value: "weekly", label: "Weekly" }, { value: "yearly", label: "Yearly" }]} />
             </div>
             <button onClick={addToExpenses} className="w-full btn-accent py-2.5 text-sm font-bold">
               Add expense

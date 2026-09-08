@@ -12,6 +12,7 @@ import {
 } from "@/lib/debt";
 import { toast } from "sonner";
 import { Landmark, Plus, Trash2, Check } from "lucide-react";
+import { LootSelect } from "@/components/ui/loot-select";
 
 export function DebtPayoff() {
   const { data: profile } = useProfile();
@@ -155,11 +156,7 @@ export function DebtPayoff() {
       {/* add form */}
       <div className="mt-3 grid grid-cols-1 gap-2 rounded-xl border border-hairline p-3 md:grid-cols-2">
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Debt name" className="field" />
-        <select value={type} onChange={(e) => setType(e.target.value as DebtAccountType)} className="field">
-          {(Object.keys(DEBT_TYPE_LABELS) as DebtAccountType[]).map((k) => (
-            <option key={k} value={k}>{DEBT_TYPE_LABELS[k]}</option>
-          ))}
-        </select>
+        <LootSelect value={type} onValueChange={(v) => setType(v as DebtAccountType)} ariaLabel="Debt type" options={(Object.keys(DEBT_TYPE_LABELS) as DebtAccountType[]).map((k) => ({ value: k, label: DEBT_TYPE_LABELS[k] }))} />
         <input value={balance} onChange={(e) => setBalance(e.target.value)} type="number" step="0.01" placeholder="Outstanding balance" className="field numeric" />
         <input value={rate} onChange={(e) => setRate(e.target.value)} type="number" step="0.01" placeholder="Interest rate % p.a." className="field numeric" />
         <input value={minPay} onChange={(e) => setMinPay(e.target.value)} type="number" step="0.01" placeholder="Minimum monthly payment" className="field numeric" />
