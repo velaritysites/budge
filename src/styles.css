@@ -440,6 +440,23 @@
 .loot-main .ledger-row { border-bottom: 1px solid var(--hairline); border-radius: 0; }
 .loot-main .ledger-row:last-child { border-bottom: 0; }
 
+.statement-step { display: flex; gap: 0.9rem; align-items: flex-start; border-top: 1px solid rgb(15 10 10 / 0.24); padding: 0.85rem 0.25rem; color: var(--background); }
+.statement-step > span { font-size: 0.65rem; font-weight: 800; opacity: 0.6; }
+.statement-step strong { display: block; font-size: 0.85rem; }
+.statement-step p { margin-top: 0.2rem; max-width: 24rem; font-size: 0.72rem; line-height: 1.4; opacity: 0.66; }
+.statement-import-panel { position: relative; overflow: hidden; border: 1px solid rgb(255 255 255 / 0.12); border-radius: 0.75rem; background: #101819; padding: clamp(1.25rem, 3vw, 2rem); box-shadow: 0 26px 50px -30px rgb(15 10 10 / 0.9); }
+.statement-import-panel::after { content: ""; position: absolute; inset: auto -12% -55% 38%; height: 20rem; background: linear-gradient(135deg, transparent, rgb(175 114 254 / 0.22), rgb(193 254 114 / 0.14)); transform: rotate(-8deg); pointer-events: none; }
+.statement-bank { min-height: 4.5rem; justify-content: flex-start; border-color: var(--border); background: #1a2224; padding: 0.75rem; }
+.statement-bank:hover { border-color: rgb(193 254 114 / 0.35); background: #20292b; }
+.statement-bank.is-active { border-color: var(--primary); background: rgb(193 254 114 / 0.08); box-shadow: inset 3px 0 var(--primary); }
+.statement-bank small { display: block; margin-top: 0.15rem; color: var(--muted-foreground); font-size: 0.68rem; }
+.statement-bank-mark { display: grid; width: 2.6rem; height: 2.6rem; place-items: center; border-radius: 0.45rem; background: var(--chart-3); color: var(--background); font-size: 0.68rem; font-weight: 800; }
+.statement-bank-mark.capitec { background: var(--secondary); font-size: 1rem; }
+.statement-dropzone { position: relative; z-index: 1; display: flex; min-height: 7rem; align-items: center; gap: 1rem; border: 1px dashed rgb(255 255 255 / 0.2); border-radius: 0.75rem; background: rgb(255 255 255 / 0.025); padding: 1rem; transition: border-color 180ms, background 180ms, transform 180ms; }
+.statement-dropzone.is-dragging { border-color: var(--primary); background: rgb(193 254 114 / 0.08); transform: scale(1.005); }
+.statement-dropzone.has-file { border-style: solid; border-color: rgb(91 192 235 / 0.35); }
+.statement-upload-icon { display: grid; width: 3rem; height: 3rem; flex: none; place-items: center; border-radius: 0.6rem; background: var(--primary); color: var(--background); }
+
 @media (max-width: 767px) {
   .loot-topbar { min-height: 4.5rem; padding: 0.75rem 1rem; }
   .loot-main > .loot-content { min-height: calc(100vh - 8rem); }

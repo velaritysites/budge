@@ -14,10 +14,11 @@ import {
 } from "@/lib/categories";
 import { CategoryIcon, CategoryLootSelect, CategoryAvatar } from "@/components/category-select";
 import {
-  parseStatement,
+  parseStatementDetailed,
   statementMonth,
   saveOverride,
   type Bank,
+  type ParseDetails,
   type Txn,
 } from "@/lib/statement-parse";
 import { toast } from "sonner";
@@ -26,9 +27,10 @@ import { computeAnomalies, persistAnomalies } from "@/lib/alerts";
 import { AnomalyAlerts } from "@/components/anomaly-alerts";
 import { SubscriptionAudit } from "@/components/subscription-audit";
 import {
-  UploadCloud, FileText, Loader2, ShieldCheck, ChevronDown, ChevronRight,
-  History, Lightbulb, AlertTriangle, Check, X, Sparkles,
+  UploadCloud, Loader2, ShieldCheck, ChevronDown, ChevronRight,
+  History, Lightbulb, AlertTriangle, Check, X, LockKeyhole, ScanLine,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/statement")({
   head: () => ({
@@ -65,6 +67,7 @@ function StatementPage() {
   const [dragging, setDragging] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [txns, setTxns] = useState<Txn[] | null>(null);
+  const [parseDetails, setParseDetails] = useState<ParseDetails | null>(null);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [syncOpen, setSyncOpen] = useState(false);
   const [syncOn, setSyncOn] = useState<Record<string, boolean>>({});
@@ -168,19 +171,22 @@ function StatementPage() {
     if (!ok) return toast.error("Upload a PDF, CSV or OFX/QFX file.");
     setFile(f);
     setTxns(null);
+    setParseDetails(null);
   }
 
   async function process() {
     if (!file || !bank) return;
     setProcessing(true);
     try {
-      const parsed = await parseStatement(file, bank);
+      const details = await parseStatementDetailed(file, bank);
+      const parsed = details.transactions;
       if (parsed.length === 0) {
         toast.error("No transactions found — check the bank selection or try a CSV export.");
       } else {
         toast.success(`${parsed.length} transactions parsed`);
       }
       setTxns(parsed);
+      setParseDetails(details);
       if (parsed.length > 0) await saveAnalysis(parsed);
     } catch (err: any) {
       toast.error(err?.message ?? "Couldn't read that statement.");
@@ -280,28 +286,85 @@ function StatementPage() {
 
   return (
     <div className="page-enter flex min-h-screen flex-col">
-      <header className="sticky top-0 z-20 flex h-[4.5rem] items-center justify-between gap-4 border-b border-hairline bg-background/60 px-5 backdrop-blur-2xl md:px-8">
-        <div className="min-w-0">
-          <p className="truncate text-[15px] font-semibold tracking-tight">Statement Analysis</p>
-          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-            Read your month · processed in your browser
-          </p>
-        </div>
-        <span className="hidden items-center gap-2 rounded-full border border-hairline px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground sm:inline-flex">
-          <ShieldCheck className="size-3.5 text-accent" /> Private
-        </span>
-      </header>
-
       <div className="flex flex-col gap-5 p-5 md:p-8">
+        <div className="flex items-end justify-between gap-4 text-background">
+          <div><h1 className="text-2xl font-bold">Read the month behind the balance.</h1><p className="mt-1 text-sm text-background/65">Import, check and categorise without handing over your statement.</p></div>
+          <span className="hidden items-center gap-2 rounded-full border border-background/20 bg-background/10 px-3 py-1.5 text-[10px] font-bold uppercase sm:inline-flex"><ShieldCheck className="size-3.5" /> Private on-device analysis</span>
+        </div>
+        <section className="grid gap-3 md:grid-cols-3" aria-label="How statement analysis works">
+          {[
+            ["01", "Choose your bank", "Select the source so Loot reads the right statement layout."],
+            ["02", "Drop in the file", "PDF, CSV and OFX/QFX are read without uploading the document."],
+            ["03", "Review the month", "Correct categories once and Loot remembers the merchant."],
+          ].map(([number, title, copy]) => (
+            <div key={number} className="statement-step">
+              <span>{number}</span><div><strong>{title}</strong><p>{copy}</p></div>
+            </div>
+          ))}
+        </section>
+
+        <div className="grid items-start gap-5 xl:grid-cols-12">
+        <section className="statement-import-panel xl:col-span-8">
+          <div className="relative z-10">
+            <span className="label-xs text-primary">New analysis</span>
+            <h2 className="mt-3 text-3xl font-bold">Bring your statement into focus.</h2>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">Choose the bank that issued your statement, then add the original export from your banking app.</p>
+
+            <div className="mt-7">
+              <span className="label-xs">Bank format</span>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                {(["fnb", "capitec"] as Bank[]).map((item) => {
+                  const active = bank === item;
+                  return (
+                    <Button key={item} type="button" variant="ghost" onClick={() => { setBank(item); setTxns(null); setParseDetails(null); }} className={`statement-bank ${active ? "is-active" : ""}`} aria-pressed={active}>
+                      <span className={`statement-bank-mark ${item}`}>{item === "fnb" ? "FNB" : "C"}</span>
+                      <span className="text-left"><strong>{item === "fnb" ? "FNB" : "Capitec"}</strong><small>{item === "fnb" ? "PDF · CSV · OFX / QFX" : "Digital PDF · converted CSV"}</small></span>
+                      <span className="ml-auto grid size-5 place-items-center rounded-full border border-border">{active && <Check className="size-3" />}</span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={(e) => { e.preventDefault(); setDragging(false); bank ? pickFile(e.dataTransfer.files?.[0] ?? null) : toast.error("Choose your bank first."); }}
+              className={`statement-dropzone mt-5 ${dragging ? "is-dragging" : ""} ${file ? "has-file" : ""}`}
+            >
+              <div className="statement-upload-icon"><UploadCloud className="size-6" /></div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold">{file ? file.name : "Drop your bank statement here"}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{file ? `${(file.size / 1024).toFixed(0)} KB · ready to analyse` : "Original exports work best · up to 20 MB"}</p>
+              </div>
+              {file ? (
+                <Button type="button" variant="ghost" size="icon" aria-label="Remove statement" onClick={() => { setFile(null); setTxns(null); setParseDetails(null); }}><X /></Button>
+              ) : (
+                <Button type="button" variant="secondary" disabled={!bank} onClick={() => bank ? inputRef.current?.click() : toast.error("Choose your bank first.")}>Browse files</Button>
+              )}
+              <input ref={inputRef} type="file" accept=".pdf,.csv,.ofx,.qfx,.txt" className="hidden" onChange={(e) => pickFile(e.target.files?.[0] ?? null)} />
+            </div>
+
+            <Button onClick={process} disabled={!file || !bank || processing} className="mt-4 h-12 w-full text-sm">
+              {processing ? <><Loader2 className="animate-spin" /> Reading transactions…</> : <><ScanLine /> Analyse statement</>}
+            </Button>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] text-muted-foreground">
+              <span className="flex items-center gap-1.5"><LockKeyhole className="size-3 text-primary" /> File stays on this device</span>
+              <span className="flex items-center gap-1.5"><ShieldCheck className="size-3 text-chart-3" /> No statement document is stored</span>
+            </div>
+          </div>
+        </section>
+
         {/* ------------------------- history ------------------------- */}
-        {(history.data?.length ?? 0) > 0 && (
-          <section className="panel p-5">
+          <section className="panel p-5 xl:col-span-4">
             <div className="flex items-center gap-2">
-              <History className="size-3.5 text-muted-foreground" />
+              <History className="size-3.5 text-secondary" />
               <span className="label-xs">Previous analyses</span>
             </div>
-            <div className="mt-3 flex flex-col gap-1">
-              {history.data!.map((h) => (
+            {(history.data?.length ?? 0) === 0 ? (
+              <div className="mt-8 border-l-2 border-primary pl-4"><p className="text-sm font-bold">Your history starts here.</p><p className="mt-1 text-xs leading-relaxed text-muted-foreground">Completed monthly analyses will line up here for quick comparison.</p></div>
+            ) : <div className="mt-3 flex flex-col gap-1">
+              {history.data?.map((h) => (
                 <button
                   key={h.id}
                   onClick={() => setExpanded((p) => ({ ...p, [`h-${h.id}`]: !p[`h-${h.id}`] }))}
@@ -316,7 +379,7 @@ function StatementPage() {
                   <ChevronDown className={`size-3.5 text-muted-foreground transition ${expanded[`h-${h.id}`] ? "rotate-180" : ""}`} />
                 </button>
               ))}
-              {history.data!.filter((h) => expanded[`h-${h.id}`]).map((h) => (
+              {history.data?.filter((h) => expanded[`h-${h.id}`]).map((h) => (
                 <div key={`d-${h.id}`} className="mx-3 mb-2 grid grid-cols-2 gap-2 rounded-lg bg-surface-2/60 p-3 sm:grid-cols-3">
                   {Object.entries(h.category_totals).sort((a, b) => b[1] - a[1]).map(([k, v]) => (
                     <div key={k} className="flex items-center justify-between gap-2 text-[11px]">
@@ -326,76 +389,16 @@ function StatementPage() {
                   ))}
                 </div>
               ))}
-            </div>
+            </div>}
           </section>
+        </div>
+
+        {parseDetails && txns && txns.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 rounded-lg border border-primary/25 bg-primary/10 px-4 py-3 text-xs">
+            <Check className="size-4 text-primary" /><strong>{txns.length} transactions read</strong>
+            <span className="text-muted-foreground">{parseDetails.bank.toUpperCase()} · {parseDetails.format.toUpperCase()} · {statementMonth(txns)}</span>
+          </div>
         )}
-
-        {/* ------------------------- upload ------------------------- */}
-        <section className="panel p-6 md:p-7">
-          <h2 className="font-display text-lg font-bold tracking-tight">Upload a statement</h2>
-          <p className="mt-1 text-[13px] text-muted-foreground">
-            We read your month, categorise every transaction and show you where it went.
-          </p>
-
-          <div className="mt-5">
-            <span className="label-xs">Which bank?</span>
-            <div className="mt-2 flex gap-2">
-              {(["fnb", "capitec"] as Bank[]).map((b) => (
-                <button
-                  key={b}
-                  onClick={() => setBank(b)}
-                  className={`flex-1 rounded-xl border px-4 py-3 text-sm font-semibold transition ${
-                    bank === b
-                      ? "border-accent/50 bg-accent/10 text-accent"
-                      : "border-border bg-background text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {b === "fnb" ? "FNB" : "Capitec"}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div
-            onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-            onDragLeave={() => setDragging(false)}
-            onDrop={(e) => { e.preventDefault(); setDragging(false); pickFile(e.dataTransfer.files?.[0] ?? null); }}
-            onClick={() => bank ? inputRef.current?.click() : toast.error("Choose your bank first.")}
-            className={`mt-5 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed px-6 py-10 text-center transition ${
-              dragging ? "border-accent bg-accent/5" : "border-border hover:border-accent/40 hover:bg-surface-2/50"
-            }`}
-          >
-            <UploadCloud className="size-6 text-muted-foreground" />
-            <p className="text-sm font-medium">Drag and drop your statement, or click to browse</p>
-            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">PDF · CSV · OFX / QFX</p>
-            <input
-              ref={inputRef} type="file" accept=".pdf,.csv,.ofx,.qfx,.txt" className="hidden"
-              onChange={(e) => pickFile(e.target.files?.[0] ?? null)}
-            />
-          </div>
-
-          {file && (
-            <div className="mt-3 flex items-center gap-3 rounded-xl border border-hairline bg-surface-2/60 px-4 py-3">
-              <FileText className="size-4 text-accent" />
-              <span className="min-w-0 flex-1 truncate text-sm font-medium">{file.name}</span>
-              <span className="font-mono text-[11px] text-muted-foreground">{(file.size / 1024).toFixed(0)} KB</span>
-              <button onClick={() => { setFile(null); setTxns(null); }} className="text-muted-foreground hover:text-foreground">
-                <X className="size-4" />
-              </button>
-            </div>
-          )}
-
-          <button
-            onClick={process}
-            disabled={!file || !bank || processing}
-            className="btn-accent mt-4 w-full justify-center py-3 text-sm font-bold disabled:opacity-40"
-          >
-            {processing ? <><Loader2 className="size-4 animate-spin" /> Reading your statement…</> : <><Sparkles className="size-4" /> Process statement</>}
-          </button>
-          <p className="mt-3 text-center text-[11px] text-muted-foreground">
-            Your statement is processed entirely in your browser. Nothing is uploaded or stored.
-          </p>
-        </section>
 
         {/* ------------------------- results ------------------------- */}
         {result && result.allCards.length + result.income.length > 0 && (
