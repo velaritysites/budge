@@ -286,18 +286,12 @@ function StatementPage() {
 
   return (
     <div className="page-enter flex min-h-screen flex-col">
-      <header className="loot-topbar">
-        <div className="min-w-0">
-          <p className="truncate text-xl font-bold text-background">Statement Analysis</p>
-          <p className="mt-0.5 text-xs font-medium text-background/70">Turn a bank statement into a clean monthly money view.</p>
-        </div>
-        <span className="hidden items-center gap-2 rounded-full border border-background/20 bg-background/10 px-3 py-1.5 text-[10px] font-bold uppercase text-background sm:inline-flex">
-          <ShieldCheck className="size-3.5" /> Private on-device analysis
-        </span>
-      </header>
-
       <div className="flex flex-col gap-5 p-5 md:p-8">
-        <section className="grid gap-3 md:grid-cols-3">
+        <div className="flex items-end justify-between gap-4 text-background">
+          <div><h1 className="text-2xl font-bold">Read the month behind the balance.</h1><p className="mt-1 text-sm text-background/65">Import, check and categorise without handing over your statement.</p></div>
+          <span className="hidden items-center gap-2 rounded-full border border-background/20 bg-background/10 px-3 py-1.5 text-[10px] font-bold uppercase sm:inline-flex"><ShieldCheck className="size-3.5" /> Private on-device analysis</span>
+        </div>
+        <section className="grid gap-3 md:grid-cols-3" aria-label="How statement analysis works">
           {[
             ["01", "Choose your bank", "Select the source so Loot reads the right statement layout."],
             ["02", "Drop in the file", "PDF, CSV and OFX/QFX are read without uploading the document."],
