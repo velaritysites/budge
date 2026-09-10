@@ -72,6 +72,8 @@ function makeTxn(date: string, description: string, amount: number, type: Txn["t
 
 function normalizeDate(raw: string, fallbackYear?: number): string {
   const clean = raw.trim().replace(/\//g, "-");
+  const compact = clean.match(/^(20\d{2})(\d{2})(\d{2})$/);
+  if (compact) return `${compact[1]}-${compact[2]}-${compact[3]}`;
   const iso = clean.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
   if (iso) return `${iso[1]}-${iso[2].padStart(2, "0")}-${iso[3].padStart(2, "0")}`;
   const numeric = clean.match(/^(\d{1,2})-(\d{1,2})-(\d{2,4})$/);
@@ -90,7 +92,7 @@ function normalizeDate(raw: string, fallbackYear?: number): string {
 function parseMoney(raw = ""): number | null {
   const clean = raw.replace(/\u00a0/g, " ").trim();
   if (!clean || /^[-–—]$/.test(clean)) return null;
-  const negative = /^-/.test(clean) || /^\(.*\)$/.test(clean) || /\bDR\b/i.test(clean);
+  const negative = /^-/.test(clean) || /-$/.test(clean) || /^\(.*\)$/.test(clean) || /\bDR\b/i.test(clean);
   const positive = /^\+/.test(clean) || /\bCR\b/i.test(clean);
   const numeric = clean.replace(/[^\d.,-]/g, "").replace(/,/g, "");
   const value = Number(numeric.replace(/[()]/g, ""));
@@ -129,7 +131,7 @@ async function pdfLines(file: File): Promise<string[]> {
 }
 
 const DATE_START = /^(?:\d{4}[/-]\d{1,2}[/-]\d{1,2}|\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|\d{1,2}\s+[A-Za-z]{3,9}(?:\s+\d{4})?)\b/;
-const MONEY_TOKEN = /(?:[-+(]?\s*(?:R\s*)?\d[\d ,]*\.\d{2}\s*(?:Cr|Dr)?\)?)/gi;
+const MONEY_TOKEN = /(?:[-+(]?\s*(?:R\s*)?\d[\d ,]*\.\d{2}\s*(?:Cr|Dr|-)?\)?)/gi;
 
 function statementYear(lines: string[]): number | undefined {
   const years = lines.join(" ").match(/\b20\d{2}\b/g);
@@ -140,9 +142,14 @@ function mergePdfRows(lines: string[]): string[] {
   const rows: string[] = [];
   for (const line of lines) {
     if (DATE_START.test(line)) rows.push(line);
-    else if (rows.length && line && !/^(page|date\s|description|balance|transaction history|account number)/i.test(line)) {
+    else if (rows.length && line && !/^(page|date\s|posting date|transaction date|description|money in|balance|transaction history|account number|opening balance|closing balance|total vat|turnover)/i.test(line)) {
       const previous = rows[rows.length - 1];
-      if ((previous.match(MONEY_TOKEN) ?? []).length === 0) rows[rows.length - 1] = `${previous} ${line}`;
+      if ((line.match(MONEY_TOKEN) ?? []).length === 0) {
+        const firstAmount = previous.search(MONEY_TOKEN);
+        rows[rows.length - 1] = firstAmount < 0
+          ? `${previous} ${line}`
+          : `${previous.slice(0, firstAmount).trim()} ${line} ${previous.slice(firstAmount)}`;
+      }
     }
   }
   return rows;
@@ -203,7 +210,16 @@ function findColumn(headers: string[], aliases: string[]): number {
 
 function parseCsv(text: string, bank: Bank): Txn[] {
   const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/).filter((line) => line.trim());
-  const headerIndex = lines.findIndex((line) => /(?:date|posting)/i.test(line) && /(?:description|narrative|details?|reference|amount|money)/i.test(line));
+  let headerIndex = lines.findIndex((line) => /(?:date|posting)/i.test(line) && /(?:description|narrative|details?|reference|amount|money)/i.test(line));
+  if (headerIndex < 0 && bank === "fnb") {
+    // Legacy FNB CSV exports can omit column labels and begin with an account summary block.
+    const transactionStart = lines.findIndex((line) => /^"?20\d{6}"?[,;]/.test(line));
+    if (transactionStart >= 0) {
+      const delimiter = detectDelimiter(lines[transactionStart]);
+      lines.splice(transactionStart, 0, ["Effective Date", "Description", "Reference", "Service Fee", "Amount", "Balance"].join(delimiter));
+      headerIndex = transactionStart;
+    }
+  }
   if (headerIndex < 0) return [];
   const delimiter = detectDelimiter(lines[headerIndex]);
   const headers = splitDelimited(lines[headerIndex], delimiter).map(normalHeader);
