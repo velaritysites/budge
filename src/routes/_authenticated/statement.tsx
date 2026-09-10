@@ -27,8 +27,8 @@ import { computeAnomalies, persistAnomalies } from "@/lib/alerts";
 import { AnomalyAlerts } from "@/components/anomaly-alerts";
 import { SubscriptionAudit } from "@/components/subscription-audit";
 import {
-  UploadCloud, FileText, Loader2, ShieldCheck, ChevronDown, ChevronRight,
-  History, Lightbulb, AlertTriangle, Check, X, Sparkles, LockKeyhole, ScanLine,
+  UploadCloud, Loader2, ShieldCheck, ChevronDown, ChevronRight,
+  History, Lightbulb, AlertTriangle, Check, X, LockKeyhole, ScanLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
