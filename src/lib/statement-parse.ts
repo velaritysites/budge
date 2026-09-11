@@ -94,8 +94,8 @@ function parseMoney(raw = ""): number | null {
   if (!clean || /^[-–—]$/.test(clean)) return null;
   const negative = /^-/.test(clean) || /-$/.test(clean) || /^\(.*\)$/.test(clean) || /\bDR\b/i.test(clean);
   const positive = /^\+/.test(clean) || /\bCR\b/i.test(clean);
-  const numeric = clean.replace(/[^\d.,-]/g, "").replace(/,/g, "");
-  const value = Number(numeric.replace(/[()]/g, ""));
+  const numeric = clean.replace(/[^\d.,]/g, "").replace(/,/g, "");
+  const value = Number(numeric);
   if (!Number.isFinite(value)) return null;
   return negative ? -Math.abs(value) : positive ? Math.abs(value) : value;
 }
