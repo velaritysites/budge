@@ -44,15 +44,23 @@ export async function persistAnomalies(
   if (anomalies.length === 0) return;
   const { data: u } = await supabase.auth.getUser();
   if (!u.user) return;
+  const categories = anomalies.map((a) => a.category);
+  const { data: existing } = await supabase
+    .from("spending_alerts")
+    .select("category, dismissed_at")
+    .eq("user_id", u.user.id)
+    .eq("period", period)
+    .in("category", categories);
+  const dismissed = new Map((existing ?? []).map((row) => [row.category, row.dismissed_at]));
   await supabase.from("spending_alerts").upsert(
     anomalies.map((a) => ({
-      user_id: u.user!.id,
+      user_id: u.user.id,
       category: a.category,
       period,
       amount: Math.round(a.amount * 100) / 100,
       average: Math.round(a.average * 100) / 100,
       pct_above: Math.round(a.pctAbove),
-      dismissed_at: null,
+      dismissed_at: dismissed.get(a.category) ?? null,
     })),
     { onConflict: "user_id,category,period" },
   );

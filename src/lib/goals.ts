@@ -68,8 +68,7 @@ export function computeAutoAllocations(
     out[g.id] = alloc;
   }
   // redistribute leftover to under-filled goals until exhausted
-  let guard = 0;
-  while (leftover > 0.01 && guard++ < 10) {
+  while (leftover > 0.01) {
     const underfilled = auto.filter((g) => out[g.id] < g.target_amount - g.current_amount);
     if (underfilled.length === 0) break;
     const w = underfilled.reduce((s, g) => s + Math.max(0, g.weight), 0) || 1;
@@ -81,6 +80,7 @@ export function computeAutoAllocations(
       newLeft += share - alloc;
       out[g.id] += alloc;
     }
+    if (newLeft >= leftover - 0.001) break;
     leftover = newLeft;
   }
   return out;
