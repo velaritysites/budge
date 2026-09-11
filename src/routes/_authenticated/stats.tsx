@@ -115,12 +115,12 @@ function StatsPage() {
       </header>
 
       <div className="p-6 md:p-8 space-y-10 max-w-6xl mx-auto w-full">
-        <div className="flex items-center gap-2">
+        <div className="flex max-w-full items-center gap-2 overflow-x-auto pb-2">
           {(["history", "networth", "briefings", "benchmarks", "annual"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`rounded-full border px-4 py-1.5 text-[11px] font-mono uppercase tracking-widest transition ${
+              className={`shrink-0 rounded-full border px-4 py-1.5 text-[11px] font-mono uppercase tracking-widest transition ${
                 tab === t ? "border-accent/40 bg-accent/10 text-accent" : "border-border text-muted-foreground hover:text-foreground"
               }`}
             >
