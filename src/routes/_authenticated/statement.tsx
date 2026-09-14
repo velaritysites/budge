@@ -197,7 +197,10 @@ function StatementPage() {
 
   async function saveAnalysis(parsed: Txn[]) {
     const { data: u } = await supabase.auth.getUser();
-    if (!u.user || !bank) return;
+    if (!u.user || !bank) {
+      toast.error("Your session expired. Sign in again to save this analysis.");
+      return;
+    }
     const totals: Record<string, number> = {};
     let income = 0;
     let spent = 0;
@@ -213,7 +216,7 @@ function StatementPage() {
       .filter((t) => t.type === "expense" && t.category === "subscriptions")
       .map((t) => ({ name: t.description, amount: t.amount, date: t.date }));
 
-    await supabase.from("statement_analyses").insert({
+    const { error: saveError } = await supabase.from("statement_analyses").insert({
       user_id: u.user.id,
       bank,
       statement_month: period,
@@ -222,6 +225,10 @@ function StatementPage() {
       category_totals: totals,
       subscription_items: subscriptionItems,
     });
+    if (saveError) {
+      toast.error(`Analysis completed, but history could not be saved: ${saveError.message}`);
+      return;
+    }
 
     // Anomaly alerts vs the previous 3 analyses
     const { data: prior } = await supabase
@@ -256,11 +263,15 @@ function StatementPage() {
     if (!result) return;
     setApplying(true);
     const { data: u } = await supabase.auth.getUser();
-    if (!u.user) return setApplying(false);
+    if (!u.user) {
+      setApplying(false);
+      toast.error("Your session expired. Sign in again to add these expenses.");
+      return;
+    }
     const rows = result.allCards
       .filter((c) => syncOn[c.key])
       .map((c) => ({
-        user_id: u.user!.id,
+        user_id: u.user.id,
         name: `${categoryLabel(c.key)} (statement)`,
         category: c.key,
         amount: Math.round(c.total * 100) / 100,

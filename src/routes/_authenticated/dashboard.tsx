@@ -183,9 +183,19 @@ function Dashboard() {
 
   // Upcoming debit orders this month
   const today = now.getDate();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const daysUntilDue = (dueDay: number) => {
+    const thisMonthLastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const thisMonthDue = new Date(currentYear, currentMonth, Math.min(dueDay, thisMonthLastDay));
+    const due = thisMonthDue.getDate() >= today
+      ? thisMonthDue
+      : new Date(currentYear, currentMonth + 1, Math.min(dueDay, new Date(currentYear, currentMonth + 2, 0).getDate()));
+    return Math.round((due.getTime() - new Date(currentYear, currentMonth, today).getTime()) / 86_400_000);
+  };
   const upcoming = expenses
     .filter((e) => e.due_day && e.frequency !== "one_off")
-    .map((e) => ({ e, day: e.due_day as number, away: ((e.due_day as number) - today + 31) % 31 }))
+    .map((e) => ({ e, day: e.due_day as number, away: daysUntilDue(e.due_day as number) }))
     .sort((a, b) => a.away - b.away)
     .slice(0, 4);
 
