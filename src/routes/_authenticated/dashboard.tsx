@@ -305,7 +305,7 @@ function Dashboard() {
           <form onSubmit={quickAdd} className="panel space-y-3 p-6">
             <div className="flex items-center justify-between">
               <h3 className="label-xs">Quick-add expense</h3>
-              <Link to="/expenses" search={{}} className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-accent">
+              <Link to="/expenses" search={{ add: undefined }} className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-accent">
                 Full page →
               </Link>
             </div>
@@ -428,7 +428,7 @@ function Dashboard() {
               <h3 className="font-display text-lg font-bold tracking-tight">Recent activity</h3>
               <p className="mt-1 text-[12px] text-muted-foreground">Latest commitments added</p>
             </div>
-            <Link to="/expenses" search={{}} className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-accent">
+            <Link to="/expenses" search={{ add: undefined }} className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-accent">
               View all →
             </Link>
           </div>
