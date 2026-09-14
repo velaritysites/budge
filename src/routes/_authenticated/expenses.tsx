@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useExpenses, useProfile } from "@/hooks/use-profile";
 import { CATEGORY_LABELS, type ExpenseCategory, type ExpenseFrequency, monthlyEquivalent } from "@/lib/finance";
 import { formatCurrency } from "@/lib/format";
@@ -14,6 +14,7 @@ import { CURRENCIES, getCurrency } from "@/lib/currencies";
 import { LootSelect } from "@/components/ui/loot-select";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
+  validateSearch: (search: Record<string, unknown>) => ({ add: search.add === "1" ? "1" : undefined }),
   head: () => ({ meta: [{ title: "Expenses — Loot" }, { name: "description", content: "Add, edit, restore and review every expense in Loot." }, { property: "og:title", content: "Expenses — Loot" }, { property: "og:description", content: "Add, edit, restore and review every expense in Loot." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: ExpensesPage,
 });
@@ -31,6 +32,7 @@ type DeletedExpense = {
 };
 
 function ExpensesPage() {
+  const search = Route.useSearch();
   const { data: profile } = useProfile();
   const { data: expenses = [] } = useExpenses();
   const qc = useQueryClient();
@@ -51,6 +53,7 @@ function ExpensesPage() {
   const multiCurrency = !!profile?.multi_currency_enabled;
   const [expCurrency, setExpCurrency] = useState(profile?.currency_code ?? "USD");
   const [rate, setRate] = useState("");
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   async function loadDeleted() {
     const { data } = await supabase
@@ -65,6 +68,14 @@ function ExpensesPage() {
   }
 
   useEffect(() => { loadDeleted(); }, []);
+  useEffect(() => {
+    if (search.add !== "1") return;
+    setBulkMode(false);
+    requestAnimationFrame(() => {
+      nameInputRef.current?.focus();
+      nameInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }, [search.add]);
 
   async function refresh() {
     await qc.invalidateQueries({ queryKey: ["expenses"] });
@@ -210,7 +221,7 @@ function ExpensesPage() {
         ) : (
           <form onSubmit={addOne} className="panel p-5 space-y-3 animate-enter">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name (e.g. Rent)"
+              <input ref={nameInputRef} value={name} onChange={(e) => setName(e.target.value)} placeholder="Name (e.g. Rent)"
                 className="field" />
               <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" step="0.01" placeholder="Amount"
                 className="field" />

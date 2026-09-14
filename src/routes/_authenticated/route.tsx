@@ -152,7 +152,7 @@ function AuthLayout() {
           <ReceiptText className="size-5 text-primary" />
           <p className="mt-2 text-sm font-bold">Add an expense</p>
           <p className="mt-1 text-xs text-muted-foreground">Have an expense, you would like to add?</p>
-          <Link to="/expenses" search={{ add: "1" } as never} onClick={() => setMobileOpen(false)} className="btn-primary mt-3 w-full !py-2 text-xs">
+          <Link to="/expenses" search={{ add: "1" }} onClick={() => setMobileOpen(false)} className="btn-primary mt-3 w-full !py-2 text-xs">
             <Plus className="size-3.5" /> New expense
           </Link>
         </div>
@@ -195,7 +195,7 @@ function AuthLayout() {
           <div className="flex items-center gap-2 md:gap-3">
             <NotificationBell />
             <Link to="/checker" className="btn-secondary hidden sm:inline-flex"><Sparkles className="size-4" /> Run a check</Link>
-            <Link to="/expenses" search={{ add: "1" } as never} className="btn-primary"><Plus className="size-4" /> <span className="hidden sm:inline">Add expense</span></Link>
+            <Link to="/expenses" search={{ add: "1" }} className="btn-primary"><Plus className="size-4" /> <span className="hidden sm:inline">Add expense</span></Link>
           </div>
         </header>
         <div key={location.pathname} className="loot-content animate-fade">

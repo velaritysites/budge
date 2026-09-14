@@ -183,9 +183,19 @@ function Dashboard() {
 
   // Upcoming debit orders this month
   const today = now.getDate();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
+  const daysUntilDue = (dueDay: number) => {
+    const thisMonthLastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const thisMonthDue = new Date(currentYear, currentMonth, Math.min(dueDay, thisMonthLastDay));
+    const due = thisMonthDue.getDate() >= today
+      ? thisMonthDue
+      : new Date(currentYear, currentMonth + 1, Math.min(dueDay, new Date(currentYear, currentMonth + 2, 0).getDate()));
+    return Math.round((due.getTime() - new Date(currentYear, currentMonth, today).getTime()) / 86_400_000);
+  };
   const upcoming = expenses
     .filter((e) => e.due_day && e.frequency !== "one_off")
-    .map((e) => ({ e, day: e.due_day as number, away: ((e.due_day as number) - today + 31) % 31 }))
+    .map((e) => ({ e, day: e.due_day as number, away: daysUntilDue(e.due_day as number) }))
     .sort((a, b) => a.away - b.away)
     .slice(0, 4);
 
@@ -295,7 +305,7 @@ function Dashboard() {
           <form onSubmit={quickAdd} className="panel space-y-3 p-6">
             <div className="flex items-center justify-between">
               <h3 className="label-xs">Quick-add expense</h3>
-              <Link to="/expenses" className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-accent">
+              <Link to="/expenses" search={{ add: undefined }} className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-accent">
                 Full page →
               </Link>
             </div>
@@ -418,7 +428,7 @@ function Dashboard() {
               <h3 className="font-display text-lg font-bold tracking-tight">Recent activity</h3>
               <p className="mt-1 text-[12px] text-muted-foreground">Latest commitments added</p>
             </div>
-            <Link to="/expenses" className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-accent">
+            <Link to="/expenses" search={{ add: undefined }} className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-accent">
               View all →
             </Link>
           </div>

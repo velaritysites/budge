@@ -28,7 +28,7 @@ function GoalDetailPage() {
   const [editDate, setEditDate] = useState("");
   const [editNote, setEditNote] = useState("");
 
-  const { data: goal } = useQuery({
+  const { data: goal, isPending: goalPending } = useQuery({
     queryKey: ["goal", goalId],
     queryFn: async (): Promise<Goal | null> => {
       const { data, error } = await supabase
@@ -132,7 +132,18 @@ function GoalDetailPage() {
     return { deposits: deposits.length, withdrawals: withdrawals.length, totalIn, totalOut, avg };
   }, [contributions]);
 
-  if (!goal) return <div className="p-8 text-muted-foreground text-sm">Loading…</div>;
+  if (goalPending) return <div className="p-8 text-muted-foreground text-sm">Loading…</div>;
+  if (!goal) {
+    return (
+      <div className="grid min-h-[70vh] place-items-center p-8 text-center">
+        <div>
+          <h1 className="text-2xl font-bold">Goal not found.</h1>
+          <p className="mt-2 text-sm text-muted-foreground">It may have been removed or is no longer available.</p>
+          <Link to="/goals" className="btn-primary mt-5 inline-flex">Back to goals</Link>
+        </div>
+      </div>
+    );
+  }
   const pct = Math.min(100, (goal.current_amount / Math.max(1, goal.target_amount)) * 100);
   const remaining = Math.max(0, goal.target_amount - goal.current_amount);
 
