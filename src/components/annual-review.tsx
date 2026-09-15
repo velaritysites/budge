@@ -6,6 +6,7 @@ import { categoryColor, categoryLabel, normalizeCategory } from "@/lib/categorie
 import { FileDown, Share2, Trophy, TrendingDown, TrendingUp } from "lucide-react";
 import { estimatePaye } from "@/lib/tax";
 import { toast } from "sonner";
+import { useTaxProfile } from "@/hooks/use-tax-profile";
 
 type Snap = {
   month: string;
@@ -23,6 +24,7 @@ function monthName(m: string) {
 }
 
 export function AnnualReview({ currency }: { currency: string }) {
+  const { data: taxProfile } = useTaxProfile();
   const thisYear = new Date().getFullYear();
   const [year, setYear] = useState(new Date().getMonth() === 0 ? thisYear - 1 : thisYear);
   const shareRef = useRef<HTMLDivElement>(null);
@@ -187,7 +189,7 @@ export function AnnualReview({ currency }: { currency: string }) {
     review.liabilitiesStart !== null && review.liabilitiesEnd !== null
       ? review.liabilitiesStart - review.liabilitiesEnd
       : null;
-  const taxRate = estimatePaye({ annualIncome: review.income }).effectiveRate;
+  const taxRate = estimatePaye({ annualIncome: review.income, age: taxProfile?.age }).effectiveRate;
 
   const recommendations: string[] = [];
   {

@@ -129,13 +129,18 @@ function GoalsPage() {
     if (!due.length) return;
     resumedRef.current = true;
     (async () => {
+      let resumed = 0;
       for (const g of due) {
-        await supabase.from("savings_goals")
+        const { data } = await supabase.from("savings_goals")
           .update({ is_paused: false, resume_date: null })
-          .eq("id", g.id);
+          .eq("id", g.id)
+          .eq("is_paused", true)
+          .select("id");
+        resumed += data?.length ?? 0;
       }
+      if (!resumed) return;
       qc.invalidateQueries({ queryKey: ["goals"] });
-      toast.success(`${due.length} paused goal${due.length > 1 ? "s" : ""} resumed — monthly amounts recalculated`);
+      toast.success(`${resumed} paused goal${resumed > 1 ? "s" : ""} resumed — monthly amounts recalculated`);
     })();
   }, [goals, qc]);
 
@@ -170,24 +175,40 @@ function GoalsPage() {
     (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (!u.user) return;
+      let applied = 0;
       for (const g of toApply) {
         const amt = allocations[g.id] ?? 0;
-        await supabase.from("goal_contributions").insert({
-          user_id: u.user.id, goal_id: g.id, amount: amt,
-          occurred_on: new Date().toISOString().slice(0, 10),
-          note: `Auto (monthly, ${allocMode})`, source: "auto",
-        });
         const newAmount = g.current_amount + amt;
         const done = newAmount >= g.target_amount;
-        await supabase.from("savings_goals").update({
+        const { data: claimed, error: claimError } = await supabase.from("savings_goals").update({
           current_amount: newAmount,
           last_auto_period: period,
           completed_at: done ? new Date().toISOString() : null,
           is_completed: done,
-        }).eq("id", g.id);
+        })
+          .eq("id", g.id)
+          .or(`last_auto_period.is.null,last_auto_period.neq.${period}`)
+          .select("id");
+        if (claimError || !claimed?.length) continue;
+        const { error: contributionError } = await supabase.from("goal_contributions").insert({
+          user_id: u.user.id, goal_id: g.id, amount: amt,
+          occurred_on: new Date().toISOString().slice(0, 10),
+          note: `Auto (monthly, ${allocMode})`, source: "auto",
+        });
+        if (contributionError) {
+          await supabase.from("savings_goals").update({
+            current_amount: g.current_amount,
+            last_auto_period: g.last_auto_period,
+            completed_at: g.completed_at,
+            is_completed: !!g.completed_at,
+          }).eq("id", g.id).eq("last_auto_period", period);
+          continue;
+        }
+        applied += 1;
       }
+      if (!applied) return;
       qc.invalidateQueries({ queryKey: ["goals"] });
-      toast.success(`Auto-applied ${toApply.length} goal${toApply.length > 1 ? "s" : ""} for this month`);
+      toast.success(`Auto-applied ${applied} goal${applied > 1 ? "s" : ""} for this month`);
     })();
   }, [goals, allocations, autoTiming, allocMode, qc]);
 
