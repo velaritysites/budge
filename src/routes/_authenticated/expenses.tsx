@@ -221,7 +221,7 @@ function ExpensesPage() {
         ) : (
           <form onSubmit={addOne} className="panel p-5 space-y-3 animate-enter">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <input ref={nameInputRef} value={name} onChange={(e) => setName(e.target.value)} placeholder="Name (e.g. Rent)"
+              <input ref={nameInputRef} autoFocus={search.add === "1"} value={name} onChange={(e) => setName(e.target.value)} placeholder="Name (e.g. Rent)"
                 className="field" />
               <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" step="0.01" placeholder="Amount"
                 className="field" />

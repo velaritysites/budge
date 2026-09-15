@@ -24,7 +24,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCompareRouteImport } from './routes/_authenticated/compare'
 import { Route as AuthenticatedCheckerRouteImport } from './routes/_authenticated/checker'
 import { Route as ApiPublicRecalibrateScoresRouteImport } from './routes/api/public/recalibrate-scores'
-import { Route as AuthenticatedGoalsGoalIdRouteImport } from './routes/_authenticated/goals.$goalId'
+import { Route as AuthenticatedGoalsGoalIdRouteImport } from './routes/_authenticated/goals_.$goalId'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -103,9 +103,9 @@ const ApiPublicRecalibrateScoresRoute =
   } as any)
 const AuthenticatedGoalsGoalIdRoute =
   AuthenticatedGoalsGoalIdRouteImport.update({
-    id: '/$goalId',
-    path: '/$goalId',
-    getParentRoute: () => AuthenticatedGoalsRoute,
+    id: '/goals_/$goalId',
+    path: '/goals/$goalId',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -116,7 +116,7 @@ export interface FileRoutesByFullPath {
   '/compare': typeof AuthenticatedCompareRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/expenses': typeof AuthenticatedExpensesRoute
-  '/goals': typeof AuthenticatedGoalsRouteWithChildren
+  '/goals': typeof AuthenticatedGoalsRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/statement': typeof AuthenticatedStatementRoute
@@ -133,7 +133,7 @@ export interface FileRoutesByTo {
   '/compare': typeof AuthenticatedCompareRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/expenses': typeof AuthenticatedExpensesRoute
-  '/goals': typeof AuthenticatedGoalsRouteWithChildren
+  '/goals': typeof AuthenticatedGoalsRoute
   '/planner': typeof AuthenticatedPlannerRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/statement': typeof AuthenticatedStatementRoute
@@ -152,13 +152,13 @@ export interface FileRoutesById {
   '/_authenticated/compare': typeof AuthenticatedCompareRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/expenses': typeof AuthenticatedExpensesRoute
-  '/_authenticated/goals': typeof AuthenticatedGoalsRouteWithChildren
+  '/_authenticated/goals': typeof AuthenticatedGoalsRoute
   '/_authenticated/planner': typeof AuthenticatedPlannerRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/statement': typeof AuthenticatedStatementRoute
   '/_authenticated/stats': typeof AuthenticatedStatsRoute
   '/_authenticated/tax': typeof AuthenticatedTaxRoute
-  '/_authenticated/goals/$goalId': typeof AuthenticatedGoalsGoalIdRoute
+  '/_authenticated/goals_/$goalId': typeof AuthenticatedGoalsGoalIdRoute
   '/api/public/recalibrate-scores': typeof ApiPublicRecalibrateScoresRoute
 }
 export interface FileRouteTypes {
@@ -212,7 +212,7 @@ export interface FileRouteTypes {
     | '/_authenticated/statement'
     | '/_authenticated/stats'
     | '/_authenticated/tax'
-    | '/_authenticated/goals/$goalId'
+    | '/_authenticated/goals_/$goalId'
     | '/api/public/recalibrate-scores'
   fileRoutesById: FileRoutesById
 }
@@ -331,38 +331,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicRecalibrateScoresRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/goals/$goalId': {
-      id: '/_authenticated/goals/$goalId'
-      path: '/$goalId'
+    '/_authenticated/goals_/$goalId': {
+      id: '/_authenticated/goals_/$goalId'
+      path: '/goals/$goalId'
       fullPath: '/goals/$goalId'
       preLoaderRoute: typeof AuthenticatedGoalsGoalIdRouteImport
-      parentRoute: typeof AuthenticatedGoalsRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
-
-interface AuthenticatedGoalsRouteChildren {
-  AuthenticatedGoalsGoalIdRoute: typeof AuthenticatedGoalsGoalIdRoute
-}
-
-const AuthenticatedGoalsRouteChildren: AuthenticatedGoalsRouteChildren = {
-  AuthenticatedGoalsGoalIdRoute: AuthenticatedGoalsGoalIdRoute,
-}
-
-const AuthenticatedGoalsRouteWithChildren =
-  AuthenticatedGoalsRoute._addFileChildren(AuthenticatedGoalsRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedCheckerRoute: typeof AuthenticatedCheckerRoute
   AuthenticatedCompareRoute: typeof AuthenticatedCompareRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedExpensesRoute: typeof AuthenticatedExpensesRoute
-  AuthenticatedGoalsRoute: typeof AuthenticatedGoalsRouteWithChildren
+  AuthenticatedGoalsRoute: typeof AuthenticatedGoalsRoute
   AuthenticatedPlannerRoute: typeof AuthenticatedPlannerRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStatementRoute: typeof AuthenticatedStatementRoute
   AuthenticatedStatsRoute: typeof AuthenticatedStatsRoute
   AuthenticatedTaxRoute: typeof AuthenticatedTaxRoute
+  AuthenticatedGoalsGoalIdRoute: typeof AuthenticatedGoalsGoalIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -370,12 +360,13 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCompareRoute: AuthenticatedCompareRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedExpensesRoute: AuthenticatedExpensesRoute,
-  AuthenticatedGoalsRoute: AuthenticatedGoalsRouteWithChildren,
+  AuthenticatedGoalsRoute: AuthenticatedGoalsRoute,
   AuthenticatedPlannerRoute: AuthenticatedPlannerRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStatementRoute: AuthenticatedStatementRoute,
   AuthenticatedStatsRoute: AuthenticatedStatsRoute,
   AuthenticatedTaxRoute: AuthenticatedTaxRoute,
+  AuthenticatedGoalsGoalIdRoute: AuthenticatedGoalsGoalIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
