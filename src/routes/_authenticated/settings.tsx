@@ -266,8 +266,8 @@ function SettingsPage() {
           </p>
           <ToggleRow icon={<Mail className="size-4" />} label="Email reminders" desc="Sent to your account email."
             checked={emailN} onChange={setEmailN} />
-          <ToggleRow icon={<Smartphone className="size-4" />} label="Push notifications" desc="Wired up now, live once the iOS app ships."
-            checked={pushN} onChange={setPushN} />
+          <ToggleRow icon={<Smartphone className="size-4" />} label="Push notifications" desc="Available when the Loot mobile app launches."
+            checked={pushN} onChange={setPushN} disabled />
         </Section>
 
         <Section title="Goals — auto progress">
@@ -345,7 +345,7 @@ function SettingsPage() {
   );
 }
 
-function ToggleRow({ icon, label, desc, checked, onChange }: { icon: React.ReactNode; label: string; desc: string; checked: boolean; onChange: (v: boolean) => void }) {
+function ToggleRow({ icon, label, desc, checked, onChange, disabled = false }: { icon: React.ReactNode; label: string; desc: string; checked: boolean; onChange: (v: boolean) => void; disabled?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-4 panel p-3">
       <div className="flex items-center gap-3 min-w-0">
@@ -355,8 +355,8 @@ function ToggleRow({ icon, label, desc, checked, onChange }: { icon: React.React
           <div className="text-[11px] text-muted-foreground truncate">{desc}</div>
         </div>
       </div>
-      <button type="button" onClick={() => onChange(!checked)}
-        className={`shrink-0 relative w-10 h-6 rounded-full transition ${checked ? "bg-accent" : "bg-muted"}`}>
+      <button type="button" disabled={disabled} aria-label={`${label}: ${checked ? "on" : "off"}`} onClick={() => onChange(!checked)}
+        className={`shrink-0 relative w-10 h-6 rounded-full transition disabled:cursor-not-allowed disabled:opacity-40 ${checked ? "bg-accent" : "bg-muted"}`}>
         <span className={`absolute top-0.5 left-0.5 size-5 rounded-full bg-background shadow transition-transform ${checked ? "translate-x-4" : ""}`} />
       </button>
     </div>

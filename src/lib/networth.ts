@@ -10,6 +10,7 @@ export type NetWorthItem = {
   label: string;
   value: number;
   depreciation_pct: number;
+  created_at: string;
   updated_at: string;
 };
 
@@ -39,7 +40,7 @@ export function useNetWorthItems() {
     queryFn: async (): Promise<NetWorthItem[]> => {
       const { data, error } = await supabase
         .from("net_worth_items")
-        .select("id, kind, category, label, value, depreciation_pct, updated_at")
+        .select("id, kind, category, label, value, depreciation_pct, created_at, updated_at")
         .order("created_at", { ascending: true });
       if (error) throw error;
       return (data ?? []).map((r: any) => ({
@@ -49,6 +50,7 @@ export function useNetWorthItems() {
         label: r.label,
         value: Number(r.value),
         depreciation_pct: Number(r.depreciation_pct ?? 0),
+        created_at: r.created_at,
         updated_at: r.updated_at,
       }));
     },
@@ -58,7 +60,7 @@ export function useNetWorthItems() {
 /** Value after applying the item's annual depreciation for elapsed time. */
 export function currentValue(item: NetWorthItem, now = new Date()): number {
   if (!item.depreciation_pct) return item.value;
-  const years = Math.max(0, (now.getTime() - new Date(item.updated_at).getTime()) / (365.25 * 86_400_000));
+  const years = Math.max(0, (now.getTime() - new Date(item.created_at).getTime()) / (365.25 * 86_400_000));
   return item.value * Math.pow(1 - item.depreciation_pct / 100, years);
 }
 

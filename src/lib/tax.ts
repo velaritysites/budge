@@ -63,6 +63,7 @@ export function estimatePaye(params: {
   annualIncome: number;
   deductions?: number;
   medicalMembers?: number;
+  age?: number;
 }): PayeEstimate {
   const annualIncome = Math.max(0, params.annualIncome);
   const deductions = Math.max(0, params.deductions ?? 0);
@@ -73,7 +74,8 @@ export function estimatePaye(params: {
     (Math.min(members, 2) * MEDICAL_CREDIT_FIRST_TWO + Math.max(0, members - 2) * MEDICAL_CREDIT_ADDITIONAL);
 
   const gross = annualTaxBeforeRebate(taxableIncome);
-  const annualTax = Math.max(0, gross - PRIMARY_REBATE - medicalCredits);
+  const rebate = rebateForAge(params.age ?? 30).total;
+  const annualTax = Math.max(0, gross - rebate - medicalCredits);
   const bracket = BRACKETS.find((x) => taxableIncome <= x.upTo) ?? BRACKETS[BRACKETS.length - 1]!;
 
   return {
