@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useExpenses, useProfile } from "@/hooks/use-profile";
 import { CATEGORY_LABELS, type ExpenseCategory, type ExpenseFrequency, monthlyEquivalent } from "@/lib/finance";
@@ -33,6 +33,7 @@ type DeletedExpense = {
 
 function ExpensesPage() {
   const search = Route.useSearch();
+  const navigate = useNavigate();
   const { data: profile } = useProfile();
   const { data: expenses = [] } = useExpenses();
   const qc = useQueryClient();
@@ -74,8 +75,9 @@ function ExpensesPage() {
     requestAnimationFrame(() => {
       nameInputRef.current?.focus();
       nameInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      navigate({ to: "/expenses", search: { add: undefined }, replace: true });
     });
-  }, [search.add]);
+  }, [navigate, search.add]);
 
   async function refresh() {
     await qc.invalidateQueries({ queryKey: ["expenses"] });
