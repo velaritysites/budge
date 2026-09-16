@@ -71,10 +71,17 @@ function ExpensesPage() {
   useEffect(() => {
     if (search.add !== "1") return;
     setBulkMode(false);
-    requestAnimationFrame(() => {
-      nameInputRef.current?.focus();
-      nameInputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
+    let tries = 0;
+    const tick = window.setInterval(() => {
+      tries += 1;
+      const el = nameInputRef.current;
+      if (el) {
+        el.focus();
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      if (el || tries > 20) window.clearInterval(tick);
+    }, 100);
+    return () => window.clearInterval(tick);
   }, [search.add]);
 
   async function refresh() {

@@ -141,16 +141,16 @@ export const MERCHANT_RULES: Partial<Record<ExpenseCategory, string[]>> = {
   insurance: ["SANLAM", "OLD MUTUAL LIFE", "MOMENTUM LIFE", "OUTSURANCE", "HOLLARD", "MIWAY", "KING PRICE", "BUDGET INSURANCE", "DIAL DIRECT", "SANTAM", "LIBERTY LIFE", "ASSUPOL", "PPS", "CLIENTELE"],
   medical_aid: ["DISCOVERY HEALTH", "BONITAS", "MEDIHELP", "MOMENTUM HEALTH", "GEMS", "BESTMED", "FEDHEALTH", "CAMAF", "PROFMED", "RESOLUTION HEALTH"],
   debt_repayments: ["PERSONAL LOAN", "CREDIT CARD PMT", "STORE ACCOUNT", "AFRICAN BANK", "CAPITEC LOAN", "FNB LOAN", "ABSA LOAN", "STANDARD BANK LOAN", "NEDBANK LOAN", "BAYPORT", "WONGA", "LETSATSI"],
-  groceries: ["CHECKERS", "SHOPRITE", "PICK N PAY", "PNP", "WOOLWORTHS FOOD", "FOOD LOVER", "SPAR", "MAKRO", "GAME FOOD", "BOXER", "USAVE", "OK FOODS", "CAMBRIDGE FOOD"],
-  eating_out: ["KFC", "MCDONALD", "NANDOS", "DEBONAIRS", "PIZZA", "STEERS", "BURGER KING", "SUBWAY", "FISHAWAYS", "CHICKEN LICKEN", "ROMAN'S", "OCEAN BASKET", "WIMPY", "MUGG AND BEAN", "TASHAS", "KAUAI", "GALITO", "PANAROTTIS"],
-  coffee_drinks: ["STARBUCKS", "SEATTLE COFFEE", "VIDA E", "BOOTLEGGER", "TRUTH COFFEE", "DELUXE", "PAUL CAFE", "HARRIS"],
+  groceries: ["CHECKERS", "SHOPRITE", "PICK N PAY", "PNP", "WOOLWORTHS FOOD", "FOOD LOVER", "SPAR", "MAKRO", "GAME FOOD", "BOXER", "USAVE", "OK FOODS", "CAMBRIDGE FOOD", "WOOLWORTHS", "SUPERSPAR", "KWIKSPAR", "FOOD LOVERS", "FRUIT AND VEG", "SIXTY60", "CHECKERS HYPER"],
+  eating_out: ["KFC", "MCDONALD", "NANDOS", "DEBONAIRS", "PIZZA", "STEERS", "BURGER KING", "SUBWAY", "FISHAWAYS", "CHICKEN LICKEN", "ROMAN'S", "OCEAN BASKET", "WIMPY", "MUGG AND BEAN", "TASHAS", "KAUAI", "GALITO", "PANAROTTIS", "UBER EATS", "MR D FOOD", "SPUR", "ROCOMAMAS", "COL'CACCHIO", "SIMPLY ASIA", "UBEREATS"],
+  coffee_drinks: ["STARBUCKS", "SEATTLE COFFEE", "VIDA E", "BOOTLEGGER", "TRUTH COFFEE", "DELUXE", "PAUL CAFE", "HARRIS", "COFFEE", "CAFE", "BOTTLE STORE", "TOPS AT SPAR", "LIQUOR"],
   household: ["BUILDERS", "LEROY MERLIN", "CHAMBERLAINS", "PLASTICS FOR AFRICA", "HIRSCH", "GAME HARDWARE", "MR PRICE HOME", "@HOME", "WOOLWORTHS HOME", "CLEANING", "LAUNDRY", "PEST CONTROL"],
   clothing_shopping: ["ZARA", "H&M", "EDGARS", "MR PRICE", "FOSCHINI", "LEGIT", "IDENTITY", "RELAY", "TRUWORTHS", "WOOLWORTHS CLOTHING", "COTTON ON", "SUPERBALIST", "TAKEALOT", "BASH", "THE FIX", "ACKERMANS", "PUMA", "ADIDAS", "NIKE"],
   health_beauty: ["CLICKS", "DISCHEM", "PHARMACY", "VIRGIN ACTIVE", "PLANET FITNESS", "ANYTIME FITNESS", "CURVES", "SALON", "HAIRDRESSER", "SPA", "NAIL", "SKIN RENEWAL", "DERMALOGICA"],
   subscriptions: ["NETFLIX", "SPOTIFY", "SHOWMAX", "DSTV", "APPLE", "GOOGLE PLAY", "MICROSOFT", "AMAZON PRIME", "YOUTUBE", "DISCORD", "DROPBOX", "ADOBE", "CANVA", "CHATGPT", "OPENAI"],
   entertainment: ["NU METRO", "STER KINEKOR", "COMPUTICKET", "TICKETMASTER", "TICKETPRO", "STEAM", "PLAYSTATION", "XBOX", "APPLE ARCADE", "ROBLOX"],
   tech_gadgets: ["APPLE STORE", "ISTORE", "INCREDIBLE CONNECT", "HI-FI CORP", "WOOTWARE", "EVETECH", "SAMSUNG", "TAKEALOT TECH", "DION WIRED"],
-  phone_airtime: ["VODACOM", "MTN", "CELL C", "TELKOM", "RAIN", "AIRTIME", "RECHARGE", "PREPAID DATA", "ROUTER"],
+  phone_airtime: ["VODACOM", "MTN", "CELL C", "TELKOM", "RAIN", "AIRTIME", "RECHARGE", "PREPAID DATA", "ROUTER", "AFRIHOST", "WEBAFRICA", "MWEB", "SUPERSONIC"],
   giving_charity: ["GIFT", "DONATION", "CHARITY", "NSPCA", "GIFT VOUCHER"],
   education: ["SCHOOL FEES", "TUITION", "VARSITY", "UNIVERSITY", "COLLEGE", "UDEMY", "COURSERA", "BOOKS", "STATIONERY", "CAMPUS"],
   childcare: ["DAYCARE", "CRÈCHE", "CRECHE", "BABYSIT", "AFTERCARE", "SCHOOL ACTIVITIES", "MONTESSORI"],
@@ -194,10 +194,18 @@ function ruleRegex(rule: string): RegExp {
 export function matchCategory(description: string): ExpenseCategory | null {
   const d = (description || "").toUpperCase();
   if (!d.trim()) return null;
-  for (const key of RULE_ORDER) {
+  // The most specific rule wins ("WOOLWORTHS CLOTHING" beats "WOOLWORTHS");
+  // RULE_ORDER breaks ties between equally specific rules.
+  let best: { key: ExpenseCategory; length: number; order: number } | null = null;
+  RULE_ORDER.forEach((key, order) => {
     const rules = MERCHANT_RULES[key];
-    if (!rules) continue;
-    for (const r of rules) if (ruleRegex(r).test(d)) return key;
-  }
-  return null;
+    if (!rules) return;
+    for (const r of rules) {
+      if (!ruleRegex(r).test(d)) continue;
+      if (!best || r.length > best.length || (r.length === best.length && order < best.order)) {
+        best = { key, length: r.length, order };
+      }
+    }
+  });
+  return best ? (best as { key: ExpenseCategory }).key : null;
 }
