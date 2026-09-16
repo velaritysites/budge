@@ -170,7 +170,7 @@ export function LootScoreCard({
         </p>
 
         <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-          {confidenceLevel(corrections?.sample_size ?? 0).label}
+          {confidenceLevel(Math.max(corrections?.sample_size ?? 0, contributions.length)).label}
         </p>
 
         <button onClick={() => setOpen(true)} className="btn-ghost mt-4 self-start">
@@ -188,7 +188,7 @@ export function LootScoreCard({
           bureau={bureau}
           latestBureau={latestBureau}
           calibrationSamples={calibration?.samples ?? 0}
-          confidence={confidenceLevel(corrections?.sample_size ?? 0)}
+          confidence={confidenceLevel(Math.max(corrections?.sample_size ?? 0, contributions.length))}
           hasContributed={contributions.length > 0}
         />
       )}
