@@ -194,10 +194,18 @@ function ruleRegex(rule: string): RegExp {
 export function matchCategory(description: string): ExpenseCategory | null {
   const d = (description || "").toUpperCase();
   if (!d.trim()) return null;
-  for (const key of RULE_ORDER) {
+  // The most specific rule wins ("WOOLWORTHS CLOTHING" beats "WOOLWORTHS");
+  // RULE_ORDER breaks ties between equally specific rules.
+  let best: { key: ExpenseCategory; length: number; order: number } | null = null;
+  RULE_ORDER.forEach((key, order) => {
     const rules = MERCHANT_RULES[key];
-    if (!rules) continue;
-    for (const r of rules) if (ruleRegex(r).test(d)) return key;
-  }
-  return null;
+    if (!rules) return;
+    for (const r of rules) {
+      if (!ruleRegex(r).test(d)) continue;
+      if (!best || r.length > best.length || (r.length === best.length && order < best.order)) {
+        best = { key, length: r.length, order };
+      }
+    }
+  });
+  return best ? (best as { key: ExpenseCategory }).key : null;
 }
