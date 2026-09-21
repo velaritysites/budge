@@ -14,7 +14,7 @@ import { CURRENCIES, getCurrency } from "@/lib/currencies";
 import { LootSelect } from "@/components/ui/loot-select";
 
 export const Route = createFileRoute("/_authenticated/expenses")({
-  validateSearch: (search: Record<string, unknown>) => ({ add: search.add === "1" ? "1" : undefined }),
+  validateSearch: (search: Record<string, unknown>) => ({ add: String(search.add ?? "") === "1" ? "1" : undefined }),
   head: () => ({ meta: [{ title: "Expenses — Loot" }, { name: "description", content: "Add, edit, restore and review every expense in Loot." }, { property: "og:title", content: "Expenses — Loot" }, { property: "og:description", content: "Add, edit, restore and review every expense in Loot." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: ExpensesPage,
 });
